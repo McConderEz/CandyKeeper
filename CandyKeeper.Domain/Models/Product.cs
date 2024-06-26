@@ -9,8 +9,10 @@ namespace CandyKeeper.Domain.Models
 {
     public class Product
     {
-
+        
         public const int MAX_NAME_SIZE = 150;
+
+        private ICollection<ProductForSale> _productsForSale = [];
 
         private Product(string name, int productTypeId, int packagingId)
         {
@@ -25,6 +27,10 @@ namespace CandyKeeper.Domain.Models
         public virtual ProductType? ProductType { get; }
         public int PackagingId { get; }
         public virtual Packaging? Packaging { get; }
+
+        public IReadOnlyCollection<ProductForSale> ProductsForSale => _productsForSale.ToList().AsReadOnly();
+
+        public void AddProductForSale(ProductForSale productForSale) => _productsForSale.Add(productForSale);
 
         public static Result<Product> Create(string name, int productTypeId, int packagingId)
         {
