@@ -8,7 +8,34 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\" />
+    <Folder Include="Repositories\City\" />
+    <Folder Include="Repositories\District\" />
+    <Folder Include="Repositories\OwnershipType\" />
+    <Folder Include="Repositories\Packaging\" />
+    <Folder Include="Repositories\Product\" />
+    <Folder Include="Repositories\ProductForSale\" />
+    <Folder Include="Repositories\ProductDelivery\" />
+    <Folder Include="Repositories\ProductType\" />
+    <Folder Include="Repositories\Store\" />
+    <Folder Include="Repositories\Supplier\" />
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CandyKeeper.Domain\CandyKeeper.Domain.csproj" />
   </ItemGroup>
 
 </Project>

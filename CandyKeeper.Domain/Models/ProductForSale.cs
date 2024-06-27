@@ -15,13 +15,12 @@ namespace CandyKeeper.Domain.Models
         public const int MAX_VOLUME = 1000000;
         public const int MIN_VOLUME = 1;
 
-        private ProductForSale(int productId, int storeId, int productDeliveriesId, decimal price, int supplierId, int volume)
+        private ProductForSale(int productId, int storeId, int productDeliveryId, decimal price, int volume)
         {
             ProductId = productId;
             StoreId = storeId;
-            ProductDeliveriesId = productDeliveriesId;
+            ProductDeliveryId = productDeliveryId;
             Price = price;
-            SupplierId = supplierId;
             Volume = volume;
         }
 
@@ -29,14 +28,13 @@ namespace CandyKeeper.Domain.Models
         public int ProductId { get; }
         public virtual Product? Product { get; }
         public int StoreId { get; }
-        public int ProductDeliveriesId { get; }
-        public virtual ProductDelivery ProductDeliveries { get; }
-        public int SupplierId { get; }
-        public virtual Supplier Supplier { get; }
+        public virtual Store? Store { get; }
+        public int ProductDeliveryId { get; }
+        public virtual ProductDelivery? ProductDelivery { get; }
         public decimal Price { get; }
         public int Volume { get; }
 
-        public static Result<ProductForSale> Create(int productId, int storeId, int productDeliveriesId, decimal price, int supplierId, int volume)
+        public static Result<ProductForSale> Create(int productId, int storeId, int productDeliveryId, decimal price, int volume)
         {
             if (price < MIN_PRICE || price > MAX_PRICE)
                 return Result.Failure<ProductForSale>("price is in incorrect range");
@@ -44,7 +42,7 @@ namespace CandyKeeper.Domain.Models
             if (volume < MIN_VOLUME || volume > MAX_VOLUME)
                 return Result.Failure<ProductForSale>("volume is in incorrect range");
 
-            var productForSale = new ProductForSale(productId, storeId, productDeliveriesId, price, supplierId, volume);
+            var productForSale = new ProductForSale(productId, storeId, productDeliveryId, price, volume);
 
             return Result.Success(productForSale);
         }

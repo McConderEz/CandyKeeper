@@ -21,9 +21,9 @@ namespace CandyKeeper.Domain.Models
         public int Id { get; }
         public DateTime DeliveryDate { get; }
         public int SupplierId { get; }
-        public virtual Supplier Supplier { get; }
+        public virtual Supplier? Supplier { get; }
         public int StoreId { get; }
-        public virtual Store Store { get; }
+        public virtual Store? Store { get; }
         public IReadOnlyCollection<ProductForSale> ProductsForSales => _productsForSale.ToList().AsReadOnly();
 
         public static Result<ProductDelivery> Create(DateTime deliveryDate, int supplierId, int storeId)

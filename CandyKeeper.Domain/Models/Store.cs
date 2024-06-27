@@ -18,7 +18,8 @@ namespace CandyKeeper.Domain.Models
         public const int STORE_NUMBER_MAX = 9999999;
 
         private ICollection<Supplier> _suppliers = [];
-        private ICollection<Product> _products = [];
+        private ICollection<ProductForSale> _productsForSale = [];
+        private ICollection<ProductDelivery> _productsDelivery = [];
 
         private Store(int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId)
         {
@@ -38,10 +39,12 @@ namespace CandyKeeper.Domain.Models
         public int OwnershipTypeId { get; }
         public virtual OwnershipType? OwnershipType { get; }
         public IReadOnlyCollection<Supplier> Suppliers => _suppliers.ToList().AsReadOnly();
-        public IReadOnlyCollection<Product> Products => _products.ToList().AsReadOnly();
+        public IReadOnlyCollection<ProductForSale> ProductsForSale => _productsForSale.ToList().AsReadOnly();
+        public IReadOnlyCollection<ProductDelivery> ProductsDelivery => _productsDelivery.ToList().AsReadOnly();
 
         public void AddSupplier(Supplier supplier) => _suppliers.Add(supplier);
-        public void AddProduct(Product product) => _products.Add(product);
+        public void AddProductForSale(ProductForSale productForSale) => _productsForSale.Add(productForSale);
+        public void AddProductDelivery(ProductDelivery productDelivery) => _productsDelivery.Add(productDelivery);
 
         public void CountNumberOfEmployees() => NumberOfEmployees++;
 
