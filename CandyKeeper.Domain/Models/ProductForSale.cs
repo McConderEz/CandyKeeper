@@ -15,8 +15,9 @@ namespace CandyKeeper.Domain.Models
         public const int MAX_VOLUME = 1000000;
         public const int MIN_VOLUME = 1;
 
-        private ProductForSale(int productId, int storeId, int productDeliveryId, decimal price, int volume)
+        private ProductForSale(int id,int productId, int storeId, int productDeliveryId, decimal price, int volume)
         {
+            Id = id;
             ProductId = productId;
             StoreId = storeId;
             ProductDeliveryId = productDeliveryId;
@@ -34,7 +35,7 @@ namespace CandyKeeper.Domain.Models
         public decimal Price { get; }
         public int Volume { get; }
 
-        public static Result<ProductForSale> Create(int productId, int storeId, int productDeliveryId, decimal price, int volume)
+        public static Result<ProductForSale> Create(int id,int productId, int storeId, int productDeliveryId, decimal price, int volume)
         {
             if (price < MIN_PRICE || price > MAX_PRICE)
                 return Result.Failure<ProductForSale>("price is in incorrect range");
@@ -42,7 +43,7 @@ namespace CandyKeeper.Domain.Models
             if (volume < MIN_VOLUME || volume > MAX_VOLUME)
                 return Result.Failure<ProductForSale>("volume is in incorrect range");
 
-            var productForSale = new ProductForSale(productId, storeId, productDeliveryId, price, volume);
+            var productForSale = new ProductForSale(id,productId, storeId, productDeliveryId, price, volume);
 
             return Result.Success(productForSale);
         }

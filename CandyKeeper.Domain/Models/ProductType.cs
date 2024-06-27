@@ -13,8 +13,9 @@ namespace CandyKeeper.Domain.Models
 
         private ICollection<Product> _products = [];
 
-        private ProductType(string name)
+        private ProductType(int id,string name)
         {
+            Id = id;
             Name = name;
         }
 
@@ -22,14 +23,14 @@ namespace CandyKeeper.Domain.Models
         public string Name { get; } = string.Empty;
         public IReadOnlyCollection<Product> Products => _products.ToList().AsReadOnly();
 
-        public void AddProduct(Product product) => _products.Add(product);
+        public void AddProduct(List<Product> products) => _products.ToList().AddRange(products);
 
-        public static Result<ProductType> Create(string name)
+        public static Result<ProductType> Create(int id, string name)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > MAX_NAME_SIZE)
                 return Result.Failure<ProductType>("name cannot be null or length > 100");
 
-            var productType = new ProductType(name);
+            var productType = new ProductType(id, name);
 
             return Result.Success(productType);
         }

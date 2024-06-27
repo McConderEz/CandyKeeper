@@ -11,8 +11,9 @@ namespace CandyKeeper.Domain.Models
     {
         private ICollection<ProductForSale> _productsForSale = [];
 
-        private ProductDelivery(DateTime deliveryDate, int supplierId, int storeId)
+        private ProductDelivery(int id,DateTime deliveryDate, int supplierId, int storeId)
         {
+            Id = id;
             DeliveryDate = deliveryDate;
             SupplierId = supplierId;
             StoreId = storeId;
@@ -26,12 +27,14 @@ namespace CandyKeeper.Domain.Models
         public virtual Store? Store { get; }
         public IReadOnlyCollection<ProductForSale> ProductsForSales => _productsForSale.ToList().AsReadOnly();
 
-        public static Result<ProductDelivery> Create(DateTime deliveryDate, int supplierId, int storeId)
+        public void AddProductForSale(List<ProductForSale> productForSales) => _productsForSale.ToList().AddRange(productForSales);
+
+        public static Result<ProductDelivery> Create(int id,DateTime deliveryDate, int supplierId, int storeId)
         {
             if (deliveryDate > DateTime.Now)
                 return Result.Failure<ProductDelivery>("DeliveryDate is incorrect");
 
-            var productDelivery = new ProductDelivery(deliveryDate, supplierId, storeId);
+            var productDelivery = new ProductDelivery(id,deliveryDate, supplierId, storeId);
 
             return Result.Success(productDelivery);
         }

@@ -11,7 +11,7 @@ namespace CandyKeeper.Domain.Models
     {
         public const int MAX_NAME_SIZE = 100;
 
-        private User(string name, string passwordHashed)
+        private User(int id,string name, string passwordHashed)
         {
             Name = name;
             PasswordHashed= passwordHashed;
@@ -22,7 +22,7 @@ namespace CandyKeeper.Domain.Models
         public string PasswordHashed { get; } = string.Empty;
 
 
-        public static Result<User> Create(string name, string passwordHashed)
+        public static Result<User> Create(int id,string name, string passwordHashed)
         {
             if (string.IsNullOrEmpty(name) || name.Length > MAX_NAME_SIZE)
                 return Result.Failure<User>("Name is null or empty");
@@ -30,7 +30,7 @@ namespace CandyKeeper.Domain.Models
             if (string.IsNullOrEmpty(passwordHashed))
                 return Result.Failure<User>("PasswordHashed is null or empty");
 
-            var user = new User(name, passwordHashed);
+            var user = new User(id, name, passwordHashed);
 
             return Result.Success(user);
         }

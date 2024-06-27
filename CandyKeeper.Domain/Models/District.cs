@@ -11,8 +11,9 @@ namespace CandyKeeper.Domain.Models
     {
         public const int MAX_NAME_SIZE = 80;
 
-        private District(string name, int cityId)
+        private District(int id,string name, int cityId)
         {
+            Id = id;
             Name = name;
             CityId = cityId;
         }
@@ -22,12 +23,12 @@ namespace CandyKeeper.Domain.Models
         public int CityId { get; }
         public virtual City? City { get; }
 
-        public static Result<District> Create(string name, int cityId)
+        public static Result<District> Create(int id,string name, int cityId)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > MAX_NAME_SIZE)
                 return Result.Failure<District>("name cannot be null or length > 80");
 
-            var district = new District(name, cityId);
+            var district = new District(id,name, cityId);
 
             return Result.Success(district);
         }

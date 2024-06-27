@@ -21,8 +21,9 @@ namespace CandyKeeper.Domain.Models
         private ICollection<ProductForSale> _productsForSale = [];
         private ICollection<ProductDelivery> _productsDelivery = [];
 
-        private Store(int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId)
+        private Store(int id,int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId)
         {
+            Id = id;
             StoreNumber = storeNumber;
             Name = name;
             YearOfOpened = yearOfOpened;
@@ -42,13 +43,13 @@ namespace CandyKeeper.Domain.Models
         public IReadOnlyCollection<ProductForSale> ProductsForSale => _productsForSale.ToList().AsReadOnly();
         public IReadOnlyCollection<ProductDelivery> ProductsDelivery => _productsDelivery.ToList().AsReadOnly();
 
-        public void AddSupplier(Supplier supplier) => _suppliers.Add(supplier);
-        public void AddProductForSale(ProductForSale productForSale) => _productsForSale.Add(productForSale);
-        public void AddProductDelivery(ProductDelivery productDelivery) => _productsDelivery.Add(productDelivery);
+        public void AddSupplier(List<Supplier> suppliers) => _suppliers.ToList().AddRange(suppliers);
+        public void AddProductForSale(List<ProductForSale> productForSales) => _productsForSale.ToList().AddRange(productForSales);
+        public void AddProductDelivery(List<ProductDelivery> productDeliveries) => _productsDelivery.ToList().AddRange(productDeliveries);
 
         public void CountNumberOfEmployees() => NumberOfEmployees++;
 
-        public static Result<Store> Create(int storeNumber, string name, DateTime yearOfOpened, string phone, int ownershipTypeId)
+        public static Result<Store> Create(int id,int storeNumber, string name, DateTime yearOfOpened, string phone, int ownershipTypeId)
         {
             if (storeNumber < STORE_NUMBER_MIN || storeNumber > STORE_NUMBER_MAX)
                 return Result.Failure<Store>("storeNumber is in incorrect ranger");
@@ -62,7 +63,7 @@ namespace CandyKeeper.Domain.Models
             if(yearOfOpened.Year < 1860 || yearOfOpened > DateTime.Now)
                 return Result.Failure<Store>("Incorrect date");
 
-            var store = new Store(storeNumber, name, yearOfOpened, phone, ownershipTypeId);
+            var store = new Store(id,storeNumber, name, yearOfOpened, phone, ownershipTypeId);
 
             return Result.Success(store);
         }
