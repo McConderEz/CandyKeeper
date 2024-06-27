@@ -13,10 +13,11 @@ namespace CandyKeeper.Domain.Models
 
         private ICollection<Store> _stores = [];
 
-        private OwnershipType(int id, string name)
+        private OwnershipType(int id, string name, IEnumerable<Store> stores)
         {
             Id = id;
             Name = name;
+            AddStore(stores.ToList());
         }
 
         public int Id { get; }
@@ -25,12 +26,12 @@ namespace CandyKeeper.Domain.Models
 
         public void AddStore(List<Store> stores) => _stores.ToList().AddRange(stores);
 
-        public static Result<OwnershipType> Create(int id,string name)
+        public static Result<OwnershipType> Create(int id,string name, IEnumerable<Store> stores = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > MAX_NAME_SIZE)
                 return Result.Failure<OwnershipType>("name cannot be null or length > 100");
 
-            var ownershipType = new OwnershipType(id,name);
+            var ownershipType = new OwnershipType(id,name,stores ?? Enumerable.Empty<Store>());
 
             return Result.Success(ownershipType);
         }

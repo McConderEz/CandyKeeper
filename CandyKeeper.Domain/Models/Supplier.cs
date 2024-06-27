@@ -18,7 +18,8 @@ namespace CandyKeeper.Domain.Models
                     RegexOptions.Singleline | RegexOptions.Compiled);
         public const int MAX_NAME_SIZE = 100;
 
-        private Supplier(int id,string name, int ownershipTypeId, int cityId, string phone)
+        private Supplier(int id,string name, int ownershipTypeId, int cityId, string phone,
+            IEnumerable<ProductDelivery> productDeliveries, IEnumerable<Store> stores)
         {
             Id = id;
             Name = name;
@@ -40,7 +41,8 @@ namespace CandyKeeper.Domain.Models
         public void AddProductForSale(List<ProductDelivery> productDeliveries) => _productDeliveries.ToList().AddRange(productDeliveries);
         public void AddStore(List<Store> stores) => _stores.ToList().AddRange(stores);
 
-        public static Result<Supplier> Create(int id,string name, int ownershipTypeId, int cityId, string phone)
+        public static Result<Supplier> Create(int id,string name, int ownershipTypeId, int cityId, string phone,
+                    IEnumerable<ProductDelivery> productDeliveries = null,IEnumerable<Store> stores = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > MAX_NAME_SIZE)
                 return Result.Failure<Supplier>("name cannot be null or length > 100");
@@ -48,7 +50,9 @@ namespace CandyKeeper.Domain.Models
             if (!ValidationRegex.IsMatch(phone))
                 return Result.Failure<Supplier>("phone has incorrect format");
 
-            var supplier = new Supplier(id,name, ownershipTypeId, cityId, phone);
+            var supplier = new Supplier(id,name, ownershipTypeId, cityId, phone,
+                                        productDeliveries ?? Enumerable.Empty<ProductDelivery>(),
+                                        stores ?? Enumerable.Empty<Store>());
 
             return Result.Success(supplier);
         }

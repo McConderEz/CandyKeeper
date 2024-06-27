@@ -21,7 +21,8 @@ namespace CandyKeeper.Domain.Models
         private ICollection<ProductForSale> _productsForSale = [];
         private ICollection<ProductDelivery> _productsDelivery = [];
 
-        private Store(int id,int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId)
+        private Store(int id,int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId,
+            IEnumerable<Supplier> suppliers, IEnumerable<ProductForSale> productForSales, IEnumerable<ProductDelivery> productDeliveries)
         {
             Id = id;
             StoreNumber = storeNumber;
@@ -29,6 +30,9 @@ namespace CandyKeeper.Domain.Models
             YearOfOpened = yearOfOpened;
             Phone = phone;
             OwnershipTypeId = ownershipTypeId;
+            AddSupplier(suppliers.ToList());
+            AddProductForSale(productForSales.ToList());
+            AddProductDelivery(productDeliveries.ToList());
         }
 
         public int Id { get; }
@@ -49,7 +53,8 @@ namespace CandyKeeper.Domain.Models
 
         public void CountNumberOfEmployees() => NumberOfEmployees++;
 
-        public static Result<Store> Create(int id,int storeNumber, string name, DateTime yearOfOpened, string phone, int ownershipTypeId)
+        public static Result<Store> Create(int id,int storeNumber, string name, DateTime yearOfOpened, string phone, int ownershipTypeId,
+                      IEnumerable<Supplier> suppliers = null, IEnumerable<ProductForSale> productForSales = null, IEnumerable<ProductDelivery> productDeliveries = null)
         {
             if (storeNumber < STORE_NUMBER_MIN || storeNumber > STORE_NUMBER_MAX)
                 return Result.Failure<Store>("storeNumber is in incorrect ranger");
@@ -63,7 +68,12 @@ namespace CandyKeeper.Domain.Models
             if(yearOfOpened.Year < 1860 || yearOfOpened > DateTime.Now)
                 return Result.Failure<Store>("Incorrect date");
 
-            var store = new Store(id,storeNumber, name, yearOfOpened, phone, ownershipTypeId);
+            
+
+            var store = new Store(id,storeNumber, name, yearOfOpened, phone, ownershipTypeId,
+                                  suppliers ?? Enumerable.Empty<Supplier>(),
+                                  productForSales ?? Enumerable.Empty<ProductForSale>(),
+                                  productDeliveries ?? Enumerable.Empty<ProductDelivery>());
 
             return Result.Success(store);
         }

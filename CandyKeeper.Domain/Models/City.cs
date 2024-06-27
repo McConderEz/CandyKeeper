@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,11 @@ namespace CandyKeeper.Domain.Models
         public const int MAX_NAME_LENGTH = 80;
 
         private readonly ICollection<District> _districts = [];
-        private City(int id, string name)
+        private City(int id, string name, IEnumerable<District> districts)
         {
             Id = id;
             Name = name;
+            AddDistrict(districts.ToList());
         }
 
         public int Id { get; }
@@ -25,13 +27,13 @@ namespace CandyKeeper.Domain.Models
 
         public void AddDistrict(List<District> districts) => _districts.ToList().AddRange(districts);
 
-        public static Result<City> Create(int id,string name)
+        public static Result<City> Create(int id,string name, IEnumerable<District> districts = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > 80)
                 return Result.Failure<City>("name cannot be null or length > 80");
 
-            var city = new City(id, name);
-
+            var city = new City(id, name, districts ?? Enumerable.Empty<District>());
+            
             return Result.Success(city);
         }
 
