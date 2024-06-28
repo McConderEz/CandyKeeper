@@ -10,8 +10,9 @@ namespace CandyKeeper.Domain.Models
     public class District
     {
         public const int MAX_NAME_SIZE = 80;
+        private readonly ICollection<Store> _stores = [];
 
-        private District(int id,string name, int cityId)
+        private District(int id,string name, int cityId, IEnumerable<Store> stores)
         {
             Id = id;
             Name = name;
@@ -22,13 +23,16 @@ namespace CandyKeeper.Domain.Models
         public string Name { get; } = string.Empty;
         public int CityId { get; }
         public virtual City? City { get; }
+        public IReadOnlyCollection<Store> Stores => _stores.ToList().AsReadOnly();
 
-        public static Result<District> Create(int id,string name, int cityId)
+        public void AddStore(List<Store> stores) => _stores.ToList().AddRange(stores);
+
+        public static Result<District> Create(int id, string name, int cityId, IEnumerable<Store> stores = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > MAX_NAME_SIZE)
                 return Result.Failure<District>("name cannot be null or length > 80");
 
-            var district = new District(id,name, cityId);
+            var district = new District(id,name, cityId, stores ?? Enumerable.Empty<Store>());
 
             return Result.Success(district);
         }

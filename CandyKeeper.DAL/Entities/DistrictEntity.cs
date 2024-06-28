@@ -13,5 +13,6 @@ namespace CandyKeeper.DAL.Entities
         public string Name { get; set; } = string.Empty;
         public int CityId { get; set; }
         public virtual CityEntity? City { get; set; }
+        public virtual ICollection<StoreEntity> Stores { get; set; } = [];
     }
 }

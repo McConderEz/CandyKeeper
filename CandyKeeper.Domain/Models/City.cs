@@ -14,25 +14,32 @@ namespace CandyKeeper.Domain.Models
         public const int MAX_NAME_LENGTH = 80;
 
         private readonly ICollection<District> _districts = [];
-        private City(int id, string name, IEnumerable<District> districts)
+        private readonly ICollection<Supplier> _suppliers = [];
+
+        private City(int id, string name, IEnumerable<District> districts, IEnumerable<Supplier> suppliers)
         {
             Id = id;
             Name = name;
             AddDistrict(districts.ToList());
+            AddSupplier(suppliers.ToList());
         }
 
         public int Id { get; }
         public string Name { get; } = string.Empty;
         public IReadOnlyCollection<District> Districts => _districts.ToList().AsReadOnly();
+        public IReadOnlyCollection<Supplier> Suppliers => _suppliers.ToList().AsReadOnly();
 
         public void AddDistrict(List<District> districts) => _districts.ToList().AddRange(districts);
+        public void AddSupplier(List<Supplier> suppliers) => _suppliers.ToList().AddRange(suppliers);
 
-        public static Result<City> Create(int id,string name, IEnumerable<District> districts = null)
+        public static Result<City> Create(int id,string name, IEnumerable<District> districts = null, IEnumerable<Supplier> suppliers = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > 80)
                 return Result.Failure<City>("name cannot be null or length > 80");
 
-            var city = new City(id, name, districts ?? Enumerable.Empty<District>());
+            var city = new City(id, name,
+                                districts ?? Enumerable.Empty<District>(),
+                                suppliers ?? Enumerable.Empty<Supplier>());
             
             return Result.Success(city);
         }

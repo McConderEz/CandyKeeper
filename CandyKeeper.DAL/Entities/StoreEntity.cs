@@ -17,6 +17,8 @@ namespace CandyKeeper.DAL.Entities
         public string Phone { get; set; } = string.Empty;
         public int OwnershipTypeId { get; set; }
         public virtual OwnershipTypeEntity? OwnershipType { get; set; }
+        public int DistrictId { get; set; }
+        public virtual DistrictEntity? District { get; set; }
 
         public ICollection<SupplierEntity> Suppliers { get; set; } = [];
         public ICollection<ProductForSaleEntity> ProductForSales { get; set; } = [];

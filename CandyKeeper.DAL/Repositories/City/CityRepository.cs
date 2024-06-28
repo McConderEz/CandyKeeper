@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace CandyKeeper.DAL.Repositories
 {
-    public class CityRepository
+    public class CityRepository : ICityRepository
     {
         private readonly CandyKeeperDbContext _context;
 
@@ -27,7 +27,7 @@ namespace CandyKeeper.DAL.Repositories
                 .ToListAsync();
 
             var cities = cityEntities
-                .Select(c => City.Create(c.Id, c.Name, c.Districts.Select(d => District.Create(d.Id,d.Name,d.CityId).Value)).Value)
+                .Select(c => City.Create(c.Id, c.Name, c.Districts.Select(d => District.Create(d.Id, d.Name, d.CityId).Value)).Value)
                 .ToList();
 
             return cities;
@@ -56,13 +56,12 @@ namespace CandyKeeper.DAL.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task Update(int id, string name, List<District> districts)
+        public async Task Update(int id, string name)
         {
             await _context.Cities
                 .Where(c => c.Id == id)
                 .ExecuteUpdateAsync(c => c
-                                   .SetProperty(c => c.Name, name)
-                                   .SetProperty(c => c.Districts, districts.Select(d => new DistrictEntity { Id = d.Id, Name = d.Name, CityId = d.CityId })));
+                                   .SetProperty(c => c.Name, name));
 
             await _context.SaveChangesAsync();
         }
@@ -73,7 +72,7 @@ namespace CandyKeeper.DAL.Repositories
                 .Where(c => c.Id == id)
                 .ExecuteDeleteAsync();
 
-            await _context.SaveChangesAsync();  
+            await _context.SaveChangesAsync();
         }
     }
 }

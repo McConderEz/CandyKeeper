@@ -21,7 +21,7 @@ namespace CandyKeeper.Domain.Models
         private ICollection<ProductForSale> _productsForSale = [];
         private ICollection<ProductDelivery> _productsDelivery = [];
 
-        private Store(int id,int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId,
+        private Store(int id,int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId,int districtId,
             IEnumerable<Supplier> suppliers, IEnumerable<ProductForSale> productForSales, IEnumerable<ProductDelivery> productDeliveries)
         {
             Id = id;
@@ -30,6 +30,7 @@ namespace CandyKeeper.Domain.Models
             YearOfOpened = yearOfOpened;
             Phone = phone;
             OwnershipTypeId = ownershipTypeId;
+            DistrictId = districtId;
             AddSupplier(suppliers.ToList());
             AddProductForSale(productForSales.ToList());
             AddProductDelivery(productDeliveries.ToList());
@@ -43,6 +44,8 @@ namespace CandyKeeper.Domain.Models
         public string Phone { get; } = string.Empty;
         public int OwnershipTypeId { get; }
         public virtual OwnershipType? OwnershipType { get; }
+        public int DistrictId { get; }
+        public virtual District? District { get; }
         public IReadOnlyCollection<Supplier> Suppliers => _suppliers.ToList().AsReadOnly();
         public IReadOnlyCollection<ProductForSale> ProductsForSale => _productsForSale.ToList().AsReadOnly();
         public IReadOnlyCollection<ProductDelivery> ProductsDelivery => _productsDelivery.ToList().AsReadOnly();
@@ -53,7 +56,7 @@ namespace CandyKeeper.Domain.Models
 
         public void CountNumberOfEmployees() => NumberOfEmployees++;
 
-        public static Result<Store> Create(int id,int storeNumber, string name, DateTime yearOfOpened, string phone, int ownershipTypeId,
+        public static Result<Store> Create(int id,int storeNumber, string name, DateTime yearOfOpened, string phone, int ownershipTypeId, int districtId,
                       IEnumerable<Supplier> suppliers = null, IEnumerable<ProductForSale> productForSales = null, IEnumerable<ProductDelivery> productDeliveries = null)
         {
             if (storeNumber < STORE_NUMBER_MIN || storeNumber > STORE_NUMBER_MAX)
@@ -70,7 +73,7 @@ namespace CandyKeeper.Domain.Models
 
             
 
-            var store = new Store(id,storeNumber, name, yearOfOpened, phone, ownershipTypeId,
+            var store = new Store(id,storeNumber, name, yearOfOpened, phone, ownershipTypeId, districtId,
                                   suppliers ?? Enumerable.Empty<Supplier>(),
                                   productForSales ?? Enumerable.Empty<ProductForSale>(),
                                   productDeliveries ?? Enumerable.Empty<ProductDelivery>());

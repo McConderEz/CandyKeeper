@@ -12,5 +12,6 @@ namespace CandyKeeper.DAL.Entities
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public ICollection<DistrictEntity> Districts { get; set; } = [];
+        public ICollection<SupplierEntity> Suppliers { get; set; } = [];
     }
 }
