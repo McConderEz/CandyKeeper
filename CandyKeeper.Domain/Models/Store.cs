@@ -18,8 +18,8 @@ namespace CandyKeeper.Domain.Models
         public const int STORE_NUMBER_MAX = 9999999;
 
         private ICollection<Supplier> _suppliers = [];
-        private ICollection<ProductForSale> _productsForSale = [];
-        private ICollection<ProductDelivery> _productsDelivery = [];
+        private ICollection<ProductForSale> _productForSales = [];
+        private ICollection<ProductDelivery> _productDeliveries = [];
 
         private Store(int id,int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId,int districtId,
             IEnumerable<Supplier> suppliers, IEnumerable<ProductForSale> productForSales, IEnumerable<ProductDelivery> productDeliveries)
@@ -47,12 +47,12 @@ namespace CandyKeeper.Domain.Models
         public int DistrictId { get; }
         public virtual District? District { get; }
         public IReadOnlyCollection<Supplier> Suppliers => _suppliers.ToList().AsReadOnly();
-        public IReadOnlyCollection<ProductForSale> ProductsForSale => _productsForSale.ToList().AsReadOnly();
-        public IReadOnlyCollection<ProductDelivery> ProductsDelivery => _productsDelivery.ToList().AsReadOnly();
+        public IReadOnlyCollection<ProductForSale> ProductForSales => _productForSales.ToList().AsReadOnly();
+        public IReadOnlyCollection<ProductDelivery> ProductDeliveries => _productDeliveries.ToList().AsReadOnly();
 
         public void AddSupplier(List<Supplier> suppliers) => _suppliers.ToList().AddRange(suppliers);
-        public void AddProductForSale(List<ProductForSale> productForSales) => _productsForSale.ToList().AddRange(productForSales);
-        public void AddProductDelivery(List<ProductDelivery> productDeliveries) => _productsDelivery.ToList().AddRange(productDeliveries);
+        public void AddProductForSale(List<ProductForSale> productForSales) => _productForSales.ToList().AddRange(productForSales);
+        public void AddProductDelivery(List<ProductDelivery> productDeliveries) => _productDeliveries.ToList().AddRange(productDeliveries);
 
         public void CountNumberOfEmployees() => NumberOfEmployees++;
 

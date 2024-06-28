@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CandyKeeper.DAL.Repositories
 {
-    public class DistrictRepository
+    public class DistrictRepository : IDistrictRepository
     {
         private readonly CandyKeeperDbContext _context;
 
@@ -41,6 +41,9 @@ namespace CandyKeeper.DAL.Repositories
                                            .Include(d => d.City)
                                            .Include(d => d.Stores)
                                            .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (districtEntities == null)
+                throw new Exception("DistrictEntity is null");
 
             var district = District.Create(districtEntities.Id, districtEntities.Name, districtEntities.CityId, districtEntities.Stores.Select(s => Store.Create(s.Id, s.StoreNumber, s.Name, s.YearOfOpened, s.Phone,
                                                                      s.OwnershipTypeId, s.DistrictId).Value)).Value;

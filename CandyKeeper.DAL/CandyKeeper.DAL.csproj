@@ -8,12 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\OwnershipType\" />
-    <Folder Include="Repositories\Packaging\" />
     <Folder Include="Repositories\Product\" />
     <Folder Include="Repositories\ProductForSale\" />
     <Folder Include="Repositories\ProductDelivery\" />
-    <Folder Include="Repositories\ProductType\" />
     <Folder Include="Repositories\Store\" />
     <Folder Include="Repositories\Supplier\" />
     <Folder Include="Migrations\" />

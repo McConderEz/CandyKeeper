@@ -9,7 +9,7 @@ namespace CandyKeeper.Domain.Models
 {
     public class ProductDelivery
     {
-        private ICollection<ProductForSale> _productsForSale = [];
+        private ICollection<ProductForSale> _productForSales = [];
 
         private ProductDelivery(int id,DateTime deliveryDate, int supplierId, int storeId, IEnumerable<ProductForSale> productForSales)
         {
@@ -26,9 +26,9 @@ namespace CandyKeeper.Domain.Models
         public virtual Supplier? Supplier { get; }
         public int StoreId { get; }
         public virtual Store? Store { get; }
-        public IReadOnlyCollection<ProductForSale> ProductsForSales => _productsForSale.ToList().AsReadOnly();
+        public IReadOnlyCollection<ProductForSale> ProductForSales => _productForSales.ToList().AsReadOnly();
 
-        public void AddProductForSale(List<ProductForSale> productForSales) => _productsForSale.ToList().AddRange(productForSales);
+        public void AddProductForSale(List<ProductForSale> productForSales) => _productForSales.ToList().AddRange(productForSales);
 
         public static Result<ProductDelivery> Create(int id,DateTime deliveryDate, int supplierId, int storeId, IEnumerable<ProductForSale> productForSales = null)
         {

@@ -39,6 +39,9 @@ namespace CandyKeeper.DAL.Repositories
                                            .Include(c => c.Districts)
                                            .FirstOrDefaultAsync(c => c.Id == id);
 
+            if (cityEntity == null)
+                throw new Exception("CityEntity is null");
+
             var city = City.Create(cityEntity.Id, cityEntity.Name, cityEntity.Districts.Select(d => District.Create(d.Id, d.Name, d.CityId).Value)).Value;
 
             return city;
