@@ -1,81 +1,88 @@
-﻿using CandyKeeper.DAL.Entities;
-using CandyKeeper.Domain.Models;
+﻿using CandyKeeper.Domain.Models;
+using CandyKeeper.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CandyKeeper.DAL.Entities;
 
 namespace CandyKeeper.DAL
 {
-    public class ProductRepository : IProductRepository
+    public class ProductForSaleRepository : IProductForSaleRepository
     {
         private readonly CandyKeeperDbContext _context;
 
-        public ProductRepository(CandyKeeperDbContext context)
+        public ProductForSaleRepository(CandyKeeperDbContext context)
         {
             _context = context;
         }
 
-        public async Task<List<Product>> Get()
+        public async Task<List<ProductForSale>> Get()
         {
-            var productEntities = await _context.Products
+            var productForSalesEntities = await _context.ProductForSales
                 .AsNoTracking()
-                .Include(p => p.ProductType)
-                .Include(p => p.ProductForSales)
-                    .ThenInclude(pfs => pfs.Packaging)
-                .Include(p => p.ProductForSales)
-                    .ThenInclude(pfs => pfs.Store)
+                .Include(pfs => pfs.Product)
+                    .ThenInclude(p => p.ProductType)
+                .Include(pfs => pfs.Packaging)
+                .Include(pfs => pfs.Store)
+                    .ThenInclude(s => s.District)
+                        .ThenInclude(d => d.City)
                 .ToListAsync();
 
-            var products = productEntities.Select(p => MapToProduct(p)).ToList();
+            var productForSales = productForSalesEntities.Select(pfs => MapToProductForSale(pfs)).ToList();
 
 
-            return products;
+            return productForSales;
         }
 
-        public async Task<Product> GetById(int id)
+        public async Task<ProductForSale> GetById(int id)
         {
-            var productEntity = await _context.Products
-                                           .Include(p => p.ProductType)
-                                           .Include(p => p.ProductForSales)
-                                               .ThenInclude(pfs => pfs.Packaging)
-                                           .Include(p => p.ProductForSales)
-                                               .ThenInclude(pfs => pfs.Store)
+            var productForSaleEntity = await _context.ProductForSales
+                                            .Include(pfs => pfs.Product)
+                                                .ThenInclude(p => p.ProductType)
+                                            .Include(pfs => pfs.Packaging)
+                                            .Include(pfs => pfs.Store)
+                                                .ThenInclude(s => s.District)
+                                                    .ThenInclude(d => d.City)
                                            .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (productEntity == null)
-                throw new Exception("productType null");
+            if (productForSaleEntity == null)
+                throw new Exception("productForSale null");
 
 
-            var product = MapToProduct(productEntity);
+            var productForSale = MapToProductForSale(productForSaleEntity);
 
-            return product;
+            return productForSale;
         }
 
-        public async Task Create(Product product)
+        public async Task Create(ProductForSale productForSale)
         {
-            var productEntity = MapToProductEntity(product);
+            var productForSaleEntity = MapToProductForSaleEntity(productForSale);
 
-            await _context.Products.AddAsync(productEntity);
+            await _context.ProductForSales.AddAsync(productForSaleEntity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Update(int id, string name, int productTypeId)
+        public async Task Update(int id, decimal price, int volume, int productId, int storeId, int productDeliveryId, int packagingId)
         {
-            await _context.Products
+            await _context.ProductForSales
                 .Where(p => p.Id == id)
                 .ExecuteUpdateAsync(p => p
-                                   .SetProperty(p => p.Name, name)
-                                   .SetProperty(p => p.ProductTypeId, productTypeId));
+                                   .SetProperty(p => p.Price, price)
+                                   .SetProperty(p => p.Volume, volume)
+                                   .SetProperty(p => p.ProductId, productId)
+                                   .SetProperty(p => p.StoreId, storeId)
+                                   .SetProperty(p => p.ProductDeliveryId, productDeliveryId)
+                                   .SetProperty(p => p.PackagingId, packagingId));
 
             await _context.SaveChangesAsync();
         }
 
         public async Task Delete(int id)
         {
-            await _context.ProductTypes
+            await _context.ProductForSales
                 .Where(p => p.Id == id)
                 .ExecuteDeleteAsync();
 
@@ -85,29 +92,84 @@ namespace CandyKeeper.DAL
         private Product MapToProduct(ProductEntity productEntity)
         {
             var productType = productEntity.ProductType != null ? MapToProductType(productEntity.ProductType) : null;
-            var productForSales = productEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList();
 
             return Product.Create(
                 productEntity.Id,
                 productEntity.Name,
                 productEntity.ProductTypeId,
-                productType,
-                productForSales
+                productType
             ).Value;
         }
 
         private ProductEntity MapToProductEntity(Product product)
         {
-            var productTypeEntity = product.ProductType != null ? MapToProductTypeEntity(product.ProductType) : null;
-            var productForSalesEntities = product.ProductForSales.Select(pfs => MapToProductForSaleEntity(pfs)).ToList();
 
             return new ProductEntity
             {
                 Id = product.Id,
                 Name = product.Name,
                 ProductTypeId = product.ProductTypeId,
-                ProductType = productTypeEntity,
-                ProductForSales = productForSalesEntities
+            };
+        }
+
+        private ProductType MapToProductType(ProductTypeEntity productTypeEntity)
+        {
+            var products = productTypeEntity.Products.Select(p => MapToProduct(p)).ToList();
+
+            return ProductType.Create(productTypeEntity.Id, productTypeEntity.Name, products).Value;
+        }
+
+        private ProductTypeEntity MapToProductTypeEntity(ProductType productType)
+        {
+            var productsEntities = productType.Products.Select(p => MapToProductEntity(p)).ToList();
+
+            return new ProductTypeEntity
+            {
+                Id = productType.Id,
+                Name = productType.Name,
+                Products = productsEntities
+            };
+        }
+
+        private District MapToDistrict(DistrictEntity districtEntity)
+        {
+            var city = districtEntity.City != null ? MapToCity(districtEntity.City) : null;
+
+            return District.Create(
+                districtEntity.Id,
+                districtEntity.Name,
+                districtEntity.CityId,
+                city
+            ).Value;
+        }
+
+        private DistrictEntity MapToDistrictEntity(District district)
+        {
+            var cityEntity = district.City != null ? MapToCityEntity(district.City) : null;
+
+            return new DistrictEntity
+            {
+                Id = district.Id,
+                Name = district.Name,
+                CityId = district.CityId,
+                City = cityEntity
+            };
+        }
+
+        private City MapToCity(CityEntity cityEntity)
+        {
+            return City.Create(
+                cityEntity.Id,
+                cityEntity.Name
+            ).Value;
+        }
+
+        private CityEntity MapToCityEntity(City city)
+        {
+            return new CityEntity
+            {
+                Id = city.Id,
+                Name = city.Name
             };
         }
 
@@ -156,54 +218,11 @@ namespace CandyKeeper.DAL
             };
         }
 
-        private ProductType MapToProductType(ProductTypeEntity productTypeEntity)
-        {
-            var products = productTypeEntity.Products.Select(p => MapToProduct(p)).ToList();
-
-            return ProductType.Create(
-                productTypeEntity.Id,
-                productTypeEntity.Name,
-                products
-            ).Value;
-        }
-
-        private ProductTypeEntity MapToProductTypeEntity(ProductType productType)
-        {
-            var products = productType.Products.Select(p => MapToProductEntity(p)).ToList();
-
-            return new ProductTypeEntity
-            {
-                Id = productType.Id,
-                Name = productType.Name,
-                Products = products
-            };
-        }
-
-        private Packaging MapToPackaging(PackagingEntity packagingEntity)
-        {
-            var productForSales = packagingEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList();
-
-            return Packaging.Create(
-                packagingEntity.Id,
-                packagingEntity.Name,
-                productForSales
-            ).Value;
-        }
-
-        private PackagingEntity MapToPackagingEntity(Packaging packaging)
-        {
-            var productForSales = packaging.ProductForSales.Select(pfs => MapToProductForSaleEntity(pfs)).ToList();
-
-            return new PackagingEntity
-            {
-                Id = packaging.Id,
-                Name = packaging.Name,
-                ProductForSales = productForSales
-            };
-        }
-
         private Store MapToStore(StoreEntity storeEntity)
         {
+            var district = storeEntity.District != null ? MapToDistrict(storeEntity.District) : null;
+            var ownershipType = storeEntity.OwnershipType != null ? MapToOwnershipType(storeEntity.OwnershipType) : null;
+
             return Store.Create(
                 storeEntity.Id,
                 storeEntity.StoreNumber,
@@ -211,12 +230,29 @@ namespace CandyKeeper.DAL
                 storeEntity.YearOfOpened,
                 storeEntity.Phone,
                 storeEntity.OwnershipTypeId,
-                storeEntity.DistrictId
+                storeEntity.DistrictId,
+                ownershipType,
+                district,
+                storeEntity.Suppliers.Select(s => MapToSupplier(s)).ToList(),
+                storeEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList(),
+                storeEntity.ProductDeliveries.Select(pd => MapToProductDelivery(pd)).ToList()
             ).Value;
+        }
+
+        private Supplier MapToSupplier(SupplierEntity s)
+        {
+            return Supplier.Create(s.Id, s.Name, s.OwnershipTypeId, s.CityId, s.Phone).Value;
+        }
+
+        private OwnershipType MapToOwnershipType(OwnershipTypeEntity ownershipType)
+        {
+            return OwnershipType.Create(ownershipType.Id, ownershipType.Name).Value;
         }
 
         private StoreEntity MapToStoreEntity(Store store)
         {
+            var districtEntity = store.District != null ? MapToDistrictEntity(store.District) : null;
+
             return new StoreEntity
             {
                 Id = store.Id,
@@ -225,7 +261,11 @@ namespace CandyKeeper.DAL
                 YearOfOpened = store.YearOfOpened,
                 Phone = store.Phone,
                 OwnershipTypeId = store.OwnershipTypeId,
-                DistrictId = store.DistrictId
+                DistrictId = store.DistrictId,
+                District = districtEntity,
+                Suppliers = store.Suppliers.Select(s => MapToSupplierEntity(s)).ToList(),
+                ProductForSales = store.ProductForSales.Select(pfs => MapToProductForSaleEntity(pfs)).ToList(),
+                ProductDeliveries = store.ProductDeliveries.Select(pd => MapToProductDeliveryEntity(pd)).ToList()
             };
         }
 
@@ -257,22 +297,11 @@ namespace CandyKeeper.DAL
                 Id = productDelivery.Id,
                 DeliveryDate = productDelivery.DeliveryDate,
                 SupplierId = productDelivery.SupplierId,
-                Supplier = supplierEntity,
                 StoreId = productDelivery.StoreId,
+                Supplier = supplierEntity,
                 Store = storeEntity,
                 ProductForSales = productForSalesEntities
             };
-        }
-
-        private Supplier MapToSupplier(SupplierEntity supplierEntity)
-        {
-            return Supplier.Create(
-                supplierEntity.Id,
-                supplierEntity.Name,
-                supplierEntity.OwnershipTypeId,
-                supplierEntity.CityId,
-                supplierEntity.Phone
-            ).Value;
         }
 
         private SupplierEntity MapToSupplierEntity(Supplier supplier)
@@ -281,9 +310,26 @@ namespace CandyKeeper.DAL
             {
                 Id = supplier.Id,
                 Name = supplier.Name,
-                OwnershipTypeId = supplier.OwnershipTypeId,
                 CityId = supplier.CityId,
-                Phone = supplier.Phone
+                OwnershipTypeId = supplier.OwnershipTypeId,
+                Phone = supplier.Phone,
+            };
+        }
+
+        private Packaging MapToPackaging(PackagingEntity packagingEntity)
+        {
+            return Packaging.Create(
+                packagingEntity.Id,
+                packagingEntity.Name
+            ).Value;
+        }
+
+        private PackagingEntity MapToPackagingEntity(Packaging packaging)
+        {
+            return new PackagingEntity
+            {
+                Id = packaging.Id,
+                Name = packaging.Name
             };
         }
     }

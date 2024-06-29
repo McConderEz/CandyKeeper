@@ -20,7 +20,7 @@ namespace CandyKeeper.DAL.Configuration
                 .HasMaxLength(Packaging.MAX_NAME_SIZE)
                 .IsRequired();
 
-            builder.HasMany(p => p.Products)
+            builder.HasMany(p => p.ProductForSales)
                 .WithOne(p => p.Packaging)
                 .HasForeignKey(p => p.PackagingId)
                 .OnDelete(DeleteBehavior.Cascade);  

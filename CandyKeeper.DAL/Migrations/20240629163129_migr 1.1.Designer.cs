@@ -4,6 +4,7 @@ using CandyKeeper.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CandyKeeper.DAL.Migrations
 {
     [DbContext(typeof(CandyKeeperDbContext))]
-    partial class CandyKeeperDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240629163129_migr 1.1")]
+    partial class migr11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
