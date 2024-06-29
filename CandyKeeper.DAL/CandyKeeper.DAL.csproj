@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\Product\" />
     <Folder Include="Repositories\ProductForSale\" />
     <Folder Include="Repositories\ProductDelivery\" />
     <Folder Include="Repositories\Store\" />

@@ -14,12 +14,12 @@ namespace CandyKeeper.Domain.Models
 
         private ICollection<ProductForSale> _productForSales = [];
 
-        private Product(int id,string name, int productTypeId, int packagingId, IEnumerable<ProductForSale> productForSales)
+        private Product(int id,string name, int productTypeId,ProductType productType ,IEnumerable<ProductForSale> productForSales)
         {
             Id = id;
             Name = name;
             ProductTypeId = productTypeId;
-            PackagingId = packagingId;
+            ProductType = productType;
             AddProductForSale(productForSales.ToList());
         }
 
@@ -27,19 +27,17 @@ namespace CandyKeeper.Domain.Models
         public string Name { get; } = string.Empty;
         public int ProductTypeId { get; }
         public virtual ProductType? ProductType { get; }
-        public int PackagingId { get; }
-        public virtual Packaging? Packaging { get; }
 
         public IReadOnlyCollection<ProductForSale> ProductForSales => _productForSales.ToList().AsReadOnly();
 
         public void AddProductForSale(List<ProductForSale> productForSales) => _productForSales.ToList().AddRange(productForSales);
 
-        public static Result<Product> Create(int id,string name, int productTypeId, int packagingId, IEnumerable<ProductForSale> productForSales = null)
+        public static Result<Product> Create(int id,string name, int productTypeId,ProductType productType = null,IEnumerable<ProductForSale> productForSales = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > MAX_NAME_SIZE)
                 return Result.Failure<Product>("name cannot be null or length > 150");
 
-            var product = new Product(id,name, productTypeId, packagingId, productForSales ?? Enumerable.Empty<ProductForSale>());
+            var product = new Product(id,name, productTypeId,productType ,productForSales ?? Enumerable.Empty<ProductForSale>());
 
             return Result.Success(product);
         }

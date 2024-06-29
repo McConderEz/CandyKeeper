@@ -27,7 +27,7 @@ namespace CandyKeeper.DAL.Repositories
                 .ToListAsync();
 
             var cities = cityEntities
-                .Select(c => City.Create(c.Id, c.Name, c.Districts.Select(d => District.Create(d.Id, d.Name, d.CityId).Value)).Value)
+                .Select(c => MapToCity(c))
                 .ToList();
 
             return cities;
@@ -42,20 +42,16 @@ namespace CandyKeeper.DAL.Repositories
             if (cityEntity == null)
                 throw new Exception("CityEntity is null");
 
-            var city = City.Create(cityEntity.Id, cityEntity.Name, cityEntity.Districts.Select(d => District.Create(d.Id, d.Name, d.CityId).Value)).Value;
+            var city = MapToCity(cityEntity);
 
             return city;
         }
 
         public async Task Create(City city)
         {
-            var cityEntity = new CityEntity
-            {
-                Name = city.Name,
-                Districts = city.Districts.Select(d => new DistrictEntity { Id = d.Id, Name = d.Name }).ToList(),
-            };
+            var cityEntity = MapToCityEntity(city);
 
-            await _context.AddAsync(cityEntity);
+            await _context.Cities.AddAsync(cityEntity);
             await _context.SaveChangesAsync();
         }
 
@@ -76,6 +72,85 @@ namespace CandyKeeper.DAL.Repositories
                 .ExecuteDeleteAsync();
 
             await _context.SaveChangesAsync();
+        }
+
+        private City MapToCity(CityEntity cityEntity)
+        {
+            var districts = cityEntity.Districts.Select(d => MapToDistrict(d)).ToList();
+            var suppliers = cityEntity.Suppliers.Select(s => MapToSupplier(s)).ToList();
+
+            return City.Create(
+                cityEntity.Id,
+                cityEntity.Name,
+                districts,
+                suppliers
+            ).Value;
+        }
+
+        private OwnershipType MapToOwnershipType(OwnershipTypeEntity ownershipTypeEntity)
+        {
+            return OwnershipType.Create(
+                ownershipTypeEntity.Id,
+                ownershipTypeEntity.Name              
+            ).Value;
+        }
+
+        private CityEntity MapToCityEntity(City city)
+        {
+            var districts = city.Districts.Select(d => MapToDistrictEntity(d)).ToList();
+            var suppliers = city.Suppliers.Select(s => MapToSupplierEntity(s)).ToList();
+
+            return new CityEntity
+            {
+                Id = city.Id,
+                Name = city.Name,
+                Districts = districts,
+                Suppliers = suppliers
+            };
+        }
+
+        private District MapToDistrict(DistrictEntity districtEntity)
+        {
+            return District.Create(
+                districtEntity.Id,
+                districtEntity.Name,
+                districtEntity.CityId
+            ).Value;
+        }
+
+        private DistrictEntity MapToDistrictEntity(District district)
+        {
+            return new DistrictEntity
+            {
+                Id = district.Id,
+                Name = district.Name,
+                CityId = district.CityId
+            };
+        }
+
+        private Supplier MapToSupplier(SupplierEntity supplierEntity)
+        {
+            return Supplier.Create(
+                supplierEntity.Id,
+                supplierEntity.Name,
+                supplierEntity.OwnershipTypeId,
+                supplierEntity.CityId,
+                supplierEntity.Phone,
+                MapToOwnershipType(supplierEntity.OwnershipType),
+                MapToCity(supplierEntity.City)
+            ).Value;
+        }
+
+        private SupplierEntity MapToSupplierEntity(Supplier supplier)
+        {
+            return new SupplierEntity
+            {
+                Id = supplier.Id,
+                Name = supplier.Name,
+                OwnershipTypeId = supplier.OwnershipTypeId,
+                CityId = supplier.CityId,
+                Phone = supplier.Phone
+            };
         }
     }
 }

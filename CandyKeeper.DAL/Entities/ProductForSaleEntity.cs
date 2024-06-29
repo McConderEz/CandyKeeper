@@ -16,6 +16,8 @@ namespace CandyKeeper.DAL.Entities
         public virtual StoreEntity? Store { get; set; }
         public int ProductDeliveryId { get; set; }
         public virtual ProductDeliveryEntity? ProductDelivery { get; set; }
+        public int PackagingId { get; set; }
+        public virtual PackagingEntity? Packaging { get; set; }
         public decimal Price { get; set; }
         public int Volume { get; set; }
     }

@@ -11,6 +11,6 @@ namespace CandyKeeper.DAL.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public ICollection<ProductEntity> Products { get; set; } = [];
+        public ICollection<ProductForSaleEntity> ProductForSales { get; set; } = [];
     }
 }

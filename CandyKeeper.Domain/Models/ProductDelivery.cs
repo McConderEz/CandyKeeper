@@ -11,12 +11,14 @@ namespace CandyKeeper.Domain.Models
     {
         private ICollection<ProductForSale> _productForSales = [];
 
-        private ProductDelivery(int id,DateTime deliveryDate, int supplierId, int storeId, IEnumerable<ProductForSale> productForSales)
+        private ProductDelivery(int id,DateTime deliveryDate, int supplierId, int storeId,Supplier supplier,Store store ,IEnumerable<ProductForSale> productForSales)
         {
             Id = id;
             DeliveryDate = deliveryDate;
             SupplierId = supplierId;
             StoreId = storeId;
+            Supplier = supplier;
+            Store = store;
             AddProductForSale(productForSales.ToList());
         }
 
@@ -30,12 +32,14 @@ namespace CandyKeeper.Domain.Models
 
         public void AddProductForSale(List<ProductForSale> productForSales) => _productForSales.ToList().AddRange(productForSales);
 
-        public static Result<ProductDelivery> Create(int id,DateTime deliveryDate, int supplierId, int storeId, IEnumerable<ProductForSale> productForSales = null)
+        public static Result<ProductDelivery> Create(int id,DateTime deliveryDate, int supplierId, int storeId, 
+                                                    Supplier supplier = null, Store store = null,IEnumerable<ProductForSale> productForSales = null)
         {
             if (deliveryDate > DateTime.Now)
                 return Result.Failure<ProductDelivery>("DeliveryDate is incorrect");
 
-            var productDelivery = new ProductDelivery(id,deliveryDate, supplierId, storeId, productForSales ?? Enumerable.Empty<ProductForSale>());
+            var productDelivery = new ProductDelivery(id,deliveryDate, supplierId, storeId,
+                                        supplier, store ,productForSales ?? Enumerable.Empty<ProductForSale>());
 
             return Result.Success(productDelivery);
         }

@@ -11,27 +11,27 @@ namespace CandyKeeper.Domain.Models
     {
         public const int MAX_NAME_SIZE = 100;
 
-        private ICollection<Product> _products = [];
+        private ICollection<ProductForSale> _productForSales = [];
 
-        private Packaging(int id,string name, IEnumerable<Product> products)
+        private Packaging(int id,string name, IEnumerable<ProductForSale> productForSales)
         {
             Id = id;
             Name = name;
-            AddProduct(products.ToList());
+            AddProductForSales(productForSales.ToList());
         }
 
         public int Id { get; }
         public string Name { get; } = string.Empty;
-        public IReadOnlyCollection<Product> Products => _products.ToList().AsReadOnly();
+        public IReadOnlyCollection<ProductForSale> ProductForSales => _productForSales.ToList().AsReadOnly();
 
-        public void AddProduct(List<Product> products) => _products.ToList().AddRange(products);
+        public void AddProductForSales(List<ProductForSale> productForSales) => _productForSales.ToList().AddRange(productForSales);
 
-        public static Result<Packaging> Create(int id,string name, IEnumerable<Product> products = null)
+        public static Result<Packaging> Create(int id,string name, IEnumerable<ProductForSale> productForSales = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > MAX_NAME_SIZE)
                 return Result.Failure<Packaging>("name cannot be null or length > 100");
 
-            var packaging = new Packaging(id, name, products ?? Enumerable.Empty<Product>());
+            var packaging = new Packaging(id, name, productForSales ?? Enumerable.Empty<ProductForSale>());
 
             return Result.Success(packaging);
         }

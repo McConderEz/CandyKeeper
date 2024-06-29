@@ -9,12 +9,12 @@ namespace CandyKeeper.DAL.Entities
 {
     public class ProductDeliveryEntity
     {
-        public int Id { get; }
-        public DateTime DeliveryDate { get; }
-        public int SupplierId { get; }
-        public virtual SupplierEntity? Supplier { get; }
-        public int StoreId { get; }
-        public virtual StoreEntity? Store { get; }
+        public int Id { get; set; }
+        public DateTime DeliveryDate { get; set; }
+        public int SupplierId { get; set; }
+        public virtual SupplierEntity? Supplier { get; set; }
+        public int StoreId { get; set; }
+        public virtual StoreEntity? Store { get; set; }
         public ICollection<ProductForSaleEntity> ProductForSales { get; set; } = [];
     }
 }

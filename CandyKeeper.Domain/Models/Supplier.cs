@@ -19,6 +19,7 @@ namespace CandyKeeper.Domain.Models
         public const int MAX_NAME_SIZE = 100;
 
         private Supplier(int id,string name, int ownershipTypeId, int cityId, string phone,
+            OwnershipType ownershipType, City city,
             IEnumerable<ProductDelivery> productDeliveries, IEnumerable<Store> stores)
         {
             Id = id;
@@ -26,6 +27,10 @@ namespace CandyKeeper.Domain.Models
             OwnershipTypeId = ownershipTypeId;
             CityId = cityId;
             Phone = phone;
+            OwnershipType = ownershipType;
+            City = city;
+            AddProductDeliveries(productDeliveries.ToList());
+            AddStores(stores.ToList());
         }
 
         public int Id { get; }
@@ -38,10 +43,11 @@ namespace CandyKeeper.Domain.Models
         public IReadOnlyCollection<ProductDelivery> ProductDeliveries => _productDeliveries.ToList().AsReadOnly();
         public IReadOnlyCollection<Store> Stores => _stores.ToList().AsReadOnly();
 
-        public void AddProductForSale(List<ProductDelivery> productDeliveries) => _productDeliveries.ToList().AddRange(productDeliveries);
-        public void AddStore(List<Store> stores) => _stores.ToList().AddRange(stores);
+        public void AddProductDeliveries(List<ProductDelivery> productDeliveries) => _productDeliveries.ToList().AddRange(productDeliveries);
+        public void AddStores(List<Store> stores) => _stores.ToList().AddRange(stores);
 
         public static Result<Supplier> Create(int id,string name, int ownershipTypeId, int cityId, string phone,
+                    OwnershipType ownershipType = null, City city = null,
                     IEnumerable<ProductDelivery> productDeliveries = null,IEnumerable<Store> stores = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > MAX_NAME_SIZE)
@@ -51,6 +57,7 @@ namespace CandyKeeper.Domain.Models
                 return Result.Failure<Supplier>("phone has incorrect format");
 
             var supplier = new Supplier(id,name, ownershipTypeId, cityId, phone,
+                                        ownershipType, city,
                                         productDeliveries ?? Enumerable.Empty<ProductDelivery>(),
                                         stores ?? Enumerable.Empty<Store>());
 

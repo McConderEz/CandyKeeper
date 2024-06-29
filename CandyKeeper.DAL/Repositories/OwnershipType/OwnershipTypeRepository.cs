@@ -26,10 +26,7 @@ namespace CandyKeeper.DAL.Repositories
                 .Include(o => o.Suppliers)
                 .ToListAsync();
 
-            var ownershipTypes = ownershipTypeEntities
-                        .Select(o => OwnershipType.Create(o.Id, o.Name, o.Stores.Select(s => Store.Create(s.Id, s.StoreNumber, s.Name, s.YearOfOpened, s.Phone, s.OwnershipTypeId, s.DistrictId).Value),
-                        o.Suppliers.Select(s => Supplier.Create(s.Id, s.Name, s.OwnershipTypeId, s.CityId, s.Phone).Value)).Value)
-                .ToList();
+            var ownershipTypes = ownershipTypeEntities.Select(o => MapToOwnershipType(o)).ToList();
 
             return ownershipTypes;
         }
@@ -44,20 +41,16 @@ namespace CandyKeeper.DAL.Repositories
             if (ownershipTypesEntity == null)
                 throw new Exception("OwnershipType is null");
 
-            var ownershipType = OwnershipType.Create(ownershipTypesEntity.Id, ownershipTypesEntity.Name, ownershipTypesEntity.Stores.Select(s => Store.Create(s.Id, s.StoreNumber, s.Name, s.YearOfOpened, s.Phone, s.OwnershipTypeId, s.DistrictId).Value),
-                        ownershipTypesEntity.Suppliers.Select(s => Supplier.Create(s.Id, s.Name, s.OwnershipTypeId, s.CityId, s.Phone).Value)).Value;
+            var ownershipType = MapToOwnershipType(ownershipTypesEntity);
 
             return ownershipType;
         }
 
         public async Task Create(OwnershipType ownershipType)
         {
-            var ownershipTypeEntity = new OwnershipTypeEntity
-            {
-                Name = ownershipType.Name,
-            };
+            var ownershipTypeEntity = MapToOwnershipTypeEntity(ownershipType);  
 
-            await _context.AddAsync(ownershipTypeEntity);
+            await _context.OwnershipTypes.AddAsync(ownershipTypeEntity);
             await _context.SaveChangesAsync();
         }
 
@@ -78,6 +71,83 @@ namespace CandyKeeper.DAL.Repositories
                 .ExecuteDeleteAsync();
 
             await _context.SaveChangesAsync();
+        }
+
+        private OwnershipType MapToOwnershipType(OwnershipTypeEntity ownershipTypeEntity)
+        {
+            var stores = ownershipTypeEntity.Stores.Select(s => MapToStore(s)).ToList();
+            var suppliers = ownershipTypeEntity.Suppliers.Select(s => MapToSupplier(s)).ToList();
+
+            return OwnershipType.Create(
+                ownershipTypeEntity.Id,
+                ownershipTypeEntity.Name,
+                stores,
+                suppliers
+            ).Value;
+        }
+
+        private OwnershipTypeEntity MapToOwnershipTypeEntity(OwnershipType ownershipType)
+        {
+            var stores = ownershipType.Stores.Select(s => MapToStoreEntity(s)).ToList();
+            var suppliers = ownershipType.Suppliers.Select(s => MapToSupplierEntity(s)).ToList();
+
+            return new OwnershipTypeEntity
+            {
+                Id = ownershipType.Id,
+                Name = ownershipType.Name,
+                Stores = stores,
+                Suppliers = suppliers
+            };
+        }
+
+        private Store MapToStore(StoreEntity storeEntity)
+        {
+            return Store.Create(
+                storeEntity.Id,
+                storeEntity.StoreNumber,
+                storeEntity.Name,
+                storeEntity.YearOfOpened,
+                storeEntity.Phone,
+                storeEntity.OwnershipTypeId,
+                storeEntity.DistrictId
+            ).Value;
+        }
+
+        private StoreEntity MapToStoreEntity(Store store)
+        {
+            return new StoreEntity
+            {
+                Id = store.Id,
+                StoreNumber = store.StoreNumber,
+                Name = store.Name,
+                YearOfOpened = store.YearOfOpened,
+                Phone = store.Phone,
+                OwnershipTypeId = store.OwnershipTypeId,
+                DistrictId = store.DistrictId
+            };
+        }
+
+        private Supplier MapToSupplier(SupplierEntity supplierEntity)
+        {
+            return Supplier.Create(
+                supplierEntity.Id,
+                supplierEntity.Name,
+                supplierEntity.OwnershipTypeId,
+                supplierEntity.CityId,
+                supplierEntity.Phone
+            ).Value;
+        }
+
+        private SupplierEntity MapToSupplierEntity(Supplier supplier)
+        {
+            return new SupplierEntity
+            {
+                Id = supplier.Id,
+                Name = supplier.Name,
+                OwnershipTypeId = supplier.OwnershipTypeId,
+                CityId = supplier.CityId,
+                Phone = supplier.Phone
+            };
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CandyKeeper.DAL.Entities;
+using CandyKeeper.DAL.Repositories;
 using CandyKeeper.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CandyKeeper.DAL.Repositories
+namespace CandyKeeper.DAL
 {
     public class ProductTypeRepository : IProductTypeRepository
     {
@@ -25,9 +26,8 @@ namespace CandyKeeper.DAL.Repositories
                 .Include(p => p.Products)
                 .ToListAsync();
 
-            var productTypes = productTypeEntities
-                .Select(p => ProductType.Create(p.Id, p.Name, p.Products.Select(p => Product.Create(p.Id, p.Name, p.ProductTypeId, p.PackagingId).Value)).Value)
-                .ToList();
+            var productTypes = productTypeEntities.Select(pt => MapToProductType(pt)).ToList();
+                
 
             return productTypes;
         }
@@ -42,19 +42,16 @@ namespace CandyKeeper.DAL.Repositories
                 throw new Exception("productType null");
 
 
-            var productType = ProductType.Create(productTypeEntity.Id, productTypeEntity.Name, productTypeEntity.Products.Select(p => Product.Create(p.Id, p.Name, p.ProductTypeId, p.PackagingId).Value)).Value;
+            var productType = MapToProductType(productTypeEntity);
 
             return productType;
         }
 
         public async Task Create(ProductType productType)
         {
-            var productTypeEntity = new ProductTypeEntity
-            {
-                Name = productType.Name,
-            };
+            var productTypeEntity = MapToProductTypeEntity(productType);
 
-            await _context.AddAsync(productTypeEntity);
+            await _context.ProductTypes.AddAsync(productTypeEntity);
             await _context.SaveChangesAsync();
         }
 
@@ -75,6 +72,48 @@ namespace CandyKeeper.DAL.Repositories
                 .ExecuteDeleteAsync();
 
             await _context.SaveChangesAsync();
+        }
+
+        private ProductType MapToProductType(ProductTypeEntity productTypeEntity)
+        {
+            var products = productTypeEntity.Products.Select(p => MapToProduct(p)).ToList();
+
+            return ProductType.Create(
+                productTypeEntity.Id,
+                productTypeEntity.Name,
+                products
+            ).Value;
+        }
+
+        private ProductTypeEntity MapToProductTypeEntity(ProductType productType)
+        {
+            var products = productType.Products.Select(p => MapToProductEntity(p)).ToList();
+
+            return new ProductTypeEntity
+            {
+                Id = productType.Id,
+                Name = productType.Name,
+                Products = products
+            };
+        }
+
+        private Product MapToProduct(ProductEntity productEntity)
+        {
+            return Product.Create(
+                productEntity.Id,
+                productEntity.Name,
+                productEntity.ProductTypeId
+            ).Value;
+        }
+
+        private ProductEntity MapToProductEntity(Product product)
+        {
+            return new ProductEntity
+            {
+                Id = product.Id,
+                Name = product.Name,
+                ProductTypeId = product.ProductTypeId
+            };
         }
     }
 }
