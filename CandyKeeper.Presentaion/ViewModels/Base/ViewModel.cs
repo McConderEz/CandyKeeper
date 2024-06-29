@@ -8,9 +8,26 @@ using System.Threading.Tasks;
 
 namespace CandyKeeper.Presentaion.ViewModels.Base
 {
-    internal abstract class ViewModel : INotifyPropertyChanged
+    internal abstract class ViewModel : INotifyPropertyChanged, IDisposable
     {
+        private bool _disposed;
+
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing || _disposed) return;
+
+            _disposed = true;
+            //Освобождение управляемых ресурсов
+        }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string PropertyName = null)
         {
