@@ -11,7 +11,6 @@ namespace CandyKeeper.DAL
     public class CandyKeeperDbContext : DbContext
     {
         //TODO: Добавить Constraints
-        //TODO: Добавить репозитории
         //TODO: Добавить UserEntity
 
         public CandyKeeperDbContext(DbContextOptions<CandyKeeperDbContext> options) 
