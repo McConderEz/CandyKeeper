@@ -5,45 +5,51 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CandyKeeper.Presentaion"
         xmlns:vm="clr-namespace:CandyKeeper.Presentaion.ViewModels"
+        xmlns:cmd="clr-namespace:CandyKeeper.Presentaion.Infrastructure.Commands"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="450" Width="800">
-    <Window.DataContext>
-        <vm:MainWindowsViewModel/>
-    </Window.DataContext>
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Файл">
-                <MenuItem Header="Выход"></MenuItem>
-            </MenuItem>
-            <MenuItem Header="Помощь">
-                <MenuItem Header="О программе"></MenuItem>
-            </MenuItem>
-        </Menu>
-        <StatusBar DockPanel.Dock="Bottom">
-            
-        </StatusBar>
-        <TabControl>
-            <TabItem Header="Вкладка 1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="29*"/>
-                        <RowDefinition Height="165*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="157*"/>
-                        <ColumnDefinition Width="637*"/>
-                    </Grid.ColumnDefinitions>
-                    <Rectangle Grid.Column="0" 
-                               Margin="5,7"
-                               Fill="Blue"
-                               Stroke="Red" 
-                               StrokeThickness="3"
-                               RadiusX="5" RadiusY="7"/>
-                    <Ellipse Grid.Column="2" Grid.Row="0"
-                             Fill="Red" Stroke="Blue" StrokeThickness="3"/>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Вкладка 2"></TabItem>
-        </TabControl>
-    </DockPanel>
+        Height="720" Width="1080" WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True" Background="Transparent">
+    <Border Background="#eff2f7" CornerRadius="30" 
+            MouseDown="Border_MouseDown" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Бокове меню-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!--Иконка меню-->
+                <Button HorizontalAlignment="Left" Margin="20 28 0 35" Style="{StaticResource topButton}">
+                    <Icon:PackIconMaterial Kind="Menu" Width="15" Height="15"/>
+                </Button>
+
+                <Border Grid.Row="1" Background="#F5DEB3" CornerRadius="0 50 0 30">
+                    <DockPanel>
+                        <!--Лого меню-->
+                        <Border Width="80" Height="80" Padding="3" Background="White" CornerRadius="100"
+                                DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="20 -30 0 0">
+                            <Ellipse>
+                                
+                            </Ellipse>
+                        </Border>
+                    </DockPanel>
+                </Border>
+
+                <TextBlock Text="Candy Keeper" Foreground="White" FontSize="22" FontWeight="SemiBold"
+                           DockPanel.Dock="Top" TextAlignment="Center" Margin="5 25 0 10" RenderTransformOrigin="0.501,0.497"/>
+                <TextBlock Text="Candy Keeper" Foreground="White" FontSize="22" FontWeight="SemiBold"
+                           DockPanel.Dock="Top" TextAlignment="Center" Margin="5 25 0 10"/>
+
+            </Grid>
+        </Grid>
+    </Border>
+    
 </Window>
