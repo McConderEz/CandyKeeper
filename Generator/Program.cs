@@ -1,2 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using CandyKeeper.DAL;
+using CandyKeeper.DAL.Repositories;
+using CandyKeeper.Domain.Models;
+using Generator;
+using Microsoft.EntityFrameworkCore;
+
+var generator = new NotesGenerator();
+generator.GenAll();

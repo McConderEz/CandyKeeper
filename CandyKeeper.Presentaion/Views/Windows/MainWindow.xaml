@@ -4,9 +4,207 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CandyKeeper.Presentaion"
+        xmlns:vm="clr-namespace:CandyKeeper.Presentaion.ViewModels"
+        xmlns:cmd="clr-namespace:CandyKeeper.Presentaion.Infrastructure.Commands"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Height="720" Width="1080" WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True" Background="Transparent">
 
-    </Grid>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
+    
+    <Border Background="#eff2f7" CornerRadius="30" 
+            MouseDown="Border_MouseDown" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+             
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Бокове меню-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!--Иконка меню-->
+                <Button HorizontalAlignment="Left" Margin="20 28 0 35" Style="{StaticResource topButton}">
+                    <Icon:PackIconMaterial Kind="Menu" Width="15" Height="15"/>
+                </Button>
+
+                <Border Grid.Row="1" Background="#F5DEB3" CornerRadius="0 50 0 30">
+                    <DockPanel>
+                        <!--Лого меню-->
+                        <Border Width="80" Height="80" Padding="1" Background="White" CornerRadius="100"
+                                DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="20 -30 0 0">
+                            <Ellipse>
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="C:\Users\rusta\source\repos\CandyKeeper\CandyKeeper.Presentaion\Images\avatardefault_92824.png"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                        </Border>
+                        <TextBlock Text="Candy Keeper" Foreground="#5c2828" FontSize="22" FontWeight="SemiBold"
+                                DockPanel.Dock="Top" TextAlignment="Center" Margin="5 25 0 10"/>
+
+                        <Separator Margin="25" DockPanel.Dock="Top" Height="0.8" Background="#A0522D"/>
+
+                        <!--Вкладки-->
+                        <StackPanel DockPanel.Dock="Top" Visibility="Visible">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="MonitorAccount" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Админ-панель"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        
+                        <StackPanel DockPanel.Dock="Top">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Candy" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Кондитерские изделия"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Store" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Магазины"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Certificate" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Поставки"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="TruckDelivery" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Поставщики"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Package" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Расфасовка"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="City" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Города"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Latitude" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Районы"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Locker" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Тип собственности"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Top">
+                            <Button Style="{StaticResource menuButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Candycane" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Вид конд. изделия"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                                               
+                        
+                    </DockPanel>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Column="1" Margin="30 20 20 20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <!--Поисковое поле-->
+                <Grid Width="300" HorizontalAlignment="Left">
+                    <TextBlock Margin="20 0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
+                            Panel.ZIndex="1" Text="Искать здесь..."
+                            Visibility="{Binding ElementName=txtSearch, Path=Text.IsEmpty, Converter={StaticResource BoolToVis}}"/>
+                    <TextBox x:Name="txtSearch" Style="{StaticResource textBoxSearch}"/>
+
+                    <Icon:PackIconMaterial Kind="Magnify" Width="15" Height="15" VerticalAlignment="Center"
+                           Margin="0 0 15 0" Foreground="#b0b9c6" HorizontalAlignment="Right"/>
+                </Grid>
+
+                <!--Верхние кнопки-->
+
+                <Button Style="{StaticResource topButton}" Margin="0 0 20 0" Background="#dcdcdc" HorizontalAlignment="Right">
+                    <Icon:PackIconMaterial Kind="Logout"/>
+                </Button>
+
+                <!--Название страницы-->
+                <TextBlock Text="Кондитерские изделия" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
+                           HorizontalAlignment="Left" Foreground="#121518"/>
+                
+                <!--Кнопка добавления-->
+                <Button Style="{StaticResource addButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
+                        <TextBlock Text="Добавить"/>
+                    </StackPanel>
+                </Button>
+
+                <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
+
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 10 0 0">
+                    <Button Content="Название" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
+                    <Button Content="Цена" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
+                    <Button Content="Магазин" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
+                    <Button Content="Поставщик" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
+                </StackPanel>
+
+                <DataGrid>
+
+                </DataGrid>
+            </Grid>
+
+          
+        </Grid>
+    </Border>
+    
 </Window>

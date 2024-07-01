@@ -13,6 +13,12 @@ namespace CandyKeeper.DAL
         //TODO: Добавить Constraints
         //TODO: Добавить UserEntity
 
+        //TODO:Сделать генератор
+
+        //TODO:Сделать регистрацию и авторизацию
+
+        //TODO: Спроектировать интерфейс и CRUD в нём
+
         public CandyKeeperDbContext(DbContextOptions<CandyKeeperDbContext> options) 
             : base(options)
         {
