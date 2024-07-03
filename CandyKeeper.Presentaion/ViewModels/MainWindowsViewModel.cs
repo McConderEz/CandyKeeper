@@ -1,4 +1,5 @@
-﻿using CandyKeeper.Presentation.Infrastructure.Commands;
+﻿using CandyKeeper.Application.Interfaces;
+using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -39,8 +40,8 @@ namespace CandyKeeper.Presentation.ViewModels
         {
             #region Команды
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecute);
-
             #endregion
+
         }
     }
 }

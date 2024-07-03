@@ -9,6 +9,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CandyKeeper.Domain.Models;
+using CandyKeeper.Presentation.ViewModels;
 
 namespace CandyKeeper.Presentation
 {
@@ -16,9 +18,11 @@ namespace CandyKeeper.Presentation
     {
         private bool IsMaximized = false;
 
+
         public MainWindow()
         {
             InitializeComponent();
+
         }
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)

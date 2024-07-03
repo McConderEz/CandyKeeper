@@ -1,6 +1,10 @@
-﻿using CandyKeeper.DAL;
+﻿using CandyKeeper.Application.Interfaces;
+using CandyKeeper.Application.Services;
+using CandyKeeper.DAL;
 using CandyKeeper.Presentation.Extensions;
+using CandyKeeper.Presentation.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,6 +20,7 @@ namespace CandyKeeper.Presentation
     /// </summary>
     public partial class App : System.Windows.Application
     {
+
         public App()
         {
             var host = Host.CreateDefaultBuilder()
@@ -32,6 +37,7 @@ namespace CandyKeeper.Presentation
                       })
                       .Build();
         }
+
     }
 
 }

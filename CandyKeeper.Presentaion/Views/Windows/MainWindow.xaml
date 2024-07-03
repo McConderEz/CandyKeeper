@@ -12,7 +12,6 @@
         WindowStyle="None"
         AllowsTransparency="True" Background="Transparent"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
-
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <Style x:Key="DataGridRowStyle1" TargetType="{x:Type DataGridRow}">
@@ -141,7 +140,7 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    
+
     <Border Background="#eff2f7" CornerRadius="30" 
             MouseDown="Border_MouseDown" MouseLeftButtonDown="Border_MouseLeftButtonDown">
              
@@ -326,7 +325,7 @@
                     <Button Content="Магазин" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
                 </StackPanel>
 
-                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid">
+                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding }">
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn CanUserResize="False" Width="auto">
                             <DataGridCheckBoxColumn.HeaderTemplate>
