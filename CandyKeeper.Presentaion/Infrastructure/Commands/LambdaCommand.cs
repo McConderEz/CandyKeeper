@@ -1,12 +1,12 @@
-﻿using CandyKeeper.Presentaion.Infrastructure;
-using CandyKeeper.Presentaion.Infrastructure.Commands.Base;
+﻿using CandyKeeper.Presentation.Infrastructure;
+using CandyKeeper.Presentation.Infrastructure.Commands.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CandyKeeper.Presentaion.Infrastructure.Commands
+namespace CandyKeeper.Presentation.Infrastructure.Commands
 {
     internal class LambdaCommand : Command
     {

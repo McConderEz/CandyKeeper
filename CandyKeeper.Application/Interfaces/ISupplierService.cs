@@ -1,13 +1,13 @@
 ﻿using CandyKeeper.Domain.Models;
 
-namespace CandyKeeper.DAL
+namespace CandyKeeper.Application.Interfaces
 {
-    public interface ISupplierRepository
+    public interface ISupplierService
     {
         Task Create(Supplier supplier);
         Task Delete(int id);
         Task<List<Supplier>> Get();
         Task<Supplier> GetById(int id);
-        Task Update(int id, string name, string phone, int ownershipTypeId, int cityId);
+        Task Update(Supplier supplier);
     }
 }

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\CandyKeeper.DAL\CandyKeeper.DAL.csproj" />
   </ItemGroup>
 
 </Project>
