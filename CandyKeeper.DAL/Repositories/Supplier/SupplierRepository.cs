@@ -73,7 +73,7 @@ namespace CandyKeeper.DAL
             await _context.SaveChangesAsync();
         }
 
-        public async Task Update(int id, int storeNumber, string name, string phone,
+        public async Task Update(int id, string name, string phone,
                                  int ownershipTypeId, int cityId)
         {
             await _context.Suppliers

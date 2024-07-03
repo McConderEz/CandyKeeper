@@ -1,5 +1,5 @@
-﻿using CandyKeeper.Presentaion.Infrastructure.Commands;
-using CandyKeeper.Presentaion.ViewModels.Base;
+﻿using CandyKeeper.Presentation.Infrastructure.Commands;
+using CandyKeeper.Presentation.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
 
-namespace CandyKeeper.Presentaion.ViewModels
+namespace CandyKeeper.Presentation.ViewModels
 {
     internal class MainWindowsViewModel : ViewModel
     {
@@ -27,7 +27,7 @@ namespace CandyKeeper.Presentaion.ViewModels
 
         private void OnCloseApplicationCommandExecute(object p)
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
 
         private bool CanCloseApplicationCommandExecute(object p) => true;

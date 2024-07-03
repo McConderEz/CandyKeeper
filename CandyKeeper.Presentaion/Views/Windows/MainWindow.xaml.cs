@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CandyKeeper.Presentaion
+namespace CandyKeeper.Presentation
 {
     public partial class MainWindow : Window
     {

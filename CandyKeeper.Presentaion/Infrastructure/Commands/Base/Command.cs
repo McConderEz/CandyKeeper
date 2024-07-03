@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace CandyKeeper.Presentaion.Infrastructure.Commands.Base
+namespace CandyKeeper.Presentation.Infrastructure.Commands.Base
 {
     internal abstract class Command : ICommand
     {

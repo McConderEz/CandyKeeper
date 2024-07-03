@@ -12,9 +12,6 @@ namespace CandyKeeper.DAL
     {
         //TODO: Добавить Constraints
         //TODO: Добавить UserEntity
-
-        //TODO:Сделать генератор
-
         //TODO:Сделать регистрацию и авторизацию
 
         //TODO: Спроектировать интерфейс и CRUD в нём
@@ -34,14 +31,6 @@ namespace CandyKeeper.DAL
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CandyKeeperDbContext).Assembly);
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("data source=(localdb)\\MSSQLLocalDB;Initial Catalog=candyKeeper;Integrated Security=True;");
-            }
         }
 
         public DbSet<CityEntity> Cities { get; set; } = null!;
