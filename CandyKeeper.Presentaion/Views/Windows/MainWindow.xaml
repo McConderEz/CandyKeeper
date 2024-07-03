@@ -12,6 +12,8 @@
         WindowStyle="None"
         AllowsTransparency="True" Background="Transparent"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
+
+    
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <Style x:Key="DataGridRowStyle1" TargetType="{x:Type DataGridRow}">
@@ -169,7 +171,7 @@
                                 DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="20 -30 0 0">
                             <Ellipse>
                                 <Ellipse.Fill>
-                                    <ImageBrush ImageSource="C:\Users\rusta\source\repos\CandyKeeper\CandyKeeper.Presentaion\Images\avatardefault_92824.png"/>
+                                    <ImageBrush ImageSource="C:\Users\lenka\source\repos\CandyKeeper\CandyKeeper.Presentaion\Images\avatardefault_92824.png"/>
                                 </Ellipse.Fill>
                             </Ellipse>
                         </Border>
@@ -351,11 +353,11 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         
-                        <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="*"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Упакова" IsReadOnly="True" CanUserResize="False" Width="*"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Цена" IsReadOnly="True" CanUserResize="False" Width="*"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Объём" IsReadOnly="True" CanUserResize="False" Width="*"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Магазин" IsReadOnly="True" CanUserResize="False" Width="*"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding ProductId}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Упакова" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding PackagingId}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Цена" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Price}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Объём" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Volume}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Магазин" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding StoreId}"></DataGridTextColumn>
 
                         <DataGridTemplateColumn Header="Действия" IsReadOnly="True" Width="*">
                             <DataGridTemplateColumn.CellTemplate>

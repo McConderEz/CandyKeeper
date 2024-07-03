@@ -11,6 +11,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CandyKeeper.Domain.Models;
 using CandyKeeper.Presentation.ViewModels;
+using System.Windows.Forms;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CandyKeeper.Presentation
 {
@@ -22,7 +24,6 @@ namespace CandyKeeper.Presentation
         public MainWindow()
         {
             InitializeComponent();
-
         }
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)

@@ -14,11 +14,13 @@ namespace CandyKeeper.Presentation.ViewModels
 {
     internal class MainWindowsViewModel : ViewModel
     {
-        private string _title = "CandyKeeper";
-        public string Title
+        private readonly IServiceProvider _serviceProvider;
+        private ViewModel _currentViewModel;
+
+        public ViewModel CurrentViewModel
         {
-            get => _title;
-            set => Set(ref _title, value);
+            get => _currentViewModel;
+            set => Set(ref _currentViewModel, value);
         }
 
         #region Команды
@@ -36,8 +38,10 @@ namespace CandyKeeper.Presentation.ViewModels
 
         #endregion
 
-        public MainWindowsViewModel()
+        public MainWindowsViewModel(IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider;
+
             #region Команды
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecute);
             #endregion

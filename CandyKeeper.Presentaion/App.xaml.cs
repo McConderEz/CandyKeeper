@@ -20,24 +20,32 @@ namespace CandyKeeper.Presentation
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        private static IHost _host;
+
+        public static IHost Host => _host ?? Program.CreateHostBuilder(Environment.GetCommandLineArgs()).Build();
 
         public App()
         {
-            var host = Host.CreateDefaultBuilder()
-                      .ConfigureServices((context, services) =>
-                      {
-                          services.AddDbContext<CandyKeeperDbContext>(options =>
-                          {
-                              options.UseSqlServer(context.Configuration.GetConnectionString("DefaultConnection"));
-                          }, ServiceLifetime.Singleton);
-
-                          services.AddRepositories();
-                          services.AddServices();
-
-                      })
-                      .Build();
+            
         }
 
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            var host = Host;
+            base.OnStartup(e);
+
+            await host.StartAsync().ConfigureAwait(false);
+        }
+
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+
+            var host = Host;
+            await host.StopAsync().ConfigureAwait(false);
+            host.Dispose();
+            _host = null;
+        }
     }
 
 }

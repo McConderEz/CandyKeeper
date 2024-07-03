@@ -2,6 +2,7 @@
 using CandyKeeper.Application.Services;
 using CandyKeeper.DAL;
 using CandyKeeper.DAL.Repositories;
+using CandyKeeper.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,23 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddScoped<IProductTypeService, ProductTypeService>();
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<ISupplierService, SupplierService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddViewModels(this IServiceCollection services)
+        {
+            services.AddSingleton<MainWindowsViewModel>();
+            services.AddSingleton<CityViewModel>();
+            services.AddSingleton<DistrictViewModel>();
+            services.AddSingleton<OwnershipTypeViewModel>();
+            services.AddSingleton<PackagingViewModel>();
+            services.AddSingleton<ProductDeliveryViewModel>();
+            services.AddSingleton<ProductForSaleViewModel>();
+            services.AddSingleton<ProductTypeViewModel>();
+            services.AddSingleton<ProductViewModel>();
+            services.AddSingleton<StoreViewModel>();
+            services.AddSingleton<SupplierViewModel>();
 
             return services;
         }

@@ -1,7 +1,6 @@
 ﻿using CandyKeeper.Application.Interfaces;
 using CandyKeeper.Domain.Models;
 using CandyKeeper.Presentation.ViewModels.Base;
-using DynamicData.Binding;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -23,12 +22,17 @@ namespace CandyKeeper.Presentation.ViewModels
             set => Set(ref _productForSales, value);
         }
 
-        public ProductForSaleViewModel(IProductForSaleService service)
+        //public ProductForSaleViewModel(IProductForSaleService service)
+        //{
+        //    _service = service;
+
+        //    _productForSales = new ObservableCollection<ProductForSale>(_service.Get().Result);
+        //}
+
+        public ProductForSaleViewModel()
         {
-            _service = service;
-
-            _productForSales = new ObservableCollection<ProductForSale>(_service.Get().Result);
+            ProductForSales = new ObservableCollection<ProductForSale>();
+            ProductForSales.Add(ProductForSale.Create(1, 1, 1, 1, 1, 2, 3).Value);
         }
-
     }
 }
