@@ -24,6 +24,8 @@ namespace CandyKeeper.DAL.Repositories
             var cityEntities = await _context.Cities
                 .AsNoTracking()
                 .Include(c => c.Districts)
+                .Include(c => c.Suppliers)
+                    .ThenInclude(s => s.OwnershipType)
                 .ToListAsync();
 
             var cities = cityEntities

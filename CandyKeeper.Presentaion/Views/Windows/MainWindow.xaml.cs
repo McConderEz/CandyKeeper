@@ -13,6 +13,7 @@ using CandyKeeper.Domain.Models;
 using CandyKeeper.Presentation.ViewModels;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
+using CandyKeeper.Application.Interfaces;
 
 namespace CandyKeeper.Presentation
 {

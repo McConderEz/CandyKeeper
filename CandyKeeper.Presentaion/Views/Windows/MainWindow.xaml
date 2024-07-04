@@ -11,9 +11,9 @@
         Height="720" Width="1080" WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True" Background="Transparent"
-    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
+        DataContext="{Binding MainWindowsViewModel, Source={StaticResource Locator}}"
+    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" d:DataContext="{d:DesignInstance Type=vm:MainWindowsViewModel}">
 
-    
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <Style x:Key="DataGridRowStyle1" TargetType="{x:Type DataGridRow}">
@@ -328,7 +328,7 @@
                     <Button Content="Магазин" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
                 </StackPanel>
 
-                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding }">
+                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding _cityViewModel.Cities}">
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn CanUserResize="False" Width="auto">
                             <DataGridCheckBoxColumn.HeaderTemplate>
@@ -354,11 +354,11 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         
-                        <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding ProductId}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Упакова" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding PackagingId}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Id}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Упакова" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Packaging.Name}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Цена" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Price}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Объём" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Volume}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Магазин" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding StoreId}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Магазин" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Store.Name}"></DataGridTextColumn>
 
                         <DataGridTemplateColumn Header="Действия" IsReadOnly="True" Width="*">
                             <DataGridTemplateColumn.CellTemplate>

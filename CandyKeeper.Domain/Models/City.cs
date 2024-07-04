@@ -13,8 +13,8 @@ namespace CandyKeeper.Domain.Models
     {
         public const int MAX_NAME_LENGTH = 80;
 
-        private readonly ICollection<District> _districts = [];
-        private readonly ICollection<Supplier> _suppliers = [];
+        private List<District> _districts = [];
+        private List<Supplier> _suppliers = [];
 
         private City(int id, string name, IEnumerable<District> districts, IEnumerable<Supplier> suppliers)
         {
@@ -29,8 +29,8 @@ namespace CandyKeeper.Domain.Models
         public IReadOnlyCollection<District> Districts => _districts.ToList().AsReadOnly();
         public IReadOnlyCollection<Supplier> Suppliers => _suppliers.ToList().AsReadOnly();
 
-        public void AddDistrict(List<District> districts) => _districts.ToList().AddRange(districts);
-        public void AddSupplier(List<Supplier> suppliers) => _suppliers.ToList().AddRange(suppliers);
+        public void AddDistrict(List<District> districts) => _districts.AddRange(districts);
+        public void AddSupplier(List<Supplier> suppliers) => _suppliers.AddRange(suppliers);
 
         public static Result<City> Create(int id,string name, IEnumerable<District> districts = null, IEnumerable<Supplier> suppliers = null)
         {

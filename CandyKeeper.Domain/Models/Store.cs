@@ -17,9 +17,9 @@ namespace CandyKeeper.Domain.Models
         public const int STORE_NUMBER_MIN = 1000000;
         public const int STORE_NUMBER_MAX = 9999999;
 
-        private ICollection<Supplier> _suppliers = [];
-        private ICollection<ProductForSale> _productForSales = [];
-        private ICollection<ProductDelivery> _productDeliveries = [];
+        private List<Supplier> _suppliers = [];
+        private List<ProductForSale> _productForSales = [];
+        private List<ProductDelivery> _productDeliveries = [];
 
         private Store(int id,int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId,int districtId,
             OwnershipType ownershipType, District district,
@@ -49,13 +49,13 @@ namespace CandyKeeper.Domain.Models
         public virtual OwnershipType? OwnershipType { get; }
         public int DistrictId { get; }
         public virtual District? District { get; }
-        public IReadOnlyCollection<Supplier> Suppliers => _suppliers.ToList().AsReadOnly();
-        public IReadOnlyCollection<ProductForSale> ProductForSales => _productForSales.ToList().AsReadOnly();
-        public IReadOnlyCollection<ProductDelivery> ProductDeliveries => _productDeliveries.ToList().AsReadOnly();
+        public IReadOnlyCollection<Supplier> Suppliers => _suppliers.AsReadOnly();
+        public IReadOnlyCollection<ProductForSale> ProductForSales => _productForSales.AsReadOnly();
+        public IReadOnlyCollection<ProductDelivery> ProductDeliveries => _productDeliveries.AsReadOnly();
 
-        public void AddSupplier(List<Supplier> suppliers) => _suppliers.ToList().AddRange(suppliers);
-        public void AddProductForSale(List<ProductForSale> productForSales) => _productForSales.ToList().AddRange(productForSales);
-        public void AddProductDelivery(List<ProductDelivery> productDeliveries) => _productDeliveries.ToList().AddRange(productDeliveries);
+        public void AddSupplier(List<Supplier> suppliers) => _suppliers.AddRange(suppliers);
+        public void AddProductForSale(List<ProductForSale> productForSales) => _productForSales.AddRange(productForSales);
+        public void AddProductDelivery(List<ProductDelivery> productDeliveries) => _productDeliveries.AddRange(productDeliveries);
 
         public void CountNumberOfEmployees() => NumberOfEmployees++;
 

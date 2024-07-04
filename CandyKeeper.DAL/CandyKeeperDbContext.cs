@@ -19,12 +19,18 @@ namespace CandyKeeper.DAL
         public CandyKeeperDbContext(DbContextOptions<CandyKeeperDbContext> options) 
             : base(options)
         {
-            Database.EnsureCreated();
+            
         }
 
         public CandyKeeperDbContext()
         {
             Database.EnsureCreated();
+        }
+
+        //Убрать
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("data source=(localdb)\\MSSQLLocalDB;Initial Catalog=candyKeeper;Integrated Security=True");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

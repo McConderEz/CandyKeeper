@@ -33,6 +33,7 @@ namespace CandyKeeper.Presentation
                               options.UseSqlServer(context.Configuration.GetConnectionString("DefaultConnection"));
                           }, ServiceLifetime.Singleton);
 
+                         
                           services.AddRepositories();
                           services.AddServices();
                           services.AddViewModels();

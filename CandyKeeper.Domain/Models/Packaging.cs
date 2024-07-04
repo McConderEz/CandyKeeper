@@ -11,7 +11,7 @@ namespace CandyKeeper.Domain.Models
     {
         public const int MAX_NAME_SIZE = 100;
 
-        private ICollection<ProductForSale> _productForSales = [];
+        private List<ProductForSale> _productForSales = [];
 
         private Packaging(int id,string name, IEnumerable<ProductForSale> productForSales)
         {
@@ -22,9 +22,9 @@ namespace CandyKeeper.Domain.Models
 
         public int Id { get; }
         public string Name { get; } = string.Empty;
-        public IReadOnlyCollection<ProductForSale> ProductForSales => _productForSales.ToList().AsReadOnly();
+        public IReadOnlyCollection<ProductForSale> ProductForSales => _productForSales.AsReadOnly();
 
-        public void AddProductForSales(List<ProductForSale> productForSales) => _productForSales.ToList().AddRange(productForSales);
+        public void AddProductForSales(List<ProductForSale> productForSales) => _productForSales.AddRange(productForSales);
 
         public static Result<Packaging> Create(int id,string name, IEnumerable<ProductForSale> productForSales = null)
         {

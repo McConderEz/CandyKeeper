@@ -10,8 +10,8 @@ namespace CandyKeeper.Domain.Models
 {
     public class Supplier
     {
-        private ICollection<ProductDelivery> _productDeliveries = [];
-        private ICollection<Store> _stores = [];
+        private List<ProductDelivery> _productDeliveries = [];
+        private List<Store> _stores = [];
 
         private static readonly Regex ValidationRegex = new Regex(
                     @"(^\+\d{1,3}\d{10}$|^$)",
@@ -40,11 +40,11 @@ namespace CandyKeeper.Domain.Models
         public virtual OwnershipType? OwnershipType { get; }
         public int CityId { get; }
         public virtual City? City { get; }
-        public IReadOnlyCollection<ProductDelivery> ProductDeliveries => _productDeliveries.ToList().AsReadOnly();
-        public IReadOnlyCollection<Store> Stores => _stores.ToList().AsReadOnly();
+        public IReadOnlyCollection<ProductDelivery> ProductDeliveries => _productDeliveries.AsReadOnly();
+        public IReadOnlyCollection<Store> Stores => _stores.AsReadOnly();
 
-        public void AddProductDeliveries(List<ProductDelivery> productDeliveries) => _productDeliveries.ToList().AddRange(productDeliveries);
-        public void AddStores(List<Store> stores) => _stores.ToList().AddRange(stores);
+        public void AddProductDeliveries(List<ProductDelivery> productDeliveries) => _productDeliveries.AddRange(productDeliveries);
+        public void AddStores(List<Store> stores) => _stores.AddRange(stores);
 
         public static Result<Supplier> Create(int id,string name, int ownershipTypeId, int cityId, string phone,
                     OwnershipType ownershipType = null, City city = null,

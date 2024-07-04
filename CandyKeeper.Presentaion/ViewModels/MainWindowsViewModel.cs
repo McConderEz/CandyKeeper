@@ -3,6 +3,7 @@ using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.ViewModels.Base;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,8 @@ namespace CandyKeeper.Presentation.ViewModels
 {
     internal class MainWindowsViewModel : ViewModel
     {
-        private readonly IServiceProvider _serviceProvider;
+        public readonly ProductForSaleViewModel _productForSaleViewModel;
+        public readonly CityViewModel _cityViewModel;
         private ViewModel _currentViewModel;
 
         public ViewModel CurrentViewModel
@@ -38,9 +40,10 @@ namespace CandyKeeper.Presentation.ViewModels
 
         #endregion
 
-        public MainWindowsViewModel(IServiceProvider serviceProvider)
+        public MainWindowsViewModel(CityViewModel cityViewModel, ProductForSaleViewModel productForSaleViewModel)
         {
-            _serviceProvider = serviceProvider;
+            _cityViewModel = cityViewModel;
+            _productForSaleViewModel = productForSaleViewModel;
 
             #region Команды
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecute);

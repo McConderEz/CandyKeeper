@@ -6,6 +6,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,17 +23,12 @@ namespace CandyKeeper.Presentation.ViewModels
             set => Set(ref _productForSales, value);
         }
 
-        //public ProductForSaleViewModel(IProductForSaleService service)
-        //{
-        //    _service = service;
-
-        //    _productForSales = new ObservableCollection<ProductForSale>(_service.Get().Result);
-        //}
-
-        public ProductForSaleViewModel()
+        public ProductForSaleViewModel(IProductForSaleService service)
         {
-            ProductForSales = new ObservableCollection<ProductForSale>();
-            ProductForSales.Add(ProductForSale.Create(1, 1, 1, 1, 1, 2, 3).Value);
+            _service = service;
+
+            _productForSales = new ObservableCollection<ProductForSale>(_service.Get().Result);
+
         }
     }
 }

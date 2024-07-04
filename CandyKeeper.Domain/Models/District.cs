@@ -10,7 +10,7 @@ namespace CandyKeeper.Domain.Models
     public class District
     {
         public const int MAX_NAME_SIZE = 80;
-        private readonly ICollection<Store> _stores = [];
+        private List<Store> _stores = [];
 
         private District(int id,string name, int cityId,City city, IEnumerable<Store> stores)
         {
@@ -24,9 +24,9 @@ namespace CandyKeeper.Domain.Models
         public string Name { get; } = string.Empty;
         public int CityId { get; }
         public virtual City? City { get; }
-        public IReadOnlyCollection<Store> Stores => _stores.ToList().AsReadOnly();
+        public IReadOnlyCollection<Store> Stores => _stores.AsReadOnly();
 
-        public void AddStore(List<Store> stores) => _stores.ToList().AddRange(stores);
+        public void AddStore(List<Store> stores) => _stores.AddRange(stores);
 
         public static Result<District> Create(int id, string name, int cityId,City city = null ,IEnumerable<Store> stores = null)
         {
