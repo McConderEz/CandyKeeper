@@ -160,6 +160,7 @@
                 </Grid.RowDefinitions>
                 
                 <!--Иконка меню-->
+                
                 <Button HorizontalAlignment="Left" Margin="20 28 0 35" Style="{StaticResource topButton}">
                     <Icon:PackIconMaterial Kind="Menu" Width="15" Height="15"/>
                 </Button>
@@ -171,7 +172,7 @@
                                 DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="20 -30 0 0">
                             <Ellipse>
                                 <Ellipse.Fill>
-                                    <ImageBrush ImageSource="C:\Users\lenka\source\repos\CandyKeeper\CandyKeeper.Presentaion\Images\avatardefault_92824.png"/>
+                                    <ImageBrush ImageSource="C:\Users\rusta\source\repos\CandyKeeper\CandyKeeper.Presentaion\Images\avatardefault_92824.png"/>
                                 </Ellipse.Fill>
                             </Ellipse>
                         </Border>

@@ -15,10 +15,8 @@ using System.Windows.Forms;
 
 namespace CandyKeeper.Presentation
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : System.Windows.Application
+
+    public partial class App: System.Windows.Application
     {
         private static IHost _host;
 
@@ -26,7 +24,7 @@ namespace CandyKeeper.Presentation
 
         public App()
         {
-            
+
         }
 
         protected override async void OnStartup(StartupEventArgs e)

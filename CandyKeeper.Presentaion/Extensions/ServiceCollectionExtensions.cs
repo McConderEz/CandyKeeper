@@ -21,7 +21,7 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddScoped<IPackagingRepository, PackagingRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductDeliveryRepository, ProductDeliveryRepository>();
-            services.AddScoped<IProductForSaleRepository, IProductForSaleRepository>();
+            services.AddScoped<IProductForSaleRepository, ProductForSaleRepository>();
             services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
             services.AddScoped<IStoreRepository, StoreRepository>();
             services.AddScoped<ISupplierRepository, SupplierRepository>();
@@ -36,7 +36,7 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddScoped<IPackagingService, PackagingService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductDeliveryService, ProductDeliveryService>();
-            services.AddScoped<IProductForSaleService, IProductForSaleService>();
+            services.AddScoped<IProductForSaleService, ProductForSaleService>();
             services.AddScoped<IProductTypeService, ProductTypeService>();
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<ISupplierService, SupplierService>();

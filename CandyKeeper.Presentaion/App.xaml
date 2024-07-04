@@ -1,10 +1,11 @@
-﻿<Application x:Class="CandyKeeper.Presentaion.App"
+﻿<Application x:Class="CandyKeeper.Presentation.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:CandyKeeper.Presentaion"
+             xmlns:local="clr-namespace:CandyKeeper.Presentation"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              StartupUri="Views/Windows/MainWindow.xaml">
     <Application.Resources>
+        
         <Style x:Key="topButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"></Setter>
             <Setter Property="Foreground" Value="#6e7783"></Setter>

@@ -1,4 +1,5 @@
 ﻿using CandyKeeper.DAL;
+using CandyKeeper.Presentation;
 using CandyKeeper.Presentation.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,9 +19,10 @@ namespace CandyKeeper.Presentation
         public static void Main()
         {
             var app = new App();
+            app.InitializeComponent();
             app.Run();
         }
-        
+
         public static IHostBuilder CreateHostBuilder(string[] Args)
         {
             var host = Host.CreateDefaultBuilder(Args)
