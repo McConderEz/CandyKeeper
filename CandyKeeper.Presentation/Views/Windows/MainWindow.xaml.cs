@@ -14,18 +14,27 @@ using CandyKeeper.Presentation.ViewModels;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using CandyKeeper.Application.Interfaces;
+using CandyKeeper.Application.Services;
+using CandyKeeper.DAL;
+using CandyKeeper.DAL.Repositories;
+using System.ComponentModel;
 
 namespace CandyKeeper.Presentation
 {
     public partial class MainWindow : Window
     {
         private bool IsMaximized = false;
+        //TODO: Разобрать привязку данных
+        //TODO: Разобрать MVVM детально
+        //TODO: Разобрать DI в MVVM 
 
 
         public MainWindow()
         {
             InitializeComponent();
         }
+
+
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {
