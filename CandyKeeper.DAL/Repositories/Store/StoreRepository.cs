@@ -156,7 +156,6 @@ namespace CandyKeeper.DAL
             var ownershipType = supplierEntity.OwnershipType != null ? MapToOwnershipType(supplierEntity.OwnershipType) : null;
             var city = supplierEntity.City != null ? MapToCity(supplierEntity.City) : null;
             var productDeliveries = supplierEntity.ProductDeliveries.Select(pd => MapToProductDelivery(pd)).ToList();
-            var stores = supplierEntity.Stores.Select(s => MapToStore(s)).ToList();
 
             return Supplier.Create(
                 supplierEntity.Id,
@@ -166,8 +165,7 @@ namespace CandyKeeper.DAL
                 supplierEntity.Phone,
                 ownershipType,
                 city,
-                productDeliveries,
-                stores
+                productDeliveries
             ).Value;
         }
 
@@ -195,7 +193,6 @@ namespace CandyKeeper.DAL
         private ProductForSale MapToProductForSale(ProductForSaleEntity productForSaleEntity)
         {
             var product = productForSaleEntity.Product != null ? MapToProduct(productForSaleEntity.Product) : null;
-            var store = productForSaleEntity.Store != null ? MapToStore(productForSaleEntity.Store) : null;
             var productDelivery = productForSaleEntity.ProductDelivery != null ? MapToProductDelivery(productForSaleEntity.ProductDelivery) : null;
             var packaging = productForSaleEntity.Packaging != null ? MapToPackaging(productForSaleEntity.Packaging) : null;
 
@@ -208,7 +205,7 @@ namespace CandyKeeper.DAL
                 productForSaleEntity.Price,
                 productForSaleEntity.Volume,
                 product,
-                store,
+                null,
                 productDelivery,
                 packaging
             ).Value;
@@ -238,9 +235,7 @@ namespace CandyKeeper.DAL
         }
 
         private ProductDelivery MapToProductDelivery(ProductDeliveryEntity productDeliveryEntity)
-        {
-            var supplier = productDeliveryEntity.Supplier != null ? MapToSupplier(productDeliveryEntity.Supplier) : null;
-            var store = productDeliveryEntity.Store != null ? MapToStore(productDeliveryEntity.Store) : null;
+        {         
             var productForSales = productDeliveryEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList();
 
             return ProductDelivery.Create(
@@ -248,8 +243,8 @@ namespace CandyKeeper.DAL
                 productDeliveryEntity.DeliveryDate,
                 productDeliveryEntity.SupplierId,
                 productDeliveryEntity.StoreId,
-                supplier,
-                store,
+                null,
+                null,
                 productForSales
             ).Value;
         }
@@ -374,10 +369,8 @@ namespace CandyKeeper.DAL
         }
 
         private ProductType MapToProductType(ProductTypeEntity productTypeEntity)
-        {
-            var products = productTypeEntity.Products.Select(p => MapToProduct(p)).ToList();
-
-            return ProductType.Create(productTypeEntity.Id, productTypeEntity.Name, products).Value;
+        { 
+            return ProductType.Create(productTypeEntity.Id, productTypeEntity.Name).Value;
         }
 
         private ProductTypeEntity MapToProductTypeEntity(ProductType productType)

@@ -25,6 +25,10 @@ namespace CandyKeeper.DAL
             var packagingEntity = await _context.Packaging
                 .AsNoTracking()
                 .Include(p => p.ProductForSales)
+                    .ThenInclude(pfs => pfs.Product)
+                        .ThenInclude(p => p.ProductType)
+                .Include(p => p.ProductForSales)
+                    .ThenInclude(pfs => pfs.Store)
                 .ToListAsync();
 
             var packaging = packagingEntity.Select(p => MapToPackaging(p)).ToList();
@@ -36,6 +40,10 @@ namespace CandyKeeper.DAL
         {
             var packagingEntity = await _context.Packaging
                                            .Include(p => p.ProductForSales)
+                                               .ThenInclude(pfs => pfs.Product)
+                                                   .ThenInclude(p => p.ProductType)
+                                           .Include(p => p.ProductForSales)
+                                               .ThenInclude(pfs => pfs.Store)
                                            .FirstOrDefaultAsync(c => c.Id == id);
 
             if (packagingEntity == null)
@@ -101,7 +109,6 @@ namespace CandyKeeper.DAL
             var product = productForSaleEntity.Product != null ? MapToProduct(productForSaleEntity.Product) : null;
             var store = productForSaleEntity.Store != null ? MapToStore(productForSaleEntity.Store) : null;
             var productDelivery = productForSaleEntity.ProductDelivery != null ? MapToProductDelivery(productForSaleEntity.ProductDelivery) : null;
-            var packaging = productForSaleEntity.Packaging != null ? MapToPackaging(productForSaleEntity.Packaging) : null;
 
             return ProductForSale.Create(
                 productForSaleEntity.Id,
@@ -113,8 +120,7 @@ namespace CandyKeeper.DAL
                 productForSaleEntity.Volume,
                 product,
                 store,
-                productDelivery,
-                packaging
+                productDelivery
             ).Value;
         }
 

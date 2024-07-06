@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 using(var db = new CandyKeeperDbContext())
 {
-    var list = await new CityRepository(db).Get();
+    var list = await new SupplierRepository(db).Get();
 
 
-    foreach (var city in list)
+    foreach (var item in list)
     {
-        Console.WriteLine($"{city.Name}");
-        foreach(var suppliers  in city.Suppliers)
+        Console.WriteLine($"{item.Name}");
+        foreach(var suppliers  in item.Stores)
         {
             Console.WriteLine($"\t{suppliers.Name}");
         }

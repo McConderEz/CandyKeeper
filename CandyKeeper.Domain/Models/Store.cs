@@ -14,8 +14,8 @@ namespace CandyKeeper.Domain.Models
                             @"(^\+\d{1,3}\d{10}$|^$)",
                             RegexOptions.Singleline | RegexOptions.Compiled);
         public const int MAX_NAME_SIZE = 100;
-        public const int STORE_NUMBER_MIN = 1000000;
-        public const int STORE_NUMBER_MAX = 9999999;
+        public const int STORE_NUMBER_MIN = 100000;
+        public const int STORE_NUMBER_MAX = 999999;
 
         private List<Supplier> _suppliers = [];
         private List<ProductForSale> _productForSales = [];
