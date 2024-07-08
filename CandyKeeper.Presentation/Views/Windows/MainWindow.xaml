@@ -10,9 +10,9 @@
         mc:Ignorable="d"
         Height="720" Width="1080" WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        AllowsTransparency="True" Background="Transparent"
-        DataContext="{Binding MainWindowsViewModel, Source={StaticResource Locator}}"
-    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" d:DataContext="{d:DesignInstance Type=vm:MainWindowsViewModel}">
+        AllowsTransparency="True" Background="Transparent"     
+        DataContext="{Binding ProductForSaleViewModel,Source={StaticResource Locator}}"
+    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -172,7 +172,7 @@
                                 DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="20 -30 0 0">
                             <Ellipse>
                                 <Ellipse.Fill>
-                                    <ImageBrush ImageSource="C:\Users\rusta\source\repos\CandyKeeper\CandyKeeper.Presentaion\Images\avatardefault_92824.png"/>
+                                    <ImageBrush ImageSource="C:\Users\rusta\source\repos\CandyKeeper\CandyKeeper.Presentation\Images\avatardefault_92824.png"/>
                                 </Ellipse.Fill>
                             </Ellipse>
                         </Border>
@@ -192,7 +192,7 @@
                         </StackPanel>
                         
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding GetCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Candy" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Кондитерские изделия"/>
@@ -291,7 +291,7 @@
                 <Grid Width="300" HorizontalAlignment="Left">
                     <TextBlock Margin="20 0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
                             Panel.ZIndex="1" Text="Искать здесь..."
-                            Visibility="{Binding ElementName=txtSearch, Path=Text.IsEmpty, Converter={StaticResource BoolToVis}}"/>
+                            Visibility="{Binding ElementName=txtSearch, Converter={StaticResource BoolToVis}}"/>
                     <TextBox x:Name="txtSearch" Style="{StaticResource textBoxSearch}"/>
 
                     <Icon:PackIconMaterial Kind="Magnify" Width="15" Height="15" VerticalAlignment="Center"
@@ -328,7 +328,7 @@
                     <Button Content="Магазин" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
                 </StackPanel>
 
-                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding _cityViewModel.Cities}">
+                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding ProductForSales }">
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn CanUserResize="False" Width="auto">
                             <DataGridCheckBoxColumn.HeaderTemplate>
@@ -340,27 +340,15 @@
 
                         <DataGridTextColumn Header="#" IsReadOnly="True" CanUserResize="False" Width="auto"></DataGridTextColumn>
 
-                        <DataGridTemplateColumn Header="Название" IsReadOnly="True" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Border Width="25" Height="25" CornerRadius="50" Margin="0 0 10 0" Background="Red">
-                                            <TextBlock Text="..." VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" Margin="0 0 0 1"/>
-                                        </Border>
-
-                                        <TextBlock Text="..." VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
                         
-                        <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Id}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Упакова" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Packaging.Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Название" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Product.Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Product.ProductType.Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Упакова" IsReadOnly="True" CanUserResize="False" Width="*"  Binding="{Binding Packaging.Name}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Цена" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Price}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Объём" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Volume}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Магазин" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Store.Name}"></DataGridTextColumn>
 
-                        <DataGridTemplateColumn Header="Действия" IsReadOnly="True" Width="*">
+                        <DataGridTemplateColumn Header="Действия" IsReadOnly="True" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">

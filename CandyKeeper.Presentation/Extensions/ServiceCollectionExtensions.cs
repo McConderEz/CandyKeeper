@@ -46,6 +46,7 @@ namespace CandyKeeper.Presentation.Extensions
 
         public static IServiceCollection AddViewModels(this IServiceCollection services)
         {
+            services.AddSingleton<ViewModelLocator>();
             services.AddSingleton<MainWindowsViewModel>();
             services.AddSingleton<CityViewModel>();
             services.AddSingleton<DistrictViewModel>();

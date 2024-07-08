@@ -5,24 +5,25 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CandyKeeper.Presentation.ViewModels
 {
-    internal class ProductViewModel : ViewModel
+    internal class CityViewModel : ViewModel
     {
-        private readonly IProductService _service;
+        private readonly ICityService _service;
 
-        private ObservableCollection<Product> _products;
+        private ObservableCollection<City> _cities;
 
-        public ObservableCollection<Product> Products
+        public ObservableCollection<City> Cities
         {
-            get => _products;
-            set => Set(ref _products, value);
+            get => _cities;
+            set => Set(ref _cities, value);
         }
 
-        public ProductViewModel(IProductService service)
+        public CityViewModel(ICityService service)
         {
             _service = service;
         }

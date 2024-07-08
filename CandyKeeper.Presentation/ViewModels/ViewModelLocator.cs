@@ -12,7 +12,7 @@ namespace CandyKeeper.Presentation.ViewModels
         public MainWindowsViewModel MainWindowsViewModel => App.Host.Services.GetRequiredService<MainWindowsViewModel>();
         public CityViewModel CityViewModel => App.Host.Services.GetRequiredService<CityViewModel>();
         public DistrictViewModel DistrictViewModel => App.Host.Services.GetRequiredService<DistrictViewModel>();
-        public OwnershipTypeViewModel OwnershipTypeViewModel => App.Host.Services.GetRequiredService<OwnershipTypeViewModel>();       
+        public OwnershipTypeViewModel OwnershipTypeViewModel => App.Host.Services.GetRequiredService<OwnershipTypeViewModel>();
         public PackagingViewModel PackagingViewModel => App.Host.Services.GetRequiredService<PackagingViewModel>();
         public ProductDeliveryViewModel ProductDeliveryViewModel => App.Host.Services.GetRequiredService<ProductDeliveryViewModel>();
         public ProductForSaleViewModel ProductForSaleViewModel => App.Host.Services.GetRequiredService<ProductForSaleViewModel>();

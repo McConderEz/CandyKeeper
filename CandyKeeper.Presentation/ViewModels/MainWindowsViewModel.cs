@@ -1,4 +1,6 @@
 ﻿using CandyKeeper.Application.Interfaces;
+using CandyKeeper.Application.Services;
+using CandyKeeper.DAL;
 using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.ViewModels.Base;
 using System;
@@ -16,7 +18,6 @@ namespace CandyKeeper.Presentation.ViewModels
     internal class MainWindowsViewModel : ViewModel
     {
         public readonly ProductForSaleViewModel _productForSaleViewModel;
-        public readonly CityViewModel _cityViewModel;
         private ViewModel _currentViewModel;
 
         public ViewModel CurrentViewModel
@@ -40,11 +41,10 @@ namespace CandyKeeper.Presentation.ViewModels
 
         #endregion
 
-        public MainWindowsViewModel(CityViewModel cityViewModel, ProductForSaleViewModel productForSaleViewModel)
+        public MainWindowsViewModel(ProductForSaleViewModel productForSaleViewModel)
         {
-            _cityViewModel = cityViewModel;
-            _productForSaleViewModel = productForSaleViewModel;
-
+            _productForSaleViewModel = productForSaleViewModel;           
+           
             #region Команды
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecute);
             #endregion
