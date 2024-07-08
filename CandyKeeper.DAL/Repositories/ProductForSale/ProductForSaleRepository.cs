@@ -114,9 +114,7 @@ namespace CandyKeeper.DAL
 
         private ProductType MapToProductType(ProductTypeEntity productTypeEntity)
         {
-            var products = productTypeEntity.Products.Select(p => MapToProduct(p)).ToList();
-
-            return ProductType.Create(productTypeEntity.Id, productTypeEntity.Name, products).Value;
+            return ProductType.Create(productTypeEntity.Id, productTypeEntity.Name).Value;
         }
 
         private ProductTypeEntity MapToProductTypeEntity(ProductType productType)
@@ -233,9 +231,7 @@ namespace CandyKeeper.DAL
                 storeEntity.DistrictId,
                 ownershipType,
                 district,
-                storeEntity.Suppliers.Select(s => MapToSupplier(s)).ToList(),
-                storeEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList(),
-                storeEntity.ProductDeliveries.Select(pd => MapToProductDelivery(pd)).ToList()
+                storeEntity.Suppliers.Select(s => MapToSupplier(s)).ToList()
             ).Value;
         }
 
@@ -263,9 +259,7 @@ namespace CandyKeeper.DAL
                 OwnershipTypeId = store.OwnershipTypeId,
                 DistrictId = store.DistrictId,
                 District = districtEntity,
-                Suppliers = store.Suppliers.Select(s => MapToSupplierEntity(s)).ToList(),
-                ProductForSales = store.ProductForSales.Select(pfs => MapToProductForSaleEntity(pfs)).ToList(),
-                ProductDeliveries = store.ProductDeliveries.Select(pd => MapToProductDeliveryEntity(pd)).ToList()
+                Suppliers = store.Suppliers.Select(s => MapToSupplierEntity(s)).ToList()
             };
         }
 
@@ -273,7 +267,6 @@ namespace CandyKeeper.DAL
         {
             var supplier = productDeliveryEntity.Supplier != null ? MapToSupplier(productDeliveryEntity.Supplier) : null;
             var store = productDeliveryEntity.Store != null ? MapToStore(productDeliveryEntity.Store) : null;
-            var productForSales = productDeliveryEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList();
 
             return ProductDelivery.Create(
                 productDeliveryEntity.Id,
@@ -281,8 +274,7 @@ namespace CandyKeeper.DAL
                 productDeliveryEntity.SupplierId,
                 productDeliveryEntity.StoreId,
                 supplier,
-                store,
-                productForSales
+                store
             ).Value;
         }
 

@@ -8,7 +8,7 @@ using System.Windows.Media.Animation;
 
 namespace CandyKeeper.Domain.Models
 {
-    public class ProductForSale
+    public class ProductForSale 
     {
         public const decimal MAX_PRICE = 1000000;
         public const decimal MIN_PRICE = 0.1m;

@@ -25,6 +25,7 @@ namespace CandyKeeper.DAL.Repositories
                 .AsNoTracking()
                 .Include(d => d.City)
                 .Include(d => d.Stores)
+                    .ThenInclude(s => s.OwnershipType)
                 .ToListAsync();
 
             var districts = districtEntities.Select(d => MapToDistrict(d)).ToList();
@@ -37,6 +38,7 @@ namespace CandyKeeper.DAL.Repositories
             var districtEntities = await _context.Districts
                                            .Include(d => d.City)
                                            .Include(d => d.Stores)
+                                               .ThenInclude(s => s.OwnershipType)
                                            .FirstOrDefaultAsync(c => c.Id == id);
 
             if (districtEntities == null)
@@ -83,7 +85,8 @@ namespace CandyKeeper.DAL.Repositories
                 districtEntity.Id,
                 districtEntity.Name,
                 districtEntity.CityId,
-                MapToCity(districtEntity.City)
+                MapToCity(districtEntity.City),
+                stores
             ).Value;
         }
 
@@ -115,8 +118,7 @@ namespace CandyKeeper.DAL.Repositories
                 storeEntity.Phone,
                 storeEntity.OwnershipTypeId,
                 storeEntity.DistrictId,
-                MapToOwnershipType(storeEntity.OwnershipType),
-                MapToDistrict(storeEntity.District)
+                MapToOwnershipType(storeEntity.OwnershipType)
             ).Value;
         }
 

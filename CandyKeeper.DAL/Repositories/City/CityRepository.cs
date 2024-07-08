@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using CandyKeeper.DAL.Entities;
 using CandyKeeper.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,8 @@ namespace CandyKeeper.DAL.Repositories
             var cityEntities = await _context.Cities
                 .AsNoTracking()
                 .Include(c => c.Districts)
+                .Include(c => c.Suppliers)
+                    .ThenInclude(s => s.OwnershipType)
                 .ToListAsync();
 
             var cities = cityEntities
@@ -36,7 +40,10 @@ namespace CandyKeeper.DAL.Repositories
         public async Task<City> GetById(int id)
         {
             var cityEntity = await _context.Cities
+                                           .AsNoTracking()
                                            .Include(c => c.Districts)
+                                           .Include(c => c.Suppliers)
+                                               .ThenInclude(s => s.OwnershipType)
                                            .FirstOrDefaultAsync(c => c.Id == id);
 
             if (cityEntity == null)
@@ -91,7 +98,7 @@ namespace CandyKeeper.DAL.Repositories
         {
             return OwnershipType.Create(
                 ownershipTypeEntity.Id,
-                ownershipTypeEntity.Name              
+                ownershipTypeEntity.Name
             ).Value;
         }
 
@@ -136,8 +143,7 @@ namespace CandyKeeper.DAL.Repositories
                 supplierEntity.OwnershipTypeId,
                 supplierEntity.CityId,
                 supplierEntity.Phone,
-                MapToOwnershipType(supplierEntity.OwnershipType),
-                MapToCity(supplierEntity.City)
+                MapToOwnershipType(supplierEntity.OwnershipType)
             ).Value;
         }
 
@@ -152,5 +158,6 @@ namespace CandyKeeper.DAL.Repositories
                 Phone = supplier.Phone
             };
         }
+
     }
 }

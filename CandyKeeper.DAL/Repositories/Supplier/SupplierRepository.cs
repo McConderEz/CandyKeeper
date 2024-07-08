@@ -73,7 +73,7 @@ namespace CandyKeeper.DAL
             await _context.SaveChangesAsync();
         }
 
-        public async Task Update(int id, int storeNumber, string name, string phone,
+        public async Task Update(int id, string name, string phone,
                                  int ownershipTypeId, int cityId)
         {
             await _context.Suppliers
@@ -140,7 +140,6 @@ namespace CandyKeeper.DAL
 
         private ProductDelivery MapToProductDelivery(ProductDeliveryEntity productDeliveryEntity)
         {
-            var supplier = productDeliveryEntity.Supplier != null ? MapToSupplier(productDeliveryEntity.Supplier) : null;
             var store = productDeliveryEntity.Store != null ? MapToStore(productDeliveryEntity.Store) : null;
             var productForSales = productDeliveryEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList();
 
@@ -149,7 +148,7 @@ namespace CandyKeeper.DAL
                 productDeliveryEntity.DeliveryDate,
                 productDeliveryEntity.SupplierId,
                 productDeliveryEntity.StoreId,
-                supplier,
+                null,
                 store,
                 productForSales
             ).Value;
@@ -177,7 +176,6 @@ namespace CandyKeeper.DAL
         {
             var ownershipType = storeEntity.OwnershipType != null ? MapToOwnershipType(storeEntity.OwnershipType) : null;
             var district = storeEntity.District != null ? MapToDistrict(storeEntity.District) : null;
-            var suppliers = storeEntity.Suppliers.Select(s => MapToSupplier(s)).ToList();
             var productForSales = storeEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList();
             var productDeliveries = storeEntity.ProductDeliveries.Select(pd => MapToProductDelivery(pd)).ToList();
 
@@ -191,7 +189,7 @@ namespace CandyKeeper.DAL
                 storeEntity.DistrictId,
                 ownershipType,
                 district,
-                suppliers,
+                null,
                 productForSales,
                 productDeliveries
             ).Value;
@@ -225,8 +223,7 @@ namespace CandyKeeper.DAL
         private ProductForSale MapToProductForSale(ProductForSaleEntity productForSaleEntity)
         {
             var product = productForSaleEntity.Product != null ? MapToProduct(productForSaleEntity.Product) : null;
-            var store = productForSaleEntity.Store != null ? MapToStore(productForSaleEntity.Store) : null;
-            var productDelivery = productForSaleEntity.ProductDelivery != null ? MapToProductDelivery(productForSaleEntity.ProductDelivery) : null;
+            var store = productForSaleEntity.Store != null ? MapToStore(productForSaleEntity.Store) : null;        
             var packaging = productForSaleEntity.Packaging != null ? MapToPackaging(productForSaleEntity.Packaging) : null;
 
             return ProductForSale.Create(
@@ -239,7 +236,7 @@ namespace CandyKeeper.DAL
                 productForSaleEntity.Volume,
                 product,
                 store,
-                productDelivery,
+                null,
                 packaging
             ).Value;
         }
