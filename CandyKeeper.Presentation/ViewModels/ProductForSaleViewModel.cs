@@ -44,6 +44,7 @@ namespace CandyKeeper.Presentation.ViewModels
             _service = service;
             GetCommand = new LambdaCommand(OnGetCommandExecuted);
             _productForSales = new ObservableCollection<ProductForSale>();
+            OnGetCommandExecuted(null);
         }
 
     }

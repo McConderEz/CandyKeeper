@@ -18,6 +18,7 @@ namespace CandyKeeper.Presentation.Extensions
         {
             services.AddScoped<ICityRepository, CityRepository>();
             services.AddScoped<IDistrictRepository, DistrictRepository>();
+            services.AddScoped<IOwnershipTypeRepository, OwnershipTypeRepository>();
             services.AddScoped<IPackagingRepository, PackagingRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductDeliveryRepository, ProductDeliveryRepository>();
@@ -33,6 +34,7 @@ namespace CandyKeeper.Presentation.Extensions
         {
             services.AddScoped<ICityService, CityService>();
             services.AddScoped<IDistrictService, DistrictService>();
+            services.AddScoped<IOwnershipTypeService, OwnershipTypeService>();
             services.AddScoped<IPackagingService, PackagingService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductDeliveryService, ProductDeliveryService>();

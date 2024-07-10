@@ -8,6 +8,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using CandyKeeper.Presentation.Infrastructure.Commands;
 
 namespace CandyKeeper.Presentation.ViewModels
 {
@@ -17,6 +19,16 @@ namespace CandyKeeper.Presentation.ViewModels
 
         private ObservableCollection<City> _cities;
 
+        #region Команды
+        public ICommand GetCommand { get; }
+        private bool CanGetCommandExecute(object p) => true;
+        public async void OnGetCommandExecuted(object p)
+        {
+            Cities = new ObservableCollection<City>(await _service.Get());
+        }
+
+        #endregion
+        
         public ObservableCollection<City> Cities
         {
             get => _cities;
@@ -26,6 +38,9 @@ namespace CandyKeeper.Presentation.ViewModels
         public CityViewModel(ICityService service)
         {
             _service = service;
+            GetCommand = new LambdaCommand(OnGetCommandExecuted);
+            _cities = new ObservableCollection<City>();
+            OnGetCommandExecuted(null);
         }
     }
 }

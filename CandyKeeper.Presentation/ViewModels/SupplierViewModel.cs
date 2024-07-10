@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using CandyKeeper.Presentation.Infrastructure.Commands;
 
 namespace CandyKeeper.Presentation.ViewModels
 {
@@ -16,6 +18,16 @@ namespace CandyKeeper.Presentation.ViewModels
 
         private ObservableCollection<Supplier> _suppliers;
 
+        #region Команды
+        public ICommand GetCommand { get; }
+        private bool CanGetCommandExecute(object p) => true;
+        public async void OnGetCommandExecuted(object p)
+        {
+            Suppliers = new ObservableCollection<Supplier>(await _service.Get());
+        }
+
+        #endregion
+        
         public ObservableCollection<Supplier> Suppliers
         {
             get => _suppliers;
@@ -25,6 +37,9 @@ namespace CandyKeeper.Presentation.ViewModels
         public SupplierViewModel(ISupplierService service)
         {
             _service = service;
+            GetCommand = new LambdaCommand(OnGetCommandExecuted);
+            _suppliers = new ObservableCollection<Supplier>();
+            OnGetCommandExecuted(null);
         }
     }
 }

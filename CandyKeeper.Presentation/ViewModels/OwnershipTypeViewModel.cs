@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using CandyKeeper.Presentation.Infrastructure.Commands;
 
 namespace CandyKeeper.Presentation.ViewModels
 {
@@ -16,6 +18,16 @@ namespace CandyKeeper.Presentation.ViewModels
 
         private ObservableCollection<OwnershipType> _ownershipTypes;
 
+        #region Команды
+        public ICommand GetCommand { get; }
+        private bool CanGetCommandExecute(object p) => true;
+        public async void OnGetCommandExecuted(object p)
+        {
+            OwnershipTypes = new ObservableCollection<OwnershipType>(await _service.Get());
+        }
+
+        #endregion
+        
         public ObservableCollection<OwnershipType> OwnershipTypes
         {
             get => _ownershipTypes;
@@ -25,6 +37,9 @@ namespace CandyKeeper.Presentation.ViewModels
         public OwnershipTypeViewModel(IOwnershipTypeService service)
         {
             _service = service;
+            GetCommand = new LambdaCommand(OnGetCommandExecuted);
+            _ownershipTypes = new ObservableCollection<OwnershipType>();
+            OnGetCommandExecuted(null);
         }
     }
 }
