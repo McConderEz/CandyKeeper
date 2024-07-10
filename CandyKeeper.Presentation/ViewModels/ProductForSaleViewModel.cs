@@ -20,10 +20,11 @@ namespace CandyKeeper.Presentation.ViewModels
     {
         private readonly IProductForSaleService _service;
         private ObservableCollection<ProductForSale> _productForSales;
+        
         #region Команды
         public ICommand GetCommand { get; }
         private bool CanGetCommandExecute(object p) => true;
-        private async void OnGetCommandExecuted(object p)
+        public async void OnGetCommandExecuted(object p)
         {
             ProductForSales = new ObservableCollection<ProductForSale>(await _service.Get());
         }

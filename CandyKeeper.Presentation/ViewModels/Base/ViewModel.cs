@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using CandyKeeper.Domain.Models;
 
 namespace CandyKeeper.Presentation.ViewModels.Base
 {
@@ -13,9 +15,7 @@ namespace CandyKeeper.Presentation.ViewModels.Base
         private bool _disposed;
 
         public event PropertyChangedEventHandler? PropertyChanged;
-
         
-
         public void Dispose()
         {
             Dispose(true);

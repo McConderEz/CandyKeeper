@@ -18,16 +18,13 @@ using CandyKeeper.Application.Services;
 using CandyKeeper.DAL;
 using CandyKeeper.DAL.Repositories;
 using System.ComponentModel;
+using CandyKeeper.Presentation.Views.Windows;
 
 namespace CandyKeeper.Presentation
 {
     public partial class MainWindow : Window
     {
         private bool IsMaximized = false;
-        //TODO: Разобрать привязку данных
-        //TODO: Разобрать MVVM детально
-        //TODO: Разобрать DI в MVVM 
-
 
         public MainWindow()
         {
@@ -64,5 +61,6 @@ namespace CandyKeeper.Presentation
                 }
             }
         }
+        
     }
 }

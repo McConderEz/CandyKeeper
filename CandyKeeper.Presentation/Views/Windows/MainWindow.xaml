@@ -8,10 +8,10 @@
         xmlns:cmd="clr-namespace:CandyKeeper.Presentation.Infrastructure.Commands"
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Height="720" Width="1080" WindowStartupLocation="CenterScreen"
+        Height="720" Width="1200" WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True" Background="Transparent"     
-        DataContext="{Binding ProductForSaleViewModel,Source={StaticResource Locator}}"
+        DataContext="{Binding MainWindowsViewModel,Source={StaticResource Locator}}"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
 
     <Window.Resources>
@@ -192,7 +192,7 @@
                         </StackPanel>
                         
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}" Command="{Binding GetCommand}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="ProductForSaleView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Candy" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Кондитерские изделия"/>
@@ -201,7 +201,7 @@
                         </StackPanel>
 
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="StoreView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Store" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Магазины"/>
@@ -210,7 +210,7 @@
                         </StackPanel>
 
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="ProductDeliveryView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Certificate" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Поставки"/>
@@ -219,7 +219,7 @@
                         </StackPanel>
 
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="SupplierView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="TruckDelivery" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Поставщики"/>
@@ -228,7 +228,7 @@
                         </StackPanel>
 
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="PackagingView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Package" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Расфасовка"/>
@@ -237,7 +237,7 @@
                         </StackPanel>
 
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="CityView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="City" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Города"/>
@@ -246,7 +246,7 @@
                         </StackPanel>
 
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="DistrictView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Latitude" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Районы"/>
@@ -255,7 +255,7 @@
                         </StackPanel>
 
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="OwnershipTypeView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Locker" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Тип собственности"/>
@@ -264,7 +264,7 @@
                         </StackPanel>
 
                         <StackPanel DockPanel.Dock="Top">
-                            <Button Style="{StaticResource menuButton}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="ProductTypeView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Candycane" Style="{StaticResource menuButtonIcon}"/>
                                     <TextBlock Text="Вид конд. изделия"/>
@@ -278,96 +278,10 @@
             </Grid>
 
             <Grid Grid.Column="1" Margin="30 20 20 20">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <!--Поисковое поле-->
-                <Grid Width="300" HorizontalAlignment="Left">
-                    <TextBlock Margin="20 0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
-                            Panel.ZIndex="1" Text="Искать здесь..."
-                            Visibility="{Binding ElementName=txtSearch, Converter={StaticResource BoolToVis}}"/>
-                    <TextBox x:Name="txtSearch" Style="{StaticResource textBoxSearch}"/>
+                <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
+                    
 
-                    <Icon:PackIconMaterial Kind="Magnify" Width="15" Height="15" VerticalAlignment="Center"
-                           Margin="0 0 15 0" Foreground="#b0b9c6" HorizontalAlignment="Right"/>
-                </Grid>
-
-                <!--Верхние кнопки-->
-
-                <Button Style="{StaticResource topButton}" Margin="0 0 20 0" Background="#dcdcdc" HorizontalAlignment="Right">
-                    <Icon:PackIconMaterial Kind="Logout"/>
-                </Button>
-
-                <!--Название страницы-->
-                <TextBlock Text="Кондитерские изделия" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
-                           HorizontalAlignment="Left" Foreground="#121518"/>
-                
-                <!--Кнопка добавления-->
-                <Button Style="{StaticResource addButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <Icon:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
-                        <TextBlock Text="Добавить"/>
-                    </StackPanel>
-                </Button>
-
-                <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-
-
-                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 10 0 0" x:Name="ProductForSaleColumnHeaders">
-                    <Button Content="Название" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
-                    <Button Content="Тип продукта" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
-                    <Button Content="Упаковка" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
-                    <Button Content="Объём" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
-                    <Button Content="Цена" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
-                    <Button Content="Магазин" Style="{StaticResource tabButton}" BorderBrush="#DAA520"/>
-                </StackPanel>
-
-                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding ProductForSales }">
-                    <DataGrid.Columns>
-                        <DataGridCheckBoxColumn CanUserResize="False" Width="auto">
-                            <DataGridCheckBoxColumn.HeaderTemplate>
-                                <DataTemplate>
-                                    <CheckBox/>
-                                </DataTemplate>
-                            </DataGridCheckBoxColumn.HeaderTemplate>
-                        </DataGridCheckBoxColumn>
-
-                        <DataGridTextColumn Header="#" IsReadOnly="True" CanUserResize="False" Width="auto"></DataGridTextColumn>
-
-                        
-                        <DataGridTextColumn Header="Название" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Product.Name}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Product.ProductType.Name}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Упакова" IsReadOnly="True" CanUserResize="False" Width="*"  Binding="{Binding Packaging.Name}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Цена" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Price}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Объём" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Volume}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Магазин" IsReadOnly="True" CanUserResize="False" Width="*" Binding="{Binding Store.Name}"></DataGridTextColumn>
-
-                        <DataGridTemplateColumn Header="Действия" IsReadOnly="True" Width="auto">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Style="{StaticResource gridEditButton}">
-                                            <Icon:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
-                                        </Button>
-                                        <Button Style="{StaticResource gridRemoveButton}">
-                                            <Icon:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
-                                        </Button>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-
-                                     
-                </DataGrid>
-                
-                
+               <!--<ContentControl x:Name="ContentArea" Grid.Row="1"/>-->
             </Grid>
 
           
