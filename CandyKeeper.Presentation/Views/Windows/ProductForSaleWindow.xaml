@@ -170,7 +170,7 @@
                            HorizontalAlignment="Left" Foreground="#121518"/>
                 
                 <!--Кнопка добавления-->
-                <Button Style="{StaticResource addButton}">
+                <Button Style="{StaticResource addButton}" Command="{Binding AddEditShowCommand}">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
                         <TextBlock Text="Добавить"/>
@@ -194,8 +194,11 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Style="{StaticResource gridEditButton}">
+                                        <Button Style="{StaticResource gridEditButton}" Command="{Binding DataContext.AddEditShowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
                                             <iconPacks:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
+                                        <Button Style="{StaticResource gridDetailButton}">
+                                            <iconPacks:PackIconMaterial Kind="Details" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
                                         <Button Style="{StaticResource gridRemoveButton}">
                                             <iconPacks:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>

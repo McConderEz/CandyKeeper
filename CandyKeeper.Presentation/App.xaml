@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:CandyKeeper.Presentation"
              xmlns:vm="clr-namespace:CandyKeeper.Presentation.ViewModels"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              StartupUri="Views/Windows/MainWindow.xaml">
 
     <Application.Resources >
@@ -265,6 +266,29 @@
                 </Style.Triggers>
             </Style>
 
+            <Style x:Key="gridDetailButton" TargetType="Button">
+                <Setter Property="Background" Value="#2e12a1"></Setter>
+                <Setter Property="BorderBrush" Value="#3e269e"></Setter>
+                <Setter Property="Foreground" Value="#ffffff"></Setter>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="FontSize" Value="13"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="5" BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#7157d9"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            
             <Style x:Key="gridRemoveButton" TargetType="Button" BasedOn="{StaticResource gridEditButton}">
                 <Setter Property="Background" Value="#d32f2f"></Setter>
                 <Setter Property="BorderBrush" Value="#b71c1c"></Setter>
@@ -282,8 +306,13 @@
             </Style>
 
             <vm:ViewModelLocator x:Key="Locator"/>
-        </ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
 
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" /> 
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        
         
     </Application.Resources>
 </Application>

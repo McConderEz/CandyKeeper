@@ -15,6 +15,7 @@ namespace CandyKeeper.DAL.Repositories
     public class CityRepository : ICityRepository
     {
         private readonly CandyKeeperDbContext _context;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         public CityRepository(CandyKeeperDbContext context)
         {
@@ -23,62 +24,129 @@ namespace CandyKeeper.DAL.Repositories
 
         public async Task<List<City>> Get()
         {
-            var cityEntities = await _context.Cities
-                .AsNoTracking()
-                .Include(c => c.Districts)
-                .Include(c => c.Suppliers)
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var cityEntities = await _context.Cities
+                    .AsNoTracking()
+                    .Include(c => c.Districts)
+                    .Include(c => c.Suppliers)
                     .ThenInclude(s => s.OwnershipType)
-                .ToListAsync();
+                    .ToListAsync();
 
-            var cities = cityEntities
-                .Select(c => MapToCity(c))
-                .ToList();
+                var cities = cityEntities
+                    .Select(c => MapToCity(c))
+                    .ToList();
 
-            return cities;
+                return cities;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task<City> GetById(int id)
         {
-            var cityEntity = await _context.Cities
-                                           .AsNoTracking()
-                                           .Include(c => c.Districts)
-                                           .Include(c => c.Suppliers)
-                                               .ThenInclude(s => s.OwnershipType)
-                                           .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (cityEntity == null)
-                throw new Exception("CityEntity is null");
+            await _semaphore.WaitAsync();
 
-            var city = MapToCity(cityEntity);
+            try
+            {
 
-            return city;
+                var cityEntity = await _context.Cities
+                    .AsNoTracking()
+                    .Include(c => c.Districts)
+                    .Include(c => c.Suppliers)
+                    .ThenInclude(s => s.OwnershipType)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (cityEntity == null)
+                    throw new Exception("CityEntity is null");
+
+                var city = MapToCity(cityEntity);
+
+                return city;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Create(City city)
         {
-            var cityEntity = MapToCityEntity(city);
+            await _semaphore.WaitAsync();
 
-            await _context.Cities.AddAsync(cityEntity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var cityEntity = MapToCityEntity(city);
+
+                await _context.Cities.AddAsync(cityEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Update(int id, string name)
         {
-            await _context.Cities
-                .Where(c => c.Id == id)
-                .ExecuteUpdateAsync(c => c
-                                   .SetProperty(c => c.Name, name));
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Cities
+                    .Where(c => c.Id == id)
+                    .ExecuteUpdateAsync(c => c
+                        .SetProperty(c => c.Name, name));
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Delete(int id)
         {
-            await _context.Cities
-                .Where(c => c.Id == id)
-                .ExecuteDeleteAsync();
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Cities
+                    .Where(c => c.Id == id)
+                    .ExecuteDeleteAsync();
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private City MapToCity(CityEntity cityEntity)

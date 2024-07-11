@@ -9,4 +9,5 @@ public partial class ProductForSaleWindow : UserControl
     {
         InitializeComponent();
     }
+    
 }
