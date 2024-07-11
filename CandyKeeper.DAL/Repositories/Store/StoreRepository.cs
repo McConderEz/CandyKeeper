@@ -13,6 +13,7 @@ namespace CandyKeeper.DAL
     public class StoreRepository : IStoreRepository
     {
         private readonly CandyKeeperDbContext _context;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         public StoreRepository(CandyKeeperDbContext context)
         {
@@ -21,85 +22,150 @@ namespace CandyKeeper.DAL
 
         public async Task<List<Store>> Get()
         {
-            var storeEntities = await _context.Stores
-                .AsNoTracking()
-                .Include(s => s.OwnershipType)
-                .Include(s => s.District)
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var storeEntities = await _context.Stores
+                    .AsNoTracking()
+                    .Include(s => s.OwnershipType)
+                    .Include(s => s.District)
                     .ThenInclude(d => d.City)
-                .Include(s => s.Suppliers)
-                .Include(s => s.ProductForSales)
+                    .Include(s => s.Suppliers)
+                    .Include(s => s.ProductForSales)
                     .ThenInclude(pfs => pfs.Product)
-                        .ThenInclude(p => p.ProductType)
-                .Include(s => s.ProductForSales)
+                    .ThenInclude(p => p.ProductType)
+                    .Include(s => s.ProductForSales)
                     .ThenInclude(pfs => pfs.Packaging)
-                .Include(s => s.ProductDeliveries)
+                    .Include(s => s.ProductDeliveries)
                     .ThenInclude(pd => pd.Supplier)
-                .ToListAsync();
+                    .ToListAsync();
 
-            var stores = storeEntities.Select(s => MapToStore(s)).ToList();
+                var stores = storeEntities.Select(s => MapToStore(s)).ToList();
 
 
-            return stores;
+                return stores;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task<Store> GetById(int id)
         {
-            var storeEntity = await _context.Stores
-                                            .Include(s => s.OwnershipType)
-                                            .Include(s => s.District)
-                                                .ThenInclude(d => d.City)
-                                            .Include(s => s.Suppliers)
-                                            .Include(s => s.ProductForSales)
-                                                .ThenInclude(pfs => pfs.Product)
-                                                    .ThenInclude(p => p.ProductType)
-                                            .Include(s => s.ProductForSales)
-                                                .ThenInclude(pfs => pfs.Packaging)
-                                            .Include(s => s.ProductDeliveries)
-                                                .ThenInclude(pd => pd.Supplier)
-                                           .FirstOrDefaultAsync(c => c.Id == id);
+            await _semaphore.WaitAsync();
 
-            if (storeEntity == null)
-                throw new Exception("store null");
+            try
+            {
+                var storeEntity = await _context.Stores
+                    .Include(s => s.OwnershipType)
+                    .Include(s => s.District)
+                    .ThenInclude(d => d.City)
+                    .Include(s => s.Suppliers)
+                    .Include(s => s.ProductForSales)
+                    .ThenInclude(pfs => pfs.Product)
+                    .ThenInclude(p => p.ProductType)
+                    .Include(s => s.ProductForSales)
+                    .ThenInclude(pfs => pfs.Packaging)
+                    .Include(s => s.ProductDeliveries)
+                    .ThenInclude(pd => pd.Supplier)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (storeEntity == null)
+                    throw new Exception("store null");
 
 
-            var store = MapToStore(storeEntity);
+                var store = MapToStore(storeEntity);
 
-            return store;
+                return store;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Create(Store store)
         {
-            var storeEntity = MapToStoreEntity(store);
+            await _semaphore.WaitAsync();
 
-            await _context.Stores.AddAsync(storeEntity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var storeEntity = MapToStoreEntity(store);
+
+                await _context.Stores.AddAsync(storeEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Update(int id, int storeNumber, string name, DateTime yearOfOpened, int numberOfEmployees, string phone,
                                  int ownershipTypeId, int districtId)
         {
-            await _context.Stores
-                .Where(p => p.Id == id)
-                .ExecuteUpdateAsync(p => p
-                                   .SetProperty(p => p.Id, id)
-                                   .SetProperty(p => p.StoreNumber, storeNumber)
-                                   .SetProperty(p => p.Name, name)
-                                   .SetProperty(p => p.YearOfOpened, yearOfOpened)
-                                   .SetProperty(p => p.NumberOfEmployees, numberOfEmployees)
-                                   .SetProperty(p => p.Phone, phone)
-                                   .SetProperty(p => p.OwnershipTypeId, ownershipTypeId)
-                                   .SetProperty(p => p.DistrictId, districtId));
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Stores
+                    .Where(p => p.Id == id)
+                    .ExecuteUpdateAsync(p => p
+                        .SetProperty(p => p.Id, id)
+                        .SetProperty(p => p.StoreNumber, storeNumber)
+                        .SetProperty(p => p.Name, name)
+                        .SetProperty(p => p.YearOfOpened, yearOfOpened)
+                        .SetProperty(p => p.NumberOfEmployees, numberOfEmployees)
+                        .SetProperty(p => p.Phone, phone)
+                        .SetProperty(p => p.OwnershipTypeId, ownershipTypeId)
+                        .SetProperty(p => p.DistrictId, districtId));
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Delete(int id)
         {
-            await _context.Stores
-                .Where(p => p.Id == id)
-                .ExecuteDeleteAsync();
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Stores
+                    .Where(p => p.Id == id)
+                    .ExecuteDeleteAsync();
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private Store MapToStore(StoreEntity storeEntity)

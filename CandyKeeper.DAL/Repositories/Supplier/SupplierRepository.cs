@@ -13,6 +13,7 @@ namespace CandyKeeper.DAL
     public class SupplierRepository : ISupplierRepository
     {
         private readonly CandyKeeperDbContext _context;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         public SupplierRepository(CandyKeeperDbContext context)
         {
@@ -21,80 +22,145 @@ namespace CandyKeeper.DAL
 
         public async Task<List<Supplier>> Get()
         {
-            var supplierEntities = await _context.Suppliers
-                .AsNoTracking()
-                .Include(s => s.OwnershipType)
-                .Include(s => s.City)
-                .Include(s => s.Stores)
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var supplierEntities = await _context.Suppliers
+                    .AsNoTracking()
+                    .Include(s => s.OwnershipType)
+                    .Include(s => s.City)
+                    .Include(s => s.Stores)
                     .ThenInclude(s => s.District)
-                .Include(s => s.ProductDeliveries)
+                    .Include(s => s.ProductDeliveries)
                     .ThenInclude(pd => pd.ProductForSales)
-                        .ThenInclude(pfs => pfs.Packaging)
-                 .Include(s => s.ProductDeliveries)
+                    .ThenInclude(pfs => pfs.Packaging)
+                    .Include(s => s.ProductDeliveries)
                     .ThenInclude(pd => pd.ProductForSales)
-                        .ThenInclude(pfs => pfs.Product)
-                .ToListAsync();
+                    .ThenInclude(pfs => pfs.Product)
+                    .ToListAsync();
 
-            var suppliers = supplierEntities.Select(s => MapToSupplier(s)).ToList();
+                var suppliers = supplierEntities.Select(s => MapToSupplier(s)).ToList();
 
 
-            return suppliers;
+                return suppliers;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task<Supplier> GetById(int id)
         {
-            var supplierEntity = await _context.Suppliers
-                                            .Include(s => s.OwnershipType)
-                                            .Include(s => s.City)
-                                            .Include(s => s.Stores)
-                                                .ThenInclude(s => s.District)
-                                            .Include(s => s.ProductDeliveries)
-                                                .ThenInclude(pd => pd.ProductForSales)
-                                                    .ThenInclude(pfs => pfs.Packaging)
-                                             .Include(s => s.ProductDeliveries)
-                                                .ThenInclude(pd => pd.ProductForSales)
-                                                    .ThenInclude(pfs => pfs.Product)
-                                           .FirstOrDefaultAsync(c => c.Id == id);
+            await _semaphore.WaitAsync();
 
-            if (supplierEntity == null)
-                throw new Exception("supplier null");
+            try
+            {
+                var supplierEntity = await _context.Suppliers
+                    .Include(s => s.OwnershipType)
+                    .Include(s => s.City)
+                    .Include(s => s.Stores)
+                    .ThenInclude(s => s.District)
+                    .Include(s => s.ProductDeliveries)
+                    .ThenInclude(pd => pd.ProductForSales)
+                    .ThenInclude(pfs => pfs.Packaging)
+                    .Include(s => s.ProductDeliveries)
+                    .ThenInclude(pd => pd.ProductForSales)
+                    .ThenInclude(pfs => pfs.Product)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (supplierEntity == null)
+                    throw new Exception("supplier null");
 
 
-            var supplier = MapToSupplier(supplierEntity);
+                var supplier = MapToSupplier(supplierEntity);
 
-            return supplier;
+                return supplier;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Create(Supplier supplier)
         {
-            var supplierEntity = MapToSupplierEntity(supplier);
+            await _semaphore.WaitAsync();
 
-            await _context.Suppliers.AddAsync(supplierEntity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var supplierEntity = MapToSupplierEntity(supplier);
+
+                await _context.Suppliers.AddAsync(supplierEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Update(int id, string name, string phone,
                                  int ownershipTypeId, int cityId)
         {
-            await _context.Suppliers
-                .Where(p => p.Id == id)
-                .ExecuteUpdateAsync(p => p
-                                   .SetProperty(p => p.Id, id)
-                                   .SetProperty(p => p.Name, name)
-                                   .SetProperty(p => p.Phone, phone)
-                                   .SetProperty(p => p.OwnershipTypeId, ownershipTypeId)
-                                   .SetProperty(p => p.CityId, cityId));
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Suppliers
+                    .Where(p => p.Id == id)
+                    .ExecuteUpdateAsync(p => p
+                        .SetProperty(p => p.Id, id)
+                        .SetProperty(p => p.Name, name)
+                        .SetProperty(p => p.Phone, phone)
+                        .SetProperty(p => p.OwnershipTypeId, ownershipTypeId)
+                        .SetProperty(p => p.CityId, cityId));
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Delete(int id)
         {
-            await _context.Suppliers
-                .Where(p => p.Id == id)
-                .ExecuteDeleteAsync();
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Suppliers
+                    .Where(p => p.Id == id)
+                    .ExecuteDeleteAsync();
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private Supplier MapToSupplier(SupplierEntity supplierEntity)

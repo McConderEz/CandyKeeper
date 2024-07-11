@@ -12,7 +12,7 @@ namespace CandyKeeper.DAL
     public class ProductRepository : IProductRepository
     {
         private readonly CandyKeeperDbContext _context;
-
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         public ProductRepository(CandyKeeperDbContext context)
         {
             _context = context;
@@ -20,66 +20,131 @@ namespace CandyKeeper.DAL
 
         public async Task<List<Product>> Get()
         {
-            var productEntities = await _context.Products
-                .AsNoTracking()
-                .Include(p => p.ProductType)
-                .Include(p => p.ProductForSales)
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var productEntities = await _context.Products
+                    .AsNoTracking()
+                    .Include(p => p.ProductType)
+                    .Include(p => p.ProductForSales)
                     .ThenInclude(pfs => pfs.Packaging)
-                .Include(p => p.ProductForSales)
+                    .Include(p => p.ProductForSales)
                     .ThenInclude(pfs => pfs.Store)
-                .ToListAsync();
+                    .ToListAsync();
 
-            var products = productEntities.Select(p => MapToProduct(p)).ToList();
+                var products = productEntities.Select(p => MapToProduct(p)).ToList();
 
 
-            return products;
+                return products;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task<Product> GetById(int id)
         {
-            var productEntity = await _context.Products
-                                           .Include(p => p.ProductType)
-                                           .Include(p => p.ProductForSales)
-                                               .ThenInclude(pfs => pfs.Packaging)
-                                           .Include(p => p.ProductForSales)
-                                               .ThenInclude(pfs => pfs.Store)
-                                           .FirstOrDefaultAsync(c => c.Id == id);
+            await _semaphore.WaitAsync();
 
-            if (productEntity == null)
-                throw new Exception("productType null");
+            try
+            {
+                var productEntity = await _context.Products
+                    .Include(p => p.ProductType)
+                    .Include(p => p.ProductForSales)
+                    .ThenInclude(pfs => pfs.Packaging)
+                    .Include(p => p.ProductForSales)
+                    .ThenInclude(pfs => pfs.Store)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (productEntity == null)
+                    throw new Exception("productType null");
 
 
-            var product = MapToProduct(productEntity);
+                var product = MapToProduct(productEntity);
 
-            return product;
+                return product;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Create(Product product)
         {
-            var productEntity = MapToProductEntity(product);
+            await _semaphore.WaitAsync();
 
-            await _context.Products.AddAsync(productEntity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var productEntity = MapToProductEntity(product);
+
+                await _context.Products.AddAsync(productEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Update(int id, string name, int productTypeId)
         {
-            await _context.Products
-                .Where(p => p.Id == id)
-                .ExecuteUpdateAsync(p => p
-                                   .SetProperty(p => p.Name, name)
-                                   .SetProperty(p => p.ProductTypeId, productTypeId));
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Products
+                    .Where(p => p.Id == id)
+                    .ExecuteUpdateAsync(p => p
+                        .SetProperty(p => p.Name, name)
+                        .SetProperty(p => p.ProductTypeId, productTypeId));
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Delete(int id)
         {
-            await _context.ProductTypes
-                .Where(p => p.Id == id)
-                .ExecuteDeleteAsync();
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.ProductTypes
+                    .Where(p => p.Id == id)
+                    .ExecuteDeleteAsync();
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private Product MapToProduct(ProductEntity productEntity)

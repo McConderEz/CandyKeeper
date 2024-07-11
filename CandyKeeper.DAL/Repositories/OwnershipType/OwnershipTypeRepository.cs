@@ -12,7 +12,8 @@ namespace CandyKeeper.DAL.Repositories
     public class OwnershipTypeRepository : IOwnershipTypeRepository
     {
         private readonly CandyKeeperDbContext _context;
-
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        
         public OwnershipTypeRepository(CandyKeeperDbContext context)
         {
             _context = context;
@@ -20,57 +21,123 @@ namespace CandyKeeper.DAL.Repositories
 
         public async Task<List<OwnershipType>> Get()
         {
-            var ownershipTypeEntities = await _context.OwnershipTypes
-                .AsNoTracking()
-                .Include(o => o.Stores)
-                .Include(o => o.Suppliers)
-                .ToListAsync();
+            await _semaphore.WaitAsync();
 
-            var ownershipTypes = ownershipTypeEntities.Select(o => MapToOwnershipType(o)).ToList();
+            try
+            {
+                var ownershipTypeEntities = await _context.OwnershipTypes
+                    .AsNoTracking()
+                    .Include(o => o.Stores)
+                    .Include(o => o.Suppliers)
+                    .ToListAsync();
 
-            return ownershipTypes;
+                var ownershipTypes = ownershipTypeEntities.Select(o => MapToOwnershipType(o)).ToList();
+
+                return ownershipTypes;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task<OwnershipType> GetById(int id)
         {
-            var ownershipTypesEntity = await _context.OwnershipTypes
-                                           .Include(o => o.Suppliers)
-                                           .Include(o => o.Stores)
-                                           .FirstOrDefaultAsync(c => c.Id == id);
+            await _semaphore.WaitAsync();
 
-            if (ownershipTypesEntity == null)
-                throw new Exception("OwnershipType is null");
 
-            var ownershipType = MapToOwnershipType(ownershipTypesEntity);
+            try
+            {
+                var ownershipTypesEntity = await _context.OwnershipTypes
+                    .Include(o => o.Suppliers)
+                    .Include(o => o.Stores)
+                    .FirstOrDefaultAsync(c => c.Id == id);
 
-            return ownershipType;
+                if (ownershipTypesEntity == null)
+                    throw new Exception("OwnershipType is null");
+
+                var ownershipType = MapToOwnershipType(ownershipTypesEntity);
+
+                return ownershipType;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Create(OwnershipType ownershipType)
         {
-            var ownershipTypeEntity = MapToOwnershipTypeEntity(ownershipType);  
+            await _semaphore.WaitAsync();
 
-            await _context.OwnershipTypes.AddAsync(ownershipTypeEntity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var ownershipTypeEntity = MapToOwnershipTypeEntity(ownershipType);
+
+                await _context.OwnershipTypes.AddAsync(ownershipTypeEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Update(int id, string name)
         {
-            await _context.OwnershipTypes
-                .Where(d => d.Id == id)
-                .ExecuteUpdateAsync(d => d
-                                   .SetProperty(d => d.Name, name));
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.OwnershipTypes
+                    .Where(d => d.Id == id)
+                    .ExecuteUpdateAsync(d => d
+                        .SetProperty(d => d.Name, name));
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Delete(int id)
         {
-            await _context.OwnershipTypes
-                .Where(c => c.Id == id)
-                .ExecuteDeleteAsync();
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.OwnershipTypes
+                    .Where(c => c.Id == id)
+                    .ExecuteDeleteAsync();
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private OwnershipType MapToOwnershipType(OwnershipTypeEntity ownershipTypeEntity)

@@ -13,7 +13,8 @@ namespace CandyKeeper.DAL
 {
     public class PackagingRepository : IPackagingRepository
     {
-        private readonly CandyKeeperDbContext _context;       
+        private readonly CandyKeeperDbContext _context;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         public PackagingRepository(CandyKeeperDbContext context)
         {
@@ -22,63 +23,128 @@ namespace CandyKeeper.DAL
 
         public async Task<List<Packaging>> Get()
         {
-            var packagingEntity = await _context.Packaging
-                .AsNoTracking()
-                .Include(p => p.ProductForSales)
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var packagingEntity = await _context.Packaging
+                    .AsNoTracking()
+                    .Include(p => p.ProductForSales)
                     .ThenInclude(pfs => pfs.Product)
-                        .ThenInclude(p => p.ProductType)
-                .Include(p => p.ProductForSales)
+                    .ThenInclude(p => p.ProductType)
+                    .Include(p => p.ProductForSales)
                     .ThenInclude(pfs => pfs.Store)
-                .ToListAsync();
+                    .ToListAsync();
 
-            var packaging = packagingEntity.Select(p => MapToPackaging(p)).ToList();
+                var packaging = packagingEntity.Select(p => MapToPackaging(p)).ToList();
 
-            return packaging;
+                return packaging;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task<Packaging> GetById(int id)
         {
-            var packagingEntity = await _context.Packaging
-                                           .Include(p => p.ProductForSales)
-                                               .ThenInclude(pfs => pfs.Product)
-                                                   .ThenInclude(p => p.ProductType)
-                                           .Include(p => p.ProductForSales)
-                                               .ThenInclude(pfs => pfs.Store)
-                                           .FirstOrDefaultAsync(c => c.Id == id);
+            await _semaphore.WaitAsync();
 
-            if (packagingEntity == null)
-                throw new Exception("Packaging entity is null");
+            try
+            {
+                var packagingEntity = await _context.Packaging
+                    .Include(p => p.ProductForSales)
+                    .ThenInclude(pfs => pfs.Product)
+                    .ThenInclude(p => p.ProductType)
+                    .Include(p => p.ProductForSales)
+                    .ThenInclude(pfs => pfs.Store)
+                    .FirstOrDefaultAsync(c => c.Id == id);
 
-            var packaging = MapToPackaging(packagingEntity);
+                if (packagingEntity == null)
+                    throw new Exception("Packaging entity is null");
 
-            return packaging;
+                var packaging = MapToPackaging(packagingEntity);
+
+                return packaging;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Create(Packaging packaging)
         {
-            var packagingEntity = MapToPackagingEntity(packaging);
+            await _semaphore.WaitAsync();
 
-            await _context.Packaging.AddAsync(packagingEntity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var packagingEntity = MapToPackagingEntity(packaging);
+
+                await _context.Packaging.AddAsync(packagingEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Update(int id, string name)
         {
-            await _context.Packaging
-                .Where(p => p.Id == id)
-                .ExecuteUpdateAsync(p => p
-                                   .SetProperty(p => p.Name, name));
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Packaging
+                    .Where(p => p.Id == id)
+                    .ExecuteUpdateAsync(p => p
+                        .SetProperty(p => p.Name, name));
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Delete(int id)
         {
-            await _context.Packaging
-                .Where(p => p.Id == id)
-                .ExecuteDeleteAsync();
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Packaging
+                    .Where(p => p.Id == id)
+                    .ExecuteDeleteAsync();
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private Packaging MapToPackaging(PackagingEntity packagingEntity)

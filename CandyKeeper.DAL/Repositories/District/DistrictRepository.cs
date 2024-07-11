@@ -13,7 +13,8 @@ namespace CandyKeeper.DAL.Repositories
     public class DistrictRepository : IDistrictRepository
     {
         private readonly CandyKeeperDbContext _context;
-
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        
         public DistrictRepository(CandyKeeperDbContext context)
         {
             _context = context;
@@ -21,60 +22,124 @@ namespace CandyKeeper.DAL.Repositories
 
         public async Task<List<District>> Get()
         {
-            var districtEntities = await _context.Districts
-                .AsNoTracking()
-                .Include(d => d.City)
-                .Include(d => d.Stores)
+            await _semaphore.WaitAsync();
+            try
+            {
+                var districtEntities = await _context.Districts
+                    .AsNoTracking()
+                    .Include(d => d.City)
+                    .Include(d => d.Stores)
                     .ThenInclude(s => s.OwnershipType)
-                .ToListAsync();
+                    .ToListAsync();
 
-            var districts = districtEntities.Select(d => MapToDistrict(d)).ToList();
+                var districts = districtEntities.Select(d => MapToDistrict(d)).ToList();
 
-            return districts;
+                return districts;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task<District> GetById(int id)
         {
-            var districtEntities = await _context.Districts
-                                           .Include(d => d.City)
-                                           .Include(d => d.Stores)
-                                               .ThenInclude(s => s.OwnershipType)
-                                           .FirstOrDefaultAsync(c => c.Id == id);
+            await _semaphore.WaitAsync();
 
-            if (districtEntities == null)
-                throw new Exception("DistrictEntity is null");
+            try
+            {
+                var districtEntities = await _context.Districts
+                    .Include(d => d.City)
+                    .Include(d => d.Stores)
+                    .ThenInclude(s => s.OwnershipType)
+                    .FirstOrDefaultAsync(c => c.Id == id);
 
-            var district = MapToDistrict(districtEntities);
+                if (districtEntities == null)
+                    throw new Exception("DistrictEntity is null");
 
-            return district;
+                var district = MapToDistrict(districtEntities);
+
+                return district;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Create(District district)
         {
-            var districtEntity = MapToDistrictEntity(district);
+            await _semaphore.WaitAsync();
 
-            await _context.Districts.AddAsync(districtEntity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var districtEntity = MapToDistrictEntity(district);
+
+                await _context.Districts.AddAsync(districtEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Update(int id, string name, int cityId)
         {
-            await _context.Districts
-                .Where(d => d.Id == id)
-                .ExecuteUpdateAsync(d => d
-                                   .SetProperty(d => d.Name, name)
-                                   .SetProperty(d => d.CityId, cityId));
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Districts
+                    .Where(d => d.Id == id)
+                    .ExecuteUpdateAsync(d => d
+                        .SetProperty(d => d.Name, name)
+                        .SetProperty(d => d.CityId, cityId));
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task Delete(int id)
         {
-            await _context.Districts
-                .Where(c => c.Id == id)
-                .ExecuteDeleteAsync();
+            await _semaphore.WaitAsync();
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Districts
+                    .Where(c => c.Id == id)
+                    .ExecuteDeleteAsync();
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private District MapToDistrict(DistrictEntity districtEntity)
