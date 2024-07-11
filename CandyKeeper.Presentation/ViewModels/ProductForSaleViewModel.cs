@@ -9,16 +9,28 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using CandyKeeper.Presentation.Views.AddEditPages;
+using CandyKeeper.Presentation.Views.DetailsPages;
+using CandyKeeper.Presentation.Views.Windows;
 
 namespace CandyKeeper.Presentation.ViewModels
 {
     internal class ProductForSaleViewModel : ViewModel
     {
+        public delegate void RefreshDataDelegate(object p);
+        public delegate void CloseUserControlDelegate(object p);
+        private static event RefreshDataDelegate _refreshEvent;
+        private static event CloseUserControlDelegate _closeEvent;
+        
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        
         private readonly IProductForSaleService _service;
         private readonly IProductService _productService;
         private readonly IStoreService _storeService;
@@ -33,12 +45,9 @@ namespace CandyKeeper.Presentation.ViewModels
         private ObservableCollection<Packaging> _packagings;
 
         private Models.ProductForSale _selectedItem = new();
+        private ProductForSale _selectedItemForDetails;
 
-        public Models.ProductForSale SelectedItem
-        {
-            get => _selectedItem;
-            set => Set(ref _selectedItem, value);
-        }
+        private DetailsProductForSalePage _detailsView;
         
         #region Команды
 
@@ -48,11 +57,24 @@ namespace CandyKeeper.Presentation.ViewModels
         private bool CanGetCommandExecute(object p) => true;
         public async void OnGetCommandExecuted(object p)
         {
-            ProductForSales = new ObservableCollection<ProductForSale>(await _service.Get());
+            await _semaphore.WaitAsync();
+            try
+            {
+                ProductForSales = new ObservableCollection<ProductForSale>(await _service.Get());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
         
         #endregion
 
+        #region AddEditShowCommand
         public ICommand AddEditShowCommand { get; }
         private bool CanAddEditShowCommandExecute(object p) => true;
         public async void OnAddEditShowCommandExecuted(object p)
@@ -61,45 +83,151 @@ namespace CandyKeeper.Presentation.ViewModels
             {
                 SelectedItem.Id = id;
             }
-            
-            await LoadComboBoxes();
-            var page = new AddEditProductForSalePage();
-            page.DataContext = this;
-            page.Show();
+
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                await LoadComboBoxes();
+                var page = new AddEditProductForSalePage();
+                page.DataContext = this;
+                page.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
-        
+        #endregion
+
+        #region AddEditCommand
         public ICommand AddEditCommand { get; }
         private bool CanAddEditCommandExecute(object p) => true;
         public async void OnAddEditCommandExecuted(object p)
         {
-            if (SelectedItem.Id == 0)
+            await _semaphore.WaitAsync();
+
+            try
             {
-                var productForSale = ProductForSale.Create(
-                    _selectedItem.Id,
-                    _selectedItem.ProductId,
-                    _selectedItem.StoreId,
-                    _selectedItem.ProductDeliveryId,
-                    _selectedItem.PackagingId,
-                    _selectedItem.Price,
-                    _selectedItem.Volume).Value;
-                await _service.Create(productForSale);
+                if (SelectedItem.Id == 0)
+                {
+                    var productForSale = ProductForSale.Create(
+                        _selectedItem.Id,
+                        _selectedItem.ProductId,
+                        _selectedItem.StoreId,
+                        _selectedItem.ProductDeliveryId,
+                        _selectedItem.PackagingId,
+                        _selectedItem.Price,
+                        _selectedItem.Volume).Value;
+                    await _service.Create(productForSale);
+                }
+                else
+                {
+                    var productForSale = ProductForSale.Create(
+                        _selectedItem.Id,
+                        _selectedItem.ProductId,
+                        _selectedItem.StoreId,
+                        _selectedItem.ProductDeliveryId,
+                        _selectedItem.PackagingId,
+                        _selectedItem.Price,
+                        _selectedItem.Volume).Value;
+                    await _service.Update(productForSale);
+                }
+                
+                _refreshEvent?.Invoke(null);
             }
-            else
+            catch (Exception ex)
             {
-                var productForSale = ProductForSale.Create(
-                    _selectedItem.Id,
-                    _selectedItem.ProductId,
-                    _selectedItem.StoreId,
-                    _selectedItem.ProductDeliveryId,
-                    _selectedItem.PackagingId,
-                    _selectedItem.Price,
-                    _selectedItem.Volume).Value;
-                await _service.Update(productForSale);
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
         
+
         #endregion
 
+        #region DeleteCommand
+
+        public ICommand DeleteCommand { get; }
+        private bool CanDeleteCommandExecute(object p) => true;
+
+        public async void OnDeleteCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (p is int id)
+                {
+                    await _service.Delete(id);
+                    _refreshEvent?.Invoke(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+
+        #region DetailsCommand
+        public ICommand DetailsCommand { get; }
+        private bool CanDetailsCommandExecute(object p) => true;
+
+        public async void OnDetailsCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (p is int id)
+                {
+                    SelectedItemForDetails = await _service.GetById(id);
+                    _closeEvent?.Invoke(null);
+                    DetailsPage = new DetailsProductForSalePage();
+                    DetailsPage.DataContext = this;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
+
+        #endregion
+        
+        #endregion
+        
+
+        public static event RefreshDataDelegate RefreshEvent
+        {
+            add => _refreshEvent += value;
+            remove => _refreshEvent -= value;
+        }
+
+        public static event CloseUserControlDelegate CloseEvent
+        {
+            add => _closeEvent += value;
+            remove => _closeEvent -= value;
+        }
+        
         public ObservableCollection<ProductForSale> ProductForSales
         {
             get => _productForSales;
@@ -126,7 +254,23 @@ namespace CandyKeeper.Presentation.ViewModels
             get => _packagings;
             set => Set(ref _packagings, value);
         }
+        public Models.ProductForSale SelectedItem
+        {
+            get => _selectedItem;
+            set => Set(ref _selectedItem, value);
+        }
         
+        public ProductForSale SelectedItemForDetails
+        {
+            get => _selectedItemForDetails;
+            set => Set(ref _selectedItemForDetails, value);
+        }
+
+        public DetailsProductForSalePage DetailsPage
+        {
+            get => _detailsView;
+            set => Set(ref _detailsView, value);
+        }
         
         public ProductForSaleViewModel(IProductForSaleService service,
             IProductService productService,
@@ -143,10 +287,11 @@ namespace CandyKeeper.Presentation.ViewModels
             GetCommand = new LambdaCommand(OnGetCommandExecuted);
             AddEditShowCommand = new LambdaCommand(OnAddEditShowCommandExecuted);
             AddEditCommand = new LambdaCommand(OnAddEditCommandExecuted);
+            DeleteCommand = new LambdaCommand(OnDeleteCommandExecuted);
+            DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
             
             _productForSales = new ObservableCollection<ProductForSale>();
             OnGetCommandExecuted(null);
-            
         }
 
         private async Task LoadComboBoxes()

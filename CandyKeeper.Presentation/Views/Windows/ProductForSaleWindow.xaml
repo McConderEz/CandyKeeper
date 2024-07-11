@@ -141,7 +141,7 @@
     </UserControl.Resources>
     
     <Grid>
-        <Grid Grid.Column="1" Margin="30 20 20 20">
+        <Grid Grid.Column="1" Margin="30 20 20 20" Name="DataGridView">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
@@ -197,10 +197,10 @@
                                         <Button Style="{StaticResource gridEditButton}" Command="{Binding DataContext.AddEditShowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
                                             <iconPacks:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
-                                        <Button Style="{StaticResource gridDetailButton}">
+                                        <Button Style="{StaticResource gridDetailButton}" Command="{Binding DataContext.DetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
                                             <iconPacks:PackIconMaterial Kind="Details" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
-                                        <Button Style="{StaticResource gridRemoveButton}">
+                                        <Button Style="{StaticResource gridRemoveButton}" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
                                             <iconPacks:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
                                     </StackPanel>
@@ -213,6 +213,12 @@
                 </DataGrid>
                 
                 
+            </Grid>
+            <Grid Grid.Column="1" Margin="30 20 20 20">
+                <ContentControl Grid.Row="1" Content="{Binding DetailsPage}"/>
+                        
+    
+                <!--<ContentControl x:Name="ContentArea" Grid.Row="1"/>-->
             </Grid>
     </Grid>
 </UserControl>

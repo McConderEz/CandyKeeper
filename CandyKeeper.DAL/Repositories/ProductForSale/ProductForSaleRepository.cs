@@ -46,6 +46,8 @@ namespace CandyKeeper.DAL
                                             .Include(pfs => pfs.Store)
                                                 .ThenInclude(s => s.District)
                                                     .ThenInclude(d => d.City)
+                                           .Include(pfs => pfs.ProductDelivery)
+                                                .ThenInclude(pd => pd.Supplier)
                                            .FirstOrDefaultAsync(c => c.Id == id);
 
             if (productForSaleEntity == null)

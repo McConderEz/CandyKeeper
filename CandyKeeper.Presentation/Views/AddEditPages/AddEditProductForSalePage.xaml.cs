@@ -53,4 +53,5 @@ public partial class AddEditProductForSalePage : Window
     {
         this.Close();
     }
+    
 }

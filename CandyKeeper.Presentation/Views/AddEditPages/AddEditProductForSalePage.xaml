@@ -58,7 +58,7 @@
                 <TextBox Width="200" Text="{Binding SelectedItem.Volume}"></TextBox>
             
                 <!--Сохранение-->
-                <Button Style="{StaticResource addButton}" Height="30" Width="100" Margin="100,40,100,0" Command="{Binding AddEditCommand}">
+                <Button Style="{StaticResource addButton}" Height="30" Width="100" Margin="100,40,100,0" Click="CloseBtn" Command="{Binding AddEditCommand}">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial Kind="ContentSave" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
                         <TextBlock Text="Сохранить"/>
