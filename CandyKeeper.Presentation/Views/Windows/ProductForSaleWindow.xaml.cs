@@ -14,6 +14,7 @@ public partial class ProductForSaleWindow : UserControl
         InitializeComponent();
         ProductForSaleViewModel.RefreshEvent += RefreshDataGridHandler;
         ProductForSaleViewModel.CloseEvent += CloseView;
+        ProductForSaleViewModel.ReturnEvent += OpenView;
     }
 
     public void RefreshDataGridHandler(object p)
@@ -28,6 +29,11 @@ public partial class ProductForSaleWindow : UserControl
     public void CloseView(object p)
     {
         this.DataGridView.Visibility = Visibility.Collapsed;
+    }
+
+    public void OpenView(object p)
+    {
+        this.DataGridView.Visibility = Visibility.Visible;
     }
     
 }

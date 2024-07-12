@@ -61,7 +61,7 @@
                 </StackPanel>
 
                 
-                <Button Grid.Row="5"  Style="{StaticResource addButton}" Command="{Binding AddEditShowCommand}" Height="40" Width="40" HorizontalAlignment="Left">
+                <Button Grid.Row="5"  Style="{StaticResource addButton}" Command="{Binding ReturnCommand}" Height="40" Width="40" HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial Kind="KeyboardReturn" VerticalAlignment="Center" Width="20" Height="20" Margin="0 1 8 0"/>
                     </StackPanel>

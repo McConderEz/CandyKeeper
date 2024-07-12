@@ -24,10 +24,10 @@ namespace CandyKeeper.Presentation.ViewModels
 {
     internal class ProductForSaleViewModel : ViewModel
     {
-        public delegate void RefreshDataDelegate(object p);
-        public delegate void CloseUserControlDelegate(object p);
-        private static event RefreshDataDelegate _refreshEvent;
-        private static event CloseUserControlDelegate _closeEvent;
+        public delegate void Delegate(object p);
+        private static event Delegate _refreshEvent;
+        private static event Delegate _closeEvent;
+        private static event Delegate _returnEvent;
         
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         
@@ -213,19 +213,50 @@ namespace CandyKeeper.Presentation.ViewModels
 
         #endregion
         
+        #region ReturnCommand
+        
+        public ICommand ReturnCommand { get; }
+        private bool CanReturnCommandExecute(object p) => true;
+
+        public async void OnReturnCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                _returnEvent?.Invoke(null);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
+        #endregion
+        
         #endregion
         
 
-        public static event RefreshDataDelegate RefreshEvent
+        public static event Delegate RefreshEvent
         {
             add => _refreshEvent += value;
             remove => _refreshEvent -= value;
         }
 
-        public static event CloseUserControlDelegate CloseEvent
+        public static event Delegate CloseEvent
         {
             add => _closeEvent += value;
             remove => _closeEvent -= value;
+        }
+        
+        public static event Delegate ReturnEvent
+        {
+            add => _returnEvent += value;
+            remove => _returnEvent -= value;
         }
         
         public ObservableCollection<ProductForSale> ProductForSales
@@ -289,6 +320,7 @@ namespace CandyKeeper.Presentation.ViewModels
             AddEditCommand = new LambdaCommand(OnAddEditCommandExecuted);
             DeleteCommand = new LambdaCommand(OnDeleteCommandExecuted);
             DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
+            ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
             
             _productForSales = new ObservableCollection<ProductForSale>();
             OnGetCommandExecuted(null);
