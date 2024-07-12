@@ -1,14 +1,15 @@
-﻿<UserControl x:Class="CandyKeeper.Presentation.Views.Windows.ProductDeliveryWindow"
+﻿<UserControl x:Class="CandyKeeper.Presentation.Views.DetailsPages.DetailsProductDeliveryPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:CandyKeeper.Presentation.Views.Windows"
-             xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna"
              mc:Ignorable="d"
              DataContext="{Binding ProductDeliveryViewModel,Source={StaticResource Locator}}"
-             d:DesignHeight="720" d:DesignWidth="1200">
+             d:DesignHeight="720" d:DesignWidth="1080">
+    
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <Style x:Key="DataGridRowStyle1" TargetType="{x:Type DataGridRow}">
@@ -137,9 +138,8 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    
     <Grid>
-        <Grid Grid.Column="1" Margin="30 20 20 20" Name="DataGridView">
+        <Grid Grid.Column="1" Margin="30 20 20 20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
@@ -149,72 +149,52 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <!--Поисковое поле-->
-                <Grid Width="300" HorizontalAlignment="Left">
-                    <TextBlock Margin="20 0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
-                            Panel.ZIndex="1" Text="Искать здесь..."
-                            Visibility="{Binding ElementName=txtSearch, Converter={StaticResource BoolToVis}}"/>
-                    <TextBox x:Name="txtSearch" Style="{StaticResource textBoxSearch}"/>
-
-                    <iconPacks:PackIconMaterial Kind="Magnify" Width="15" Height="15" VerticalAlignment="Center"
-                           Margin="0 0 15 0" Foreground="#b0b9c6" HorizontalAlignment="Right"/>
-                </Grid>
-
-                <!--Верхние кнопки-->
-                
+            
+            
 
                 <!--Название страницы-->
-                <TextBlock Text="Поставки продукции" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
+                <TextBlock Text="Подробная информация о кондитерском изделии" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
                            HorizontalAlignment="Left" Foreground="#121518"/>
                 
-                <!--Кнопка добавления-->
-                <Button Style="{StaticResource addButton}" Command="{Binding AddEditShowCommand}">
-                    <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
-                        <TextBlock Text="Добавить"/>
-                    </StackPanel>
-                </Button>
-
+                
                 <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
 
-                
-
-                <DataGrid Name="ProductDeliveryDataGrid" Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" ItemsSource="{Binding ProductDeliveries}">
+                <StackPanel Grid.Row="4">
+                    <TextBlock Text="Id" Visibility="Collapsed" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Дата поставки" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.DeliveryDate}" FontSize="18" FontWeight="SemiBold"/>
+                    <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
+                    <TextBlock Text="Магазин" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Store.Name}" FontSize="18" FontWeight="SemiBold"/>
+                    <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
+                    <TextBlock Text="Поставщик" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Supplier.Name}" FontSize="18" FontWeight="SemiBold"/>
+                    <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
+                    <TextBlock Text="Кондитерские изделия заказа" HorizontalAlignment="Center" FontSize="18" FontWeight="SemiBold"/>
+                    
+                    <Grid>
+                        <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding SelectedItemForDetails.ProductForSales}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Название поставщика" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Supplier.Name}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Название магазина" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Store.Name}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Дата поставки" IsReadOnly="True" CanUserResize="False" Width="auto"  Binding="{Binding DeliveryDate}"></DataGridTextColumn>
-
-                        <DataGridTemplateColumn Header="Действия" IsReadOnly="True" Width="auto">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Style="{StaticResource gridEditButton}" Command="{Binding DataContext.AddEditShowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
-                                            <iconPacks:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
-                                        </Button>
-                                        <Button Style="{StaticResource gridDetailButton}" Command="{Binding DataContext.DetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
-                                            <iconPacks:PackIconMaterial Kind="Details" Style="{StaticResource gridButtonIcon}"/>
-                                        </Button>
-                                        <Button Style="{StaticResource gridRemoveButton}" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
-                                            <iconPacks:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
-                                        </Button>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Название" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Product.Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Product.ProductType.Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Упакова" IsReadOnly="True" CanUserResize="False" Width="auto"  Binding="{Binding Packaging.Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Цена" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Price}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Объём" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Volume}"></DataGridTextColumn>
+                        
                     </DataGrid.Columns>
 
                                      
                 </DataGrid>
+                    </Grid>
+                </StackPanel>
+
                 
+                <Button Grid.Row="5"  Style="{StaticResource addButton}" Command="{Binding ReturnCommand}" Height="40" Width="40" HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="KeyboardReturn" VerticalAlignment="Center" Width="20" Height="20" Margin="0 1 8 0"/>
+                    </StackPanel>
+                </Button>
                 
-            </Grid>
-        
-            <Grid Grid.Column="1" Margin="30 20 20 20">
-                <ContentControl Grid.Row="1" Content="{Binding DetailsPage}"/>
-                            
-    
-                <!--<ContentControl x:Name="ContentArea" Grid.Row="1"/>-->
             </Grid>
     </Grid>
 </UserControl>

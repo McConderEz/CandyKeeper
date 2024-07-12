@@ -37,6 +37,12 @@ namespace CandyKeeper.Application.Services
         {
             await _repository.Update(productDelivery.Id, productDelivery.DeliveryDate, productDelivery.SupplierId, productDelivery.StoreId);
         }
+
+        public async Task AddProductForSale(int id, ProductForSale model)
+        {
+            await _repository.AddProductForSale(id, model);
+        }
+
         public async Task Delete(int id)
         {
             await _repository.Delete(id);

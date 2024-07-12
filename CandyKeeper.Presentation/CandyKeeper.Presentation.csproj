@@ -22,4 +22,22 @@
     <ProjectReference Include="..\CandyKeeper.Domain\CandyKeeper.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Views\AddEditPages\AddEditProductDeliveryPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\DetailsPages\DetailsProductDeliveryPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\AddEditPages\AddProductInProductDeliveryPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>

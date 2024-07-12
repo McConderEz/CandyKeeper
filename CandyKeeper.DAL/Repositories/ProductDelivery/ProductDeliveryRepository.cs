@@ -154,6 +154,35 @@ namespace CandyKeeper.DAL
             }
         }
 
+        public async Task AddProductForSale(int id,ProductForSale model)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (model == null)
+                    throw new Exception("entity is null!");
+
+                var productDelivery = await _context.ProductDeliveries.SingleOrDefaultAsync(pd => pd.Id == id);
+
+                if (productDelivery == null)
+                    throw new Exception("product delivery is not exist!");
+
+                var entity = MapToProductForSaleEntity(model);
+                
+                productDelivery.ProductForSales.Add(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
         private ProductDelivery MapToProductDelivery(ProductDeliveryEntity productDeliveryEntity)
         {
             var supplier = productDeliveryEntity.Supplier != null ? MapToSupplier(productDeliveryEntity.Supplier) : null;

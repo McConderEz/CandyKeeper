@@ -1,4 +1,5 @@
-﻿using CandyKeeper.Domain.Models;
+﻿using CandyKeeper.DAL.Entities;
+using CandyKeeper.Domain.Models;
 
 namespace CandyKeeper.DAL.Repositories
 {
@@ -9,5 +10,6 @@ namespace CandyKeeper.DAL.Repositories
         Task<List<ProductDelivery>> Get();
         Task<ProductDelivery> GetById(int id);
         Task Update(int id, DateTime deliveryDate, int supplierId, int storeId);
+        Task AddProductForSale(int id, ProductForSale model);
     }
 }
