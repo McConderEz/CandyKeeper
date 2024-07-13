@@ -6,9 +6,14 @@
              xmlns:local="clr-namespace:CandyKeeper.Presentation.Views.Windows"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna"
+             xmlns:extensions="clr-namespace:CandyKeeper.Presentation.Extensions"
              mc:Ignorable="d"
              DataContext="{Binding StoreViewModel,Source={StaticResource Locator}}"
              d:DesignHeight="720" d:DesignWidth="1080">
+    
+    <UserControl.Resources>
+        <extensions:ComboBoxItemToVisibilityConverter x:Key="ComboBoxItemToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid Grid.Column="1" Margin="30 20 20 20">
                 <Grid.RowDefinitions>
@@ -55,14 +60,21 @@
                     <TextBlock Text="{Binding SelectedItemForDetails.District.City.Name}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
                     <StackPanel>
-                    <ComboBox Name="DisplayDataGridComboBox" FontSize="14" FontWeight="SemiBold" Width="300" HorizontalAlignment="Left"
-                              SelectedValuePath="Content"
-                              SelectedItem="{Binding SelectedDataGridInDetailsPage, Mode=TwoWay}" 
-                              DisplayMemberPath="Content">
-                        <ComboBoxItem Content="Поставщики магазина"/>
-                        <ComboBoxItem Content="Кондитерские изделия"/>
-                        <ComboBoxItem Content="Поставки"/>
-                    </ComboBox>
+                        <ComboBox Name="DisplayDataGridComboBox" FontSize="14" FontWeight="SemiBold" Width="300" HorizontalAlignment="Left"
+                                  SelectedItem="{Binding SelectedDataGridInDetailsPage, Mode=TwoWay}" 
+                                  SelectedValuePath="Content"
+                                  >
+                            <ComboBox.Resources>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </Style>
+                            </ComboBox.Resources>
+                            <ComboBoxItem Content="Поставщики магазина"/>
+                            <ComboBoxItem Content="Кондитерские изделия"/>
+                            <ComboBoxItem Content="Поставки"/>
+                        </ComboBox>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
                     <TextBlock Text="{Binding SelectedDataGridInDetailsPage.Content}" HorizontalAlignment="Center" FontSize="14" FontWeight="SemiBold"/>
                     <StackPanel>
@@ -73,7 +85,7 @@
                             </StackPanel>
                         </Button>
                     </StackPanel>
-                    <Grid>
+                    <Grid Visibility="{Binding ElementName=DisplayDataGridComboBox, Path=SelectedItem, Converter={StaticResource ComboBoxItemToVisibilityConverter}, ConverterParameter=Поставщики магазина}">
                         <DataGrid 
                             Name="SupplierDataGrid" 
                             Style="{DynamicResource DataGridStyle1}" 
@@ -83,7 +95,7 @@
                             Grid.Row="5"  
                             ItemsSource="{Binding SelectedItemForDetails.Suppliers}"
                             AutoGenerateColumns="False"
-                            Height="200"> <!-- Установите фиксированную высоту -->
+                            Height="100"> <!-- Установите фиксированную высоту -->
         
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Название" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Name}"/>
@@ -105,6 +117,48 @@
                         </DataGrid>
                     </Grid>
                     
+                    <Grid Visibility="{Binding ElementName=DisplayDataGridComboBox, Path=SelectedItem, Converter={StaticResource ComboBoxItemToVisibilityConverter}, ConverterParameter=Кондитерские изделия}">
+                        <DataGrid 
+                            Name="ProductForSaleDataGrid" 
+                            Style="{DynamicResource DataGridStyle1}" 
+                            CellStyle="{DynamicResource DataGridCellStyle1}" 
+                            ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                            RowStyle="{DynamicResource DataGridRowStyle1}" 
+                            Grid.Row="5"  
+                            ItemsSource="{Binding SelectedItemForDetails.ProductForSales}"
+                            AutoGenerateColumns="False"
+                            Height="100"> <!-- Установите фиксированную высоту -->
+        
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Название" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Product.Name}"/>
+                                <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Product.ProductType.Name}"/>
+                                <DataGridTextColumn Header="Упаковка" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Packaging.Name}"/>
+                                <DataGridTextColumn Header="Цена" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Price}"/>
+                                <DataGridTextColumn Header="Объём" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Volume}"/>
+                                <DataGridTextColumn Header="Поставщик" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding ProductDelivery.Supplier.Name}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                    
+                    <Grid Visibility="{Binding ElementName=DisplayDataGridComboBox, Path=SelectedItem, Converter={StaticResource ComboBoxItemToVisibilityConverter}, ConverterParameter=Поставки}">
+                        <DataGrid 
+                            Name="ProductDeliveryDataGrid" 
+                            Style="{DynamicResource DataGridStyle1}" 
+                            CellStyle="{DynamicResource DataGridCellStyle1}" 
+                            ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                            RowStyle="{DynamicResource DataGridRowStyle1}" 
+                            Grid.Row="5"  
+                            ItemsSource="{Binding SelectedItemForDetails.ProductDeliveries}"
+                            AutoGenerateColumns="False"
+                            Height="100"> <!-- Установите фиксированную высоту -->
+        
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Поставщик" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Supplier.Name}"/>
+                                <DataGridTextColumn Header="Дата поставки" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding DeliveryDate}"/>
+                                
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
                 </StackPanel>
                 </StackPanel>
                 

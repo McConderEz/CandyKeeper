@@ -54,6 +54,7 @@ namespace CandyKeeper.Presentation.ViewModels
             set => Set(ref _displayDate, value);
         }
         
+        
         #region Команды
 
         #region  GetCommand
@@ -243,9 +244,6 @@ namespace CandyKeeper.Presentation.ViewModels
         }
         
         #endregion
-        
-        //TODO: Сделать удаление поставщиков из магазина
-        //TODO: Сделать смену списка на товары или поставки
         
         #region AddSupplierInStoreShowCommand
         public ICommand AddSupplierInStoreShowCommand { get; }
@@ -451,6 +449,7 @@ namespace CandyKeeper.Presentation.ViewModels
             await GetSuppliers();
             await GetOwnershipTypes();
             await GetDistricts();
+            await GetProductForSales();
         }
         
         
@@ -479,5 +478,7 @@ namespace CandyKeeper.Presentation.ViewModels
         {
             Districts = new ObservableCollection<District>(await _districtService.Get());
         }
+
+        
     }
 }
