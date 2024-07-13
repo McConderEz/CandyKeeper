@@ -26,46 +26,45 @@
                 <!--Название страницы-->
                 <TextBlock Text="Подробная информация о кондитерском изделии" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
                            HorizontalAlignment="Left" Foreground="#121518"/>
-                
+                <Button Style="{StaticResource addButton}" Command="{Binding ReturnCommand}" Height="40" Width="40" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="KeyboardReturn" VerticalAlignment="Center" Width="20" Height="20" Margin="0 1 8 0"/>
+                    </StackPanel>
+                </Button>
 
                 <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
 
                 <StackPanel Grid.Row="4">
-                    <TextBlock Text="Id" Visibility="Collapsed" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="Название" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedItemForDetails.Product.Name}" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Id" Visibility="Collapsed" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="Название" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Product.Name}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-                    <TextBlock Text="Тип продукции" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedItemForDetails.Product.ProductType.Name}" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Тип продукции" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Product.ProductType.Name}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-                    <TextBlock Text="Упаковка" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedItemForDetails.Packaging.Name}" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Упаковка" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Packaging.Name}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-                    <TextBlock Text="Цена" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedItemForDetails.Price}" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Цена" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Price}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-                    <TextBlock Text="Объём" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedItemForDetails.Volume}" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Объём" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Volume}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-                    <TextBlock Text="Магазин" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedItemForDetails.Store.Name}" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Магазин" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Store.Name}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-                    <TextBlock Text="Поставка" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Поставка" FontSize="14" FontWeight="SemiBold"/>
                     <StackPanel Margin="15 0 0 0">
-                        <TextBlock Text="Дата поставки" FontSize="18" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding SelectedItemForDetails.ProductDelivery.DeliveryDate}" FontSize="18" FontWeight="SemiBold"/>
-                        <TextBlock Text="Поставщик" FontSize="18" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding SelectedItemForDetails.ProductDelivery.Supplier.Name}" FontSize="18" FontWeight="SemiBold"/>
+                        <TextBlock Text="Дата поставки" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding SelectedItemForDetails.ProductDelivery.DeliveryDate}" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="Поставщик" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding SelectedItemForDetails.ProductDelivery.Supplier.Name}" FontSize="14" FontWeight="SemiBold"/>
                     </StackPanel>
                     
                 </StackPanel>
 
                 
-                <Button Grid.Row="5"  Style="{StaticResource addButton}" Command="{Binding ReturnCommand}" Height="40" Width="40" HorizontalAlignment="Left">
-                    <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial Kind="KeyboardReturn" VerticalAlignment="Center" Width="20" Height="20" Margin="0 1 8 0"/>
-                    </StackPanel>
-                </Button>
                 
             </Grid>
     </Grid>

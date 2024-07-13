@@ -30,15 +30,18 @@ namespace CandyKeeper.DAL
                     .AsNoTracking()
                     .Include(s => s.OwnershipType)
                     .Include(s => s.District)
-                    .ThenInclude(d => d.City)
+                        .ThenInclude(d => d.City)
                     .Include(s => s.Suppliers)
+                        .ThenInclude(s => s.OwnershipType)
+                    .Include(s => s.Suppliers)
+                        .ThenInclude(s => s.City)
                     .Include(s => s.ProductForSales)
-                    .ThenInclude(pfs => pfs.Product)
-                    .ThenInclude(p => p.ProductType)
+                        .ThenInclude(pfs => pfs.Product)
+                            .ThenInclude(p => p.ProductType)
                     .Include(s => s.ProductForSales)
-                    .ThenInclude(pfs => pfs.Packaging)
+                        .ThenInclude(pfs => pfs.Packaging)
                     .Include(s => s.ProductDeliveries)
-                    .ThenInclude(pd => pd.Supplier)
+                        .ThenInclude(pd => pd.Supplier)
                     .ToListAsync();
 
                 var stores = storeEntities.Select(s => MapToStore(s)).ToList();
@@ -67,6 +70,9 @@ namespace CandyKeeper.DAL
                     .Include(s => s.District)
                     .ThenInclude(d => d.City)
                     .Include(s => s.Suppliers)
+                    .ThenInclude(s => s.OwnershipType)
+                    .Include(s => s.Suppliers)
+                    .ThenInclude(s => s.City)
                     .Include(s => s.ProductForSales)
                     .ThenInclude(pfs => pfs.Product)
                     .ThenInclude(p => p.ProductType)
@@ -156,6 +162,74 @@ namespace CandyKeeper.DAL
                     .Where(p => p.Id == id)
                     .ExecuteDeleteAsync();
 
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
+        public async Task AddSupplier(int id,Supplier model)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (model == null)
+                    throw new NullReferenceException("model is null");
+                
+                var entity = await _context.Suppliers.FindAsync(model.Id);
+
+                if (entity == null)
+                    throw new NullReferenceException("entity is null");
+                
+                var store = await _context.Stores.SingleOrDefaultAsync(pd => pd.Id == id);
+
+                if (store == null)
+                    throw new NullReferenceException("store is null");
+                
+
+                
+                store.Suppliers.Add(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
+        public async Task DeleteSupplier(int id,Supplier model)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (model == null)
+                    throw new NullReferenceException("model is null");
+                
+                var entity = await _context.Suppliers.FindAsync(model.Id);
+
+                if (entity == null)
+                    throw new NullReferenceException("entity is null");
+                
+                var store = await _context.Stores.SingleOrDefaultAsync(pd => pd.Id == id);
+
+                if (store == null)
+                    throw new NullReferenceException("store is null");
+                
+
+                
+                store.Suppliers.Remove(entity);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -259,7 +333,6 @@ namespace CandyKeeper.DAL
         private ProductForSale MapToProductForSale(ProductForSaleEntity productForSaleEntity)
         {
             var product = productForSaleEntity.Product != null ? MapToProduct(productForSaleEntity.Product) : null;
-            var productDelivery = productForSaleEntity.ProductDelivery != null ? MapToProductDelivery(productForSaleEntity.ProductDelivery) : null;
             var packaging = productForSaleEntity.Packaging != null ? MapToPackaging(productForSaleEntity.Packaging) : null;
 
             return ProductForSale.Create(
@@ -272,7 +345,7 @@ namespace CandyKeeper.DAL
                 productForSaleEntity.Volume,
                 product,
                 null,
-                productDelivery,
+                null,
                 packaging
             ).Value;
         }
@@ -441,13 +514,11 @@ namespace CandyKeeper.DAL
 
         private ProductTypeEntity MapToProductTypeEntity(ProductType productType)
         {
-            var productsEntities = productType.Products.Select(p => MapToProductEntity(p)).ToList();
 
             return new ProductTypeEntity
             {
                 Id = productType.Id,
-                Name = productType.Name,
-                Products = productsEntities
+                Name = productType.Name
             };
         }
 

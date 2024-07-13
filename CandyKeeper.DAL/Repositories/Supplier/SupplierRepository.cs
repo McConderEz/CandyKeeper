@@ -243,7 +243,6 @@ namespace CandyKeeper.DAL
             var ownershipType = storeEntity.OwnershipType != null ? MapToOwnershipType(storeEntity.OwnershipType) : null;
             var district = storeEntity.District != null ? MapToDistrict(storeEntity.District) : null;
             var productForSales = storeEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList();
-            var productDeliveries = storeEntity.ProductDeliveries.Select(pd => MapToProductDelivery(pd)).ToList();
 
             return Store.Create(
                 storeEntity.Id,
@@ -256,8 +255,7 @@ namespace CandyKeeper.DAL
                 ownershipType,
                 district,
                 null,
-                productForSales,
-                productDeliveries
+                productForSales
             ).Value;
         }
 
@@ -289,7 +287,6 @@ namespace CandyKeeper.DAL
         private ProductForSale MapToProductForSale(ProductForSaleEntity productForSaleEntity)
         {
             var product = productForSaleEntity.Product != null ? MapToProduct(productForSaleEntity.Product) : null;
-            var store = productForSaleEntity.Store != null ? MapToStore(productForSaleEntity.Store) : null;        
             var packaging = productForSaleEntity.Packaging != null ? MapToPackaging(productForSaleEntity.Packaging) : null;
 
             return ProductForSale.Create(
@@ -301,7 +298,7 @@ namespace CandyKeeper.DAL
                 productForSaleEntity.Price,
                 productForSaleEntity.Volume,
                 product,
-                store,
+                null,
                 null,
                 packaging
             ).Value;
@@ -433,9 +430,7 @@ namespace CandyKeeper.DAL
 
         private ProductType MapToProductType(ProductTypeEntity productTypeEntity)
         {
-            var products = productTypeEntity.Products.Select(p => MapToProduct(p)).ToList();
-
-            return ProductType.Create(productTypeEntity.Id, productTypeEntity.Name, products).Value;
+            return ProductType.Create(productTypeEntity.Id, productTypeEntity.Name).Value;
         }
 
         private ProductTypeEntity MapToProductTypeEntity(ProductType productType)
@@ -445,8 +440,7 @@ namespace CandyKeeper.DAL
             return new ProductTypeEntity
             {
                 Id = productType.Id,
-                Name = productType.Name,
-                Products = productsEntities
+                Name = productType.Name
             };
         }
 

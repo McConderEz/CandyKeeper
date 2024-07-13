@@ -153,27 +153,32 @@
             
 
                 <!--Название страницы-->
-                <TextBlock Text="Подробная информация о кондитерском изделии" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
+                <TextBlock Text="Подробная информация о поставке" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
                            HorizontalAlignment="Left" Foreground="#121518"/>
-                
+                <Button  Style="{StaticResource addButton}" Command="{Binding ReturnCommand}" Height="40" Width="40" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="KeyboardReturn" VerticalAlignment="Center" Width="20" Height="20" Margin="0 1 8 0"/>
+                    </StackPanel>
+                </Button>
                 
                 <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
 
                 <StackPanel Grid.Row="4">
-                    <TextBlock Text="Id" Visibility="Collapsed" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="Дата поставки" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedItemForDetails.DeliveryDate}" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Id" Visibility="Collapsed" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="Дата поставки" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.DeliveryDate}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-                    <TextBlock Text="Магазин" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedItemForDetails.Store.Name}" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Магазин" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Store.Name}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-                    <TextBlock Text="Поставщик" FontSize="18" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding SelectedItemForDetails.Supplier.Name}" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Поставщик" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SelectedItemForDetails.Supplier.Name}" FontSize="14" FontWeight="SemiBold"/>
                     <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
-                    <TextBlock Text="Кондитерские изделия заказа" HorizontalAlignment="Center" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock Text="Кондитерские изделия заказа" HorizontalAlignment="Center" FontSize="14" FontWeight="SemiBold"/>
                     
                     <Grid>
-                        <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding SelectedItemForDetails.ProductForSales}">
+                        <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding SelectedItemForDetails.ProductForSales}"
+                                  Height="200">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Название" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Product.Name}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Product.ProductType.Name}"></DataGridTextColumn>
@@ -188,12 +193,7 @@
                     </Grid>
                 </StackPanel>
 
-                
-                <Button Grid.Row="5"  Style="{StaticResource addButton}" Command="{Binding ReturnCommand}" Height="40" Width="40" HorizontalAlignment="Left">
-                    <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial Kind="KeyboardReturn" VerticalAlignment="Center" Width="20" Height="20" Margin="0 1 8 0"/>
-                    </StackPanel>
-                </Button>
+            
                 
             </Grid>
     </Grid>

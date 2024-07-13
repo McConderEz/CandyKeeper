@@ -9,5 +9,7 @@ namespace CandyKeeper.Application.Interfaces
         Task<List<Store>> Get();
         Task<Store> GetById(int id);
         Task Update(Store store);
+        Task AddSupplier(int id, Supplier model);
+        Task DeleteSupplier(int id, Supplier model);
     }
 }
