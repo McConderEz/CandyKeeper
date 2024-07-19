@@ -9,5 +9,7 @@ namespace CandyKeeper.DAL
         Task<List<Supplier>> Get();
         Task<Supplier> GetById(int id);
         Task Update(int id, string name, string phone, int ownershipTypeId, int cityId);
+        Task AddStore(int id, Store model);
+        Task DeleteStore(int id, Store model);
     }
 }

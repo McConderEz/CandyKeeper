@@ -1,0 +1,52 @@
+﻿<Window x:Class="CandyKeeper.Presentation.Views.AddEditPages.AddStoreInSupplierPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:CandyKeeper.Presentation.Views.AddEditPages"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      WindowStartupLocation="CenterScreen"
+      WindowStyle="None"
+      AllowsTransparency="True" Background="Transparent"
+      DataContext="{Binding SupplierViewModel,Source={StaticResource Locator}}"
+      Title="AddEditDeliveryPage" Height="400" Width="300">
+    <Border Background="#dbdae0" CornerRadius="20"
+            MouseDown="Border_MouseDown" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+        <Grid>
+            <StackPanel
+                VerticalAlignment="Center">
+            
+                <Button Style="{StaticResource gridRemoveButton}" Click="CloseBtn" Width="25" Height="25" Margin="250 -20  0 0">
+                    <iconPacks:PackIconMaterial Kind="Close" Style="{StaticResource gridButtonIcon}"/>
+                </Button>
+                
+                <TextBlock Text="Магазин к поставщику" Grid.Row="1" FontSize="14" FontWeight="SemiBold" Margin="0 10 0 0"
+                           HorizontalAlignment="Center" Foreground="#121518"/>
+                
+                <!-- Заполнение данных-->
+                <TextBlock Text="Магазин" Margin="50 20 0 0"></TextBlock>
+                <ComboBox Name="ProductComboBox" Width="200" ItemsSource="{Binding Stores }" SelectedValue="{Binding StoreId}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}" Margin="0,0,10,0" />
+                                <TextBlock Text="{Binding District.Name, StringFormat='{}{0:C}'}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <ComboBox.SelectedValuePath>Id</ComboBox.SelectedValuePath>
+                </ComboBox>
+                
+            
+                <!--Сохранение-->
+                <Button Style="{StaticResource addButton}" Height="30" Width="100" Margin="100,220,100,0" Click="CloseBtn" Command="{Binding AddStoreInSupplierCommand}" CommandParameter="{Binding StoreId }">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="ContentSave" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
+                        <TextBlock Text="Сохранить"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+    
+</Window>

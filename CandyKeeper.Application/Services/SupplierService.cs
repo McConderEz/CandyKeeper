@@ -38,6 +38,17 @@ namespace CandyKeeper.Application.Services
         {
             await _repository.Update(supplier.Id, supplier.Name, supplier.Phone, supplier.OwnershipTypeId, supplier.CityId);
         }
+
+        public async Task AddStore(int id, Store model)
+        {
+            await _repository.AddStore(id, model);
+        }
+
+        public async Task DeleteStore(int id, Store model)
+        {
+            await _repository.DeleteStore(id, model);
+        }
+
         public async Task Delete(int id)
         {
             await _repository.Delete(id);

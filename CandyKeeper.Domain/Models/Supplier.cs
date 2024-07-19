@@ -16,7 +16,7 @@ namespace CandyKeeper.Domain.Models
         private static readonly Regex ValidationRegex = new Regex(
                     @"(^\+\d{1,3}\d{10}$|^$)",
                     RegexOptions.Singleline | RegexOptions.Compiled);
-        public const int MAX_NAME_SIZE = 100;
+        public const int MAX_NAME_SIZE = 150;
 
         private Supplier(int id,string name, int ownershipTypeId, int cityId, string phone,
             OwnershipType ownershipType, City city,
@@ -51,7 +51,7 @@ namespace CandyKeeper.Domain.Models
                     IEnumerable<ProductDelivery> productDeliveries = null,IEnumerable<Store> stores = null)
         {
             if (string.IsNullOrWhiteSpace(name) || name.Length > MAX_NAME_SIZE)
-                return Result.Failure<Supplier>("name cannot be null or length > 100");
+                return Result.Failure<Supplier>("name cannot be null or length > 150");
 
             if (!ValidationRegex.IsMatch(phone))
                 return Result.Failure<Supplier>("phone has incorrect format");

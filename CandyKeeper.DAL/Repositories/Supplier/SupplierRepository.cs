@@ -65,13 +65,15 @@ namespace CandyKeeper.DAL
                     .Include(s => s.OwnershipType)
                     .Include(s => s.City)
                     .Include(s => s.Stores)
-                    .ThenInclude(s => s.District)
+                        .ThenInclude(s => s.District)
+                            .ThenInclude(d => d.City)
+                    .Include(s => s.Stores)
+                        .ThenInclude(s => s.OwnershipType)
                     .Include(s => s.ProductDeliveries)
-                    .ThenInclude(pd => pd.ProductForSales)
-                    .ThenInclude(pfs => pfs.Packaging)
+                        .ThenInclude(pd => pd.ProductForSales)
+                            .ThenInclude(pfs => pfs.Packaging)
                     .Include(s => s.ProductDeliveries)
-                    .ThenInclude(pd => pd.ProductForSales)
-                    .ThenInclude(pfs => pfs.Product)
+                        .ThenInclude(pd => pd.Store)
                     .FirstOrDefaultAsync(c => c.Id == id);
 
                 if (supplierEntity == null)
@@ -123,7 +125,6 @@ namespace CandyKeeper.DAL
                 await _context.Suppliers
                     .Where(p => p.Id == id)
                     .ExecuteUpdateAsync(p => p
-                        .SetProperty(p => p.Id, id)
                         .SetProperty(p => p.Name, name)
                         .SetProperty(p => p.Phone, phone)
                         .SetProperty(p => p.OwnershipTypeId, ownershipTypeId)
@@ -151,6 +152,74 @@ namespace CandyKeeper.DAL
                     .Where(p => p.Id == id)
                     .ExecuteDeleteAsync();
 
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
+        public async Task AddStore(int id,Store model)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (model == null)
+                    throw new NullReferenceException("model is null");
+                
+                var entity = await _context.Stores.FindAsync(model.Id);
+
+                if (entity == null)
+                    throw new NullReferenceException("entity is null");
+                
+                var supplier = await _context.Suppliers.SingleOrDefaultAsync(pd => pd.Id == id);
+
+                if (supplier == null)
+                    throw new NullReferenceException("store is null");
+                
+
+                
+                supplier.Stores.Add(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
+        public async Task DeleteStore(int id,Store model)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (model == null)
+                    throw new NullReferenceException("model is null");
+                
+                var entity = await _context.Stores.FindAsync(model.Id);
+
+                if (entity == null)
+                    throw new NullReferenceException("entity is null");
+                
+                var supplier = await _context.Suppliers.SingleOrDefaultAsync(pd => pd.Id == id);
+
+                if (supplier == null)
+                    throw new NullReferenceException("store is null");
+                
+
+                
+                supplier.Stores.Remove(entity);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -242,7 +311,6 @@ namespace CandyKeeper.DAL
         {
             var ownershipType = storeEntity.OwnershipType != null ? MapToOwnershipType(storeEntity.OwnershipType) : null;
             var district = storeEntity.District != null ? MapToDistrict(storeEntity.District) : null;
-            var productForSales = storeEntity.ProductForSales.Select(pfs => MapToProductForSale(pfs)).ToList();
 
             return Store.Create(
                 storeEntity.Id,
@@ -253,9 +321,7 @@ namespace CandyKeeper.DAL
                 storeEntity.OwnershipTypeId,
                 storeEntity.DistrictId,
                 ownershipType,
-                district,
-                null,
-                productForSales
+                district
             ).Value;
         }
 
