@@ -195,7 +195,7 @@
                             <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="ProductForSaleView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Candy" Style="{StaticResource menuButtonIcon}"/>
-                                    <TextBlock Text="Кондитерские изделия"/>
+                                    <TextBlock Text="Продукция"/>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -227,6 +227,15 @@
                             </Button>
                         </StackPanel>
 
+                        <StackPanel DockPanel.Dock="Top" Visibility="Visible">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="ProductView">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Cookie" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Кондитерские изделия"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        
                         <StackPanel DockPanel.Dock="Top">
                             <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="PackagingView">
                                 <StackPanel Orientation="Horizontal">
