@@ -134,7 +134,6 @@ namespace CandyKeeper.DAL
                 await _context.Stores
                     .Where(p => p.Id == id)
                     .ExecuteUpdateAsync(p => p
-                        .SetProperty(p => p.Id, id)
                         .SetProperty(p => p.StoreNumber, storeNumber)
                         .SetProperty(p => p.Name, name)
                         .SetProperty(p => p.YearOfOpened, yearOfOpened)

@@ -55,6 +55,8 @@ namespace CandyKeeper.DAL.Repositories
                 var ownershipTypesEntity = await _context.OwnershipTypes
                     .Include(o => o.Suppliers)
                     .Include(o => o.Stores)
+                        .ThenInclude(s => s.District)
+                            .ThenInclude(d => d.City)
                     .FirstOrDefaultAsync(c => c.Id == id);
 
                 if (ownershipTypesEntity == null)
@@ -169,6 +171,7 @@ namespace CandyKeeper.DAL.Repositories
 
         private Store MapToStore(StoreEntity storeEntity)
         {
+            var district = storeEntity.District != null ? MapToDistrict(storeEntity.District) : null;
             return Store.Create(
                 storeEntity.Id,
                 storeEntity.StoreNumber,
@@ -176,7 +179,9 @@ namespace CandyKeeper.DAL.Repositories
                 storeEntity.YearOfOpened,
                 storeEntity.Phone,
                 storeEntity.OwnershipTypeId,
-                storeEntity.DistrictId
+                storeEntity.DistrictId,
+                null,
+                district
             ).Value;
         }
 
@@ -192,6 +197,17 @@ namespace CandyKeeper.DAL.Repositories
                 OwnershipTypeId = store.OwnershipTypeId,
                 DistrictId = store.DistrictId
             };
+        }
+
+        private District MapToDistrict(DistrictEntity? storeDistrict)
+        {
+            return District.Create(storeDistrict.Id, storeDistrict.Name, storeDistrict.CityId,
+                MapToCity(storeDistrict.City)).Value;
+        }
+
+        private City MapToCity(CityEntity? storeDistrictCity)
+        {
+            return City.Create(storeDistrictCity.Id, storeDistrictCity.Name).Value;
         }
 
         private Supplier MapToSupplier(SupplierEntity supplierEntity)

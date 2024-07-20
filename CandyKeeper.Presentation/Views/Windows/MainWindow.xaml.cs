@@ -62,5 +62,10 @@ namespace CandyKeeper.Presentation
             }
         }
         
+        private void CloseBtn(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        
     }
 }

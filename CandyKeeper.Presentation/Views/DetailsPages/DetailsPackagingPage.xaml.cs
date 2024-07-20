@@ -4,14 +4,14 @@ using CandyKeeper.Presentation.ViewModels;
 
 namespace CandyKeeper.Presentation.Views.DetailsPages;
 
-public partial class DetailsOwnershipTypePage : UserControl
+public partial class DetailsPackagingPage : UserControl
 {
-    public DetailsOwnershipTypePage()
+    public DetailsPackagingPage()
     {
         InitializeComponent();
-        OwnershipTypeViewModel.ReturnEvent += CloseView;
+        PackagingViewModel.ReturnEvent += CloseView;
     }
-    
+
     public void CloseView(object p)
     {
         this.Visibility = Visibility.Collapsed;
