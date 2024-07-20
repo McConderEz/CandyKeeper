@@ -11,6 +11,8 @@ namespace CandyKeeper.DAL
 {
     public class ProductRepository : IProductRepository
     {
+        //TODO: Оптимизировать все репозитории поменяв List на IQueryable 
+        
         private readonly CandyKeeperDbContext _context;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         public ProductRepository(CandyKeeperDbContext context)
@@ -61,7 +63,7 @@ namespace CandyKeeper.DAL
                     .Include(p => p.ProductForSales)
                     .ThenInclude(pfs => pfs.Store)
                     .FirstOrDefaultAsync(c => c.Id == id);
-
+                
                 if (productEntity == null)
                     throw new Exception("productType null");
 
