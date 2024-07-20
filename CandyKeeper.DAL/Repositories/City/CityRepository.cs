@@ -59,18 +59,15 @@ namespace CandyKeeper.DAL.Repositories
             try
             {
 
-                var cityEntity = await _context.Cities
-                    .AsNoTracking()
-                    .Include(c => c.Districts)
-                    .Include(c => c.Suppliers)
-                    .ThenInclude(s => s.OwnershipType)
-                    .FirstOrDefaultAsync(c => c.Id == id);
+                IQueryable<CityEntity> cityEntity = _context.Cities.Where(c => c.Id == id).AsNoTracking();
 
                 if (cityEntity == null)
                     throw new Exception("CityEntity is null");
 
-                var city = MapToCity(cityEntity);
-
+                var city = MapToCity((await cityEntity.Include(c => c.Districts)
+                    .Include(c => c.Suppliers)
+                    .ThenInclude(s => s.OwnershipType)
+                    .SingleOrDefaultAsync())!);
                 return city;
             }
             catch (Exception ex)

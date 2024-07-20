@@ -56,18 +56,17 @@ namespace CandyKeeper.DAL
 
             try
             {
-                var packagingEntity = await _context.Packaging
-                    .Include(p => p.ProductForSales)
-                    .ThenInclude(pfs => pfs.Product)
-                    .ThenInclude(p => p.ProductType)
-                    .Include(p => p.ProductForSales)
-                    .ThenInclude(pfs => pfs.Store)
-                    .FirstOrDefaultAsync(c => c.Id == id);
+                IQueryable<PackagingEntity> packagingEntity = _context.Packaging.Where(p => p.Id == id).AsNoTracking();
 
                 if (packagingEntity == null)
                     throw new Exception("Packaging entity is null");
 
-                var packaging = MapToPackaging(packagingEntity);
+                var packaging = MapToPackaging((await packagingEntity.Include(p => p.ProductForSales)
+                    .ThenInclude(pfs => pfs.Product)
+                    .ThenInclude(p => p.ProductType)
+                    .Include(p => p.ProductForSales)
+                    .ThenInclude(pfs => pfs.Store)
+                    .SingleOrDefaultAsync())!);
 
                 return packaging;
             }

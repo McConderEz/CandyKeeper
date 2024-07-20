@@ -52,16 +52,15 @@ namespace CandyKeeper.DAL.Repositories
 
             try
             {
-                var districtEntities = await _context.Districts
-                    .Include(d => d.City)
-                    .Include(d => d.Stores)
-                    .ThenInclude(s => s.OwnershipType)
-                    .FirstOrDefaultAsync(c => c.Id == id);
-
+                IQueryable<DistrictEntity> districtEntities = _context.Districts.Where(d => d.Id == id).AsNoTracking();
+                
                 if (districtEntities == null)
                     throw new Exception("DistrictEntity is null");
 
-                var district = MapToDistrict(districtEntities);
+                var district = MapToDistrict((await districtEntities.Include(d => d.City)
+                    .Include(d => d.Stores)
+                    .ThenInclude(s => s.OwnershipType)
+                    .SingleOrDefaultAsync())!);
 
                 return district;
             }

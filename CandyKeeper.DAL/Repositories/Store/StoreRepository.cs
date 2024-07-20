@@ -65,31 +65,31 @@ namespace CandyKeeper.DAL
 
             try
             {
-                var storeEntity = await _context.Stores
-                    .Include(s => s.OwnershipType)
-                    .Include(s => s.District)
-                        .ThenInclude(d => d.City)
-                    .Include(s => s.Suppliers)
-                        .ThenInclude(s => s.OwnershipType)
-                    .Include(s => s.Suppliers)
-                        .ThenInclude(s => s.City)
-                    .Include(s => s.ProductForSales)
-                        .ThenInclude(pfs => pfs.Product)
-                            .ThenInclude(p => p.ProductType)
-                    .Include(s => s.ProductForSales)
-                        .ThenInclude(pfs => pfs.Packaging)
-                    .Include(s => s.ProductForSales)
-                        .ThenInclude(pfs => pfs.ProductDelivery)
-                            .ThenInclude(pfs => pfs.Supplier)
-                    .Include(s => s.ProductDeliveries)
-                        .ThenInclude(pd => pd.Supplier)
-                    .FirstOrDefaultAsync(c => c.Id == id);
+                IQueryable<StoreEntity> storeEntity = _context.Stores.Where(s => s.Id == id).AsNoTracking();
 
                 if (storeEntity == null)
                     throw new Exception("store null");
 
 
-                var store = MapToStore(storeEntity);
+                var store = MapToStore((await storeEntity
+                    .Include(s => s.OwnershipType)
+                    .Include(s => s.District)
+                    .ThenInclude(d => d.City)
+                    .Include(s => s.Suppliers)
+                    .ThenInclude(s => s.OwnershipType)
+                    .Include(s => s.Suppliers)
+                    .ThenInclude(s => s.City)
+                    .Include(s => s.ProductForSales)
+                    .ThenInclude(pfs => pfs.Product)
+                    .ThenInclude(p => p.ProductType)
+                    .Include(s => s.ProductForSales)
+                    .ThenInclude(pfs => pfs.Packaging)
+                    .Include(s => s.ProductForSales)
+                    .ThenInclude(pfs => pfs.ProductDelivery)
+                    .ThenInclude(pfs => pfs.Supplier)
+                    .Include(s => s.ProductDeliveries)
+                    .ThenInclude(pd => pd.Supplier)
+                    .SingleOrDefaultAsync())!);
 
                 return store;
             }

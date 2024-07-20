@@ -61,26 +61,26 @@ namespace CandyKeeper.DAL
 
             try
             {
-                var supplierEntity = await _context.Suppliers
-                    .Include(s => s.OwnershipType)
-                    .Include(s => s.City)
-                    .Include(s => s.Stores)
-                        .ThenInclude(s => s.District)
-                            .ThenInclude(d => d.City)
-                    .Include(s => s.Stores)
-                        .ThenInclude(s => s.OwnershipType)
-                    .Include(s => s.ProductDeliveries)
-                        .ThenInclude(pd => pd.ProductForSales)
-                            .ThenInclude(pfs => pfs.Packaging)
-                    .Include(s => s.ProductDeliveries)
-                        .ThenInclude(pd => pd.Store)
-                    .FirstOrDefaultAsync(c => c.Id == id);
+                IQueryable<SupplierEntity> supplierEntity = _context.Suppliers.Where(s => s.Id == id).AsNoTracking();
 
                 if (supplierEntity == null)
                     throw new Exception("supplier null");
 
 
-                var supplier = MapToSupplier(supplierEntity);
+                var supplier = MapToSupplier((await supplierEntity
+                    .Include(s => s.OwnershipType)
+                    .Include(s => s.City)
+                    .Include(s => s.Stores)
+                    .ThenInclude(s => s.District)
+                    .ThenInclude(d => d.City)
+                    .Include(s => s.Stores)
+                    .ThenInclude(s => s.OwnershipType)
+                    .Include(s => s.ProductDeliveries)
+                    .ThenInclude(pd => pd.ProductForSales)
+                    .ThenInclude(pfs => pfs.Packaging)
+                    .Include(s => s.ProductDeliveries)
+                    .ThenInclude(pd => pd.Store)
+                    .SingleOrDefaultAsync())!);
 
                 return supplier;
             }

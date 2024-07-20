@@ -53,15 +53,15 @@ namespace CandyKeeper.DAL
 
             try
             {
-                var productTypeEntity = await _context.ProductTypes
-                    .Include(p => p.Products)
-                    .FirstOrDefaultAsync(c => c.Id == id);
+                IQueryable<ProductTypeEntity> productTypeEntity = _context.ProductTypes.Where(pt => pt.Id == id).AsNoTracking();
 
                 if (productTypeEntity == null)
                     throw new Exception("productType null");
 
 
-                var productType = MapToProductType(productTypeEntity);
+                var productType = MapToProductType((await productTypeEntity
+                    .Include(p => p.Products)
+                    .SingleOrDefaultAsync())!);
 
                 return productType;
             }

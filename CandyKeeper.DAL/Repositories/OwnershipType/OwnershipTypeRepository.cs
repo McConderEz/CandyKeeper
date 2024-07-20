@@ -52,17 +52,16 @@ namespace CandyKeeper.DAL.Repositories
 
             try
             {
-                var ownershipTypesEntity = await _context.OwnershipTypes
-                    .Include(o => o.Suppliers)
-                    .Include(o => o.Stores)
-                        .ThenInclude(s => s.District)
-                            .ThenInclude(d => d.City)
-                    .FirstOrDefaultAsync(c => c.Id == id);
+                IQueryable<OwnershipTypeEntity> ownershipTypesEntity = _context.OwnershipTypes.Where(o => o.Id == id).AsNoTracking();
 
                 if (ownershipTypesEntity == null)
                     throw new Exception("OwnershipType is null");
 
-                var ownershipType = MapToOwnershipType(ownershipTypesEntity);
+                var ownershipType = MapToOwnershipType((await ownershipTypesEntity.Include(o => o.Suppliers)
+                    .Include(o => o.Stores)
+                    .ThenInclude(s => s.District)
+                    .ThenInclude(d => d.City)
+                    .SingleOrDefaultAsync())!);
 
                 return ownershipType;
             }

@@ -56,7 +56,13 @@ namespace CandyKeeper.DAL
 
             try
             {
-                var productForSaleEntity = await _context.ProductForSales
+                IQueryable<ProductForSaleEntity> productForSaleEntity = _context.ProductForSales.Where(pfs => pfs.Id == id).AsNoTracking();
+
+                if (productForSaleEntity == null)
+                    throw new Exception("productForSale null");
+
+
+                var productForSale = MapToProductForSale((await productForSaleEntity
                     .Include(pfs => pfs.Product)
                     .ThenInclude(p => p.ProductType)
                     .Include(pfs => pfs.Packaging)
@@ -65,13 +71,7 @@ namespace CandyKeeper.DAL
                     .ThenInclude(d => d.City)
                     .Include(pfs => pfs.ProductDelivery)
                     .ThenInclude(pd => pd.Supplier)
-                    .FirstOrDefaultAsync(c => c.Id == id);
-
-                if (productForSaleEntity == null)
-                    throw new Exception("productForSale null");
-
-
-                var productForSale = MapToProductForSale(productForSaleEntity);
+                    .SingleOrDefaultAsync())!);
 
                 return productForSale;
             }
