@@ -18,6 +18,7 @@ namespace CandyKeeper.Domain.Models
             Name = name;
             CityId = cityId;
             City = city;
+            AddStore(stores.ToList());
         }
 
         public int Id { get; }

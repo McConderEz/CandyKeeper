@@ -139,7 +139,7 @@
     </UserControl.Resources>
     
     <Grid>
-        <Grid Grid.Column="1" Margin="30 20 20 20">
+        <Grid Grid.Column="1" Margin="30 20 20 20" Name="DataGridView">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
@@ -168,7 +168,7 @@
                            HorizontalAlignment="Left" Foreground="#121518"/>
                 
                 <!--Кнопка добавления-->
-                <Button Style="{StaticResource addButton}">
+                <Button Style="{StaticResource addButton}" Command="{Binding AddEditShowCommand}">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
                         <TextBlock Text="Добавить"/>
@@ -179,7 +179,7 @@
 
                 
 
-                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding Districts}">
+                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="DistrictDataGrid" ItemsSource="{Binding Districts}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Название" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Name}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Город" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding City.Name}"></DataGridTextColumn>
@@ -188,10 +188,13 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Style="{StaticResource gridEditButton}">
+                                        <Button Style="{StaticResource gridEditButton}" Command="{Binding DataContext.AddEditShowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
                                             <iconPacks:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
-                                        <Button Style="{StaticResource gridRemoveButton}">
+                                        <Button Style="{StaticResource gridDetailButton}" Command="{Binding DataContext.DetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
+                                            <iconPacks:PackIconMaterial Kind="Details" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
+                                        <Button Style="{StaticResource gridRemoveButton}" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
                                             <iconPacks:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
                                     </StackPanel>
@@ -199,11 +202,10 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
-
-                                     
                 </DataGrid>
-                
-                
+            </Grid>
+            <Grid Grid.Column="1" Margin="30 20 20 20">
+                <ContentControl Grid.Row="1" Content="{Binding DetailsPage}"/>
             </Grid>
     </Grid>
 </UserControl>
