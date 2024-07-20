@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace CandyKeeper.DAL
 {
@@ -14,23 +17,19 @@ namespace CandyKeeper.DAL
         //TODO: Добавить UserEntity
         //TODO:Сделать регистрацию и авторизацию
 
-        public CandyKeeperDbContext(DbContextOptions<CandyKeeperDbContext> options) 
-            : base(options)
-        {
-            
-        }
-
-        public CandyKeeperDbContext()
+        public CandyKeeperDbContext(DbContextOptions options)
+          : base(options)
         {
             Database.EnsureCreated();
         }
-
-        //Убрать
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("data source=(localdb)\\MSSQLLocalDB;Initial Catalog=candyKeeper;Integrated Security=True");
+            optionsBuilder.UseSqlServer(
+                "data source=(localdb)\\MSSQLLocalDB;Initial Catalog=candyKeeper;Integrated Security=True");
         }
-
+        
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -47,5 +46,6 @@ namespace CandyKeeper.DAL
         public DbSet<ProductTypeEntity> ProductTypes { get; set; } = null!;
         public DbSet<StoreEntity> Stores { get; set; } = null!;
         public DbSet<SupplierEntity> Suppliers { get; set; } = null!;
+        public DbSet<UserEntity> Users { get; set; } = null!;
     }
 }

@@ -7,13 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using CandyKeeper.DAL.Entities;
 
 namespace Generator
 {
     public class NotesGenerator
     {
-        private readonly CandyKeeperDbContext _dbContext = new CandyKeeperDbContext();
+        private readonly CandyKeeperDbContext _dbContext = new CandyKeeperDbContext(new DbContextOptions<CandyKeeperDbContext>());
         private readonly Parser _parser = new Parser();
 
         private const string PATH = "C:\\Users\\rusta\\source\\repos\\CandyKeeper\\Generator\\Dataset\\";
