@@ -46,6 +46,7 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<ISupplierService, SupplierService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
 
             return services;
         }
@@ -64,6 +65,7 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddSingleton<ProductViewModel>();
             services.AddSingleton<StoreViewModel>();
             services.AddSingleton<SupplierViewModel>();
+            
 
             return services;
         }

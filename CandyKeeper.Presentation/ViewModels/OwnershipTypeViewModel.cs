@@ -16,7 +16,6 @@ namespace CandyKeeper.Presentation.ViewModels
 {
     internal class OwnershipTypeViewModel: ViewModel
     {
-        //TODO: Какая-то херня с переходом в страницу подробнее, после удаления или добавления записи
         public delegate void Delegate(object p);
         private static event Delegate _refreshEvent;
         private static event Delegate _closeEvent;
