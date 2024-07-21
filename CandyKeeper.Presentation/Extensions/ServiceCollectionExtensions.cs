@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CandyKeeper.DAL.Repositories.User;
+using CandyKeeper.Presentation.ViewModels.Base;
 using Microsoft.VisualBasic.ApplicationServices;
 
 namespace CandyKeeper.Presentation.Extensions
@@ -65,7 +66,7 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddSingleton<ProductViewModel>();
             services.AddSingleton<StoreViewModel>();
             services.AddSingleton<SupplierViewModel>();
-            
+            services.AddSingleton<UserViewModel>();
 
             return services;
         }

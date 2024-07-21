@@ -62,7 +62,14 @@
                 <Setter Property="Width" Value="15"/>
                 <Setter Property="Height" Value="15"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="20 2 20 0"/>
+                <Setter Property="Margin" Value="40 2 20 0"/>
+            </Style>
+            
+            <Style x:Key="loginButtonIcon" TargetType="Icon:PackIconMaterial">
+                <Setter Property="Width" Value="15"/>
+                <Setter Property="Height" Value="15"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="40 2 10 0"/>
             </Style>
 
             <Style x:Key="textBoxSearch" TargetType="TextBox">

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CandyKeeper.Presentation.ViewModels.Base;
 
 namespace CandyKeeper.Presentation.ViewModels
 {
@@ -20,6 +21,6 @@ namespace CandyKeeper.Presentation.ViewModels
         public ProductViewModel ProductViewModel => App.Host.Services.GetRequiredService<ProductViewModel>();
         public StoreViewModel StoreViewModel => App.Host.Services.GetRequiredService<StoreViewModel>();
         public SupplierViewModel SupplierViewModel => App.Host.Services.GetRequiredService<SupplierViewModel>();
-
+        //public SupplierViewModel UserViewModel => App.Host.Services.GetRequiredService<UserViewModel>();
     }
 }
