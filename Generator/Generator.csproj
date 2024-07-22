@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CandyKeeper.DAL\CandyKeeper.DAL.csproj" />
     <ProjectReference Include="..\CandyKeeper.Domain\CandyKeeper.Domain.csproj" />
+    <ProjectReference Include="..\CandyKeeper.Presentation\CandyKeeper.Presentation.csproj" />
   </ItemGroup>
 
   <ItemGroup>

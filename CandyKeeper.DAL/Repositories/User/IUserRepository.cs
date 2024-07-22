@@ -7,4 +7,5 @@ public interface IUserRepository
     Task<List<Domain.Models.User>> Get();
     Task<Domain.Models.User> GetById(int id);
     Task Update(int id, string name,int principalId, int? storeId);
+    Task<Domain.Models.User> GetByUserName(string userName);
 }

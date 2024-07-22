@@ -9,27 +9,33 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using CandyKeeper.DAL.Entities;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Web.WebView2.Core.Raw;
 
 namespace Generator
 {
     public class NotesGenerator
     {
-        private readonly CandyKeeperDbContext _dbContext = new CandyKeeperDbContext(null);
+        private static IHost _host = CandyKeeper.Presentation.Program.CreateHostBuilder(null).Build();
+        
+        private readonly CandyKeeperDbContext _dbContext = _host.Services.GetRequiredService<CandyKeeperDbContext>();
         private readonly Parser _parser = new Parser();
 
-        private const string PATH = "C:\\Users\\rusta\\source\\repos\\CandyKeeper\\Generator\\Dataset\\";
+        private const string PATH = "C:\\Users\\rusta\\RiderProjects\\CandyKeeper\\Generator\\Dataset\\";
 
         public void GenAll()
         {
-            //GenCity();
-            //GenDistrict();
-            //GenOwnershipType();
-            //GenProductType();
-            //GenPackaging();
-            //GenProduct();
-            //GenSupplier();
-            //GenStore();
-            //GenProductDelivery();
+            GenCity();
+            GenDistrict();
+            GenOwnershipType();
+            GenProductType();
+            GenPackaging();
+            GenProduct();
+            GenSupplier();
+            GenStore();
+            GenProductDelivery();
             GenProductForSale();
         }
 

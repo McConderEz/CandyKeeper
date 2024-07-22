@@ -2,7 +2,7 @@
 
 namespace CandyKeeper.Application.Services;
 
-public interface PasswordHasherService: IPasswordHasherService
+public class PasswordHasherService: IPasswordHasherService
 {
     public string Generate(string password) =>
         BCrypt.Net.BCrypt.EnhancedHashPassword(password);

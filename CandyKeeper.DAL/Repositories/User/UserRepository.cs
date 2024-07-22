@@ -75,7 +75,7 @@ public class UserRepository : IUserRepository
                     .FirstOrDefaultAsync(c => c.Id == id);
 
                 if (userEntity == null)
-                    throw new Exception("supplier null");
+                    throw new Exception("user null");
 
 
                 var user = MapToUser(userEntity);
@@ -160,6 +160,33 @@ public class UserRepository : IUserRepository
                     .ExecuteDeleteAsync();
 
                 await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task<Domain.Models.User> GetByUserName(string userName)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var userEntity = await _context.Users
+                    .FirstOrDefaultAsync(c => c.Name == userName);
+
+                if (userEntity == null)
+                    throw new Exception("user null");
+
+
+                var user = MapToUser(userEntity);
+
+                return user;
             }
             catch (Exception ex)
             {

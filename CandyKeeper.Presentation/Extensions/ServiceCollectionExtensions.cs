@@ -6,11 +6,14 @@ using CandyKeeper.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CandyKeeper.DAL.Repositories.User;
 using CandyKeeper.Presentation.ViewModels.Base;
+using CSharpFunctionalExtensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic.ApplicationServices;
 
 namespace CandyKeeper.Presentation.Extensions
@@ -47,7 +50,8 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<ISupplierService, SupplierService>();
             services.AddScoped<IUserService, UserService>();
-            //services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+            services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+            services.AddSingleton<IAccountService, AccountService>();
 
             return services;
         }

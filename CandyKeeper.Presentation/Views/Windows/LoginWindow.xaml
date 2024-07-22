@@ -9,7 +9,7 @@
         xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
-        DataContext="{Binding MainWindowsViewModel,Source={StaticResource Locator}}"
+        DataContext="{Binding UserViewModel,Source={StaticResource Locator}}"
         Title="LoginWindow" Height="400" Width="250"
         AllowsTransparency="True" Background="Transparent"
         xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">

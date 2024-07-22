@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:CandyKeeper.Presentation.ViewModels"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             StartupUri="Views/Windows/LoginWindow.xaml">
+             StartupUri="Views/Windows/MainWindow.xaml">
 
     <Application.Resources >
 

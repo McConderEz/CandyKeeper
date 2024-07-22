@@ -9,8 +9,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        //var generator = new NotesGenerator();
-        //generator.GenAll();
+        var generator = new NotesGenerator();
+        generator.GenAll();
     }
 }
 

@@ -33,8 +33,14 @@ public class UserService : IUserService
         return await _repository.GetById(id);
     }
 
+    public async Task<User> GetByUserName(string userName)
+    {
+        return await _repository.GetByUserName(userName);
+    }
+
     public async Task Update(int id, string name,int principalId, int? storeId)
     {
         await _repository.Update(id, name, principalId ,storeId);
     }
+    
 }
