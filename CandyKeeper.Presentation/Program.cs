@@ -40,6 +40,7 @@ namespace CandyKeeper.Presentation
                           services.EnsureRolesExist(context.Configuration.GetConnectionString("DefaultConnection")!, roleNames);
 
                       });
+            
             return host;
         }
     }

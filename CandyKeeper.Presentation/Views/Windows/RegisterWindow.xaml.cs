@@ -1,15 +1,25 @@
 ﻿using System.Windows;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
+using CandyKeeper.Presentation.ViewModels.Base;
 
 namespace CandyKeeper.Presentation.Views.Windows;
 
 public partial class RegisterWindow : Window
 {
+    //TODO: Сделать скрытие вводимого пароля
     private bool IsMaximized = false;
     
     public RegisterWindow()
     {
         InitializeComponent();
+        UserViewModel.CloseEvent += HideWindow;
+    }
+    
+    private void HideWindow(object? sender, EventArgs e)
+    {
+        if(this.Visibility == Visibility.Visible)
+            this.Close();
     }
     
     private void Border_MouseDown(object sender, MouseButtonEventArgs e)
@@ -44,10 +54,7 @@ public partial class RegisterWindow : Window
     private void CloseBtn(object sender, RoutedEventArgs e)
     {
         this.Close();
+        App.Current.Shutdown();
     }
-
-    private void LoginBtn(object sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
+    
 }

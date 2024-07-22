@@ -30,22 +30,31 @@
             <TextBlock Text="Логин" Margin="65 10 0 0"></TextBlock>
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="Account" Style="{StaticResource loginButtonIcon}"/>
-                <TextBox Width="150" Text="" ></TextBox>
+                <TextBox Width="150" Text="{Binding CurrentUser.Name}" ></TextBox>
             </StackPanel>
             <TextBlock Text="Пароль" Margin="65 10 0 0"></TextBlock>
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="Lock" Style="{StaticResource loginButtonIcon}" />
-                <PasswordBox Width="150" ></PasswordBox>
+                <TextBox Width="150" Text="{Binding CurrentUser.PasswordHashed}"></TextBox>
             </StackPanel>
             
             </StackPanel>
-            <Button Style="{StaticResource addButton}" Height="30" Width="100" Click="LoginBtn" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 35">
-                <StackPanel Orientation="Horizontal">
-                    <Icon:PackIconMaterial Kind="Login" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
-                    <TextBlock Text="Войти"/>
-                </StackPanel>
-            </Button>
-            <TextBlock Text="Создать учётную запись" VerticalAlignment="Bottom" Foreground="DarkTurquoise" FontSize="10" FontWeight="SemiBold"  HorizontalAlignment="Center" Margin="0 0 0 20"></TextBlock>
+            
+            <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+                <TextBlock Grid.Row="2" Visibility="{Binding IsInvalidCredentials, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Red" FontSize="10" Margin="0 0 0 5 " HorizontalAlignment="Center">
+                    Неверные учетные данные. Попробуйте еще раз.
+                </TextBlock>
+                <Button Style="{StaticResource addButton}" Height="30" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 35" Command="{Binding LoginCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <Icon:PackIconMaterial Kind="Login" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
+                        <TextBlock Text="Войти"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding GoToRegCommand}" HorizontalAlignment="Center" Height="25"  Margin="0 -25 0 20" Background="Transparent" BorderBrush="Transparent">
+                    <TextBlock Text="Создать учётную запись" VerticalAlignment="Bottom" FontSize="10" FontWeight="SemiBold" Style="{StaticResource textLight}"/>
+                </Button>
+            </StackPanel>
+            
         </Grid>
     </Border>
 </Window>

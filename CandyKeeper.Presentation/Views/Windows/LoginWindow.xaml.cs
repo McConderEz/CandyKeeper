@@ -1,5 +1,8 @@
 ﻿using System.Windows;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
+using CandyKeeper.Presentation.ViewModels.Base;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CandyKeeper.Presentation.Views.Windows;
 
@@ -10,8 +13,19 @@ public partial class LoginWindow : Window
     public LoginWindow()
     {
         InitializeComponent();
+        UserViewModel.CloseEvent += HideWindow;
     }
-    
+
+    private void HideWindow(object? sender, EventArgs e)
+    {
+        if(this.Visibility == Visibility.Visible)
+            this.Hide();
+        else
+        {
+            this.Show();
+        }
+    }
+
     private void Border_MouseDown(object sender, MouseButtonEventArgs e)
     {
         if(e.ChangedButton == MouseButton.Left)
@@ -45,9 +59,5 @@ public partial class LoginWindow : Window
     {
         this.Close();
     }
-
-    private void LoginBtn(object sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
+    
 }

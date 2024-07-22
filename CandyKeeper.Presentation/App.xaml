@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:CandyKeeper.Presentation.ViewModels"
              xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             StartupUri="Views/Windows/MainWindow.xaml">
+             StartupUri="Views/Windows/LoginWindow.xaml">
 
     <Application.Resources >
 
@@ -249,6 +249,14 @@
                 </Style.Triggers>
             </Style>
 
+            <Style x:Key="textLight" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="DarkTurquoise"></Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="DarkBlue"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
 
             <Style x:Key="gridEditButton" TargetType="Button">
                 <Setter Property="Background" Value="#A45B35"></Setter>

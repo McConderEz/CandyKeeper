@@ -56,7 +56,7 @@ public class AccountService : IAccountService
                     {
                         command.Parameters.AddWithValue("@userName", userName);
                         var principalId = (int)command.ExecuteScalar();
-                        user = User.Create(0, userName, password, principalId).Value;
+                        user = User.Create(0, userName, hashedPassword, principalId).Value;
                     
                         await _userService.Create(user);
                     }
@@ -66,6 +66,10 @@ public class AccountService : IAccountService
                     Console.WriteLine(ex.Message);
                 }
             }
+        }
+        else
+        {
+            throw new Exception("User already exist");
         }
     }
     
@@ -146,7 +150,7 @@ public class AccountService : IAccountService
                                                
                                                                SELECT principal_id 
                                                                FROM sys.database_principals 
-                                                               WHERE name = 'Root'
+                                                               WHERE name = 'Admin'
                                                """;
 
 
@@ -155,7 +159,13 @@ public class AccountService : IAccountService
                     using (SqlCommand command = new SqlCommand(getPrincipalIdSql, connection))
                     {
                         var principalId = (int)command.ExecuteScalar();
-                        var user = User.Create(0, "Root", hashedPassword, principalId).Value;
+
+                        User user = await _userService.GetByUserName("Root");
+                        
+                        if (user != null)
+                            return;
+                        
+                        user = User.Create(0, "Root", hashedPassword, principalId).Value;
                         await _userService.Create(user);
                     }
                 }

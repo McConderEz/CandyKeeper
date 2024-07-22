@@ -120,6 +120,7 @@ public class UserRepository : IUserRepository
                 Id = user.Id,
                 Name = user.Name,
                 PasswordHashed = user.PasswordHashed,
+                PrincipalId = user.PrincipalId,
                 StoreId = user.StoreId
             };
         }
@@ -181,9 +182,8 @@ public class UserRepository : IUserRepository
                     .FirstOrDefaultAsync(c => c.Name == userName);
 
                 if (userEntity == null)
-                    throw new Exception("user null");
-
-
+                    return null;
+                
                 var user = MapToUser(userEntity);
 
                 return user;
