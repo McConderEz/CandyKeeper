@@ -48,6 +48,7 @@ public class UserRepository : IUserRepository
                 userEntity.Id,
                 userEntity.Name,
                 userEntity.PasswordHashed,
+                userEntity.PrincipalId,
                 userEntity.StoreId,
                 store).Value;
         }
@@ -123,7 +124,7 @@ public class UserRepository : IUserRepository
             };
         }
 
-        public async Task Update(int id, string name, int? storeId)
+        public async Task Update(int id, string name,int principalId ,int? storeId)
         {
             await _semaphore.WaitAsync();
 
@@ -133,6 +134,7 @@ public class UserRepository : IUserRepository
                     .Where(p => p.Id == id)
                     .ExecuteUpdateAsync(p => p
                         .SetProperty(p => p.Name, name)
+                        .SetProperty(p => p.PrincipalId, principalId)
                         .SetProperty(p => p.StoreId, storeId));
 
                 await _context.SaveChangesAsync();

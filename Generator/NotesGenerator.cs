@@ -14,7 +14,7 @@ namespace Generator
 {
     public class NotesGenerator
     {
-        private readonly CandyKeeperDbContext _dbContext = new CandyKeeperDbContext(new DbContextOptions<CandyKeeperDbContext>());
+        private readonly CandyKeeperDbContext _dbContext = new CandyKeeperDbContext(null);
         private readonly Parser _parser = new Parser();
 
         private const string PATH = "C:\\Users\\rusta\\source\\repos\\CandyKeeper\\Generator\\Dataset\\";

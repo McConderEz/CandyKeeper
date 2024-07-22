@@ -17,16 +17,17 @@ namespace CandyKeeper.DAL
         //TODO: Добавить UserEntity
         //TODO:Сделать регистрацию и авторизацию
 
-        public CandyKeeperDbContext(DbContextOptions options)
-          : base(options)
+        private readonly IConfiguration _configuration;
+        
+        public CandyKeeperDbContext(IConfiguration configuration)
         {
+            _configuration = configuration;
             Database.EnsureCreated();
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(
-                "data source=(localdb)\\MSSQLLocalDB;Initial Catalog=candyKeeper;Integrated Security=True");
+            optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
         }
         
         

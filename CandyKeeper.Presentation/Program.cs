@@ -15,6 +15,8 @@ namespace CandyKeeper.Presentation
 {
     public class Program
     {
+        private static string[] roleNames = { "Admin", "Manager", "Client" };
+        
         [STAThread]
         public static void Main()
         {
@@ -35,6 +37,7 @@ namespace CandyKeeper.Presentation
                           services.AddRepositories();
                           services.AddServices();
                           services.AddViewModels();
+                          services.EnsureRolesExist(context.Configuration.GetConnectionString("DefaultConnection")!, roleNames);
 
                       });
             return host;

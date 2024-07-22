@@ -47,7 +47,7 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<ISupplierService, SupplierService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
+            //services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
             return services;
         }
