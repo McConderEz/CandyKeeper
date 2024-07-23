@@ -15,6 +15,8 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using CandyKeeper.Domain.Models;
 using CandyKeeper.Presentation.Views.Windows;
+using Microsoft.Extensions.DependencyInjection;
+using User = CandyKeeper.Presentation.Models.User;
 
 namespace CandyKeeper.Presentation.ViewModels
 {
@@ -22,6 +24,7 @@ namespace CandyKeeper.Presentation.ViewModels
     {
         private UserControl _currentView;
         private ViewModelLocator _viewModelLocator;
+        private User _currentUser;
 
         public UserControl CurrentView
         {
@@ -29,6 +32,12 @@ namespace CandyKeeper.Presentation.ViewModels
             set => Set(ref _currentView, value);
         }
 
+        public User CurrentUser
+        {
+            get => _currentUser;
+            set => Set(ref _currentUser, value);
+        }
+        
         #region Команды
 
         #region CloseApplicationCommand
@@ -60,14 +69,21 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
 
+        
         public MainWindowsViewModel()
         {
             _viewModelLocator = new ViewModelLocator();
-            
             #region Команды
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecute);
             SelectViewCommand = new LambdaCommand(OnSelectViewCommandExecute);
             #endregion
+
+            UserViewModel.ShowMainEvent += GetCurrentUser;
+        }
+
+        private void GetCurrentUser(object? sender, User e)
+        {
+            CurrentUser = e;
         }
 
         public UserControl SelectViewModel(string viewModelName) => viewModelName switch

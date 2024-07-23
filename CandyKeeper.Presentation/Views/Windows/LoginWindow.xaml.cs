@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
+using CandyKeeper.Presentation.Models;
 using CandyKeeper.Presentation.ViewModels.Base;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,12 +15,15 @@ public partial class LoginWindow : Window
     {
         InitializeComponent();
         UserViewModel.CloseEvent += HideWindow;
+        UserViewModel.ShowMainEvent += HideWindow;
     }
 
-    private void HideWindow(object? sender, EventArgs e)
+    private void HideWindow(object? sender, User e)
     {
-        if(this.Visibility == Visibility.Visible)
+        if (this.Visibility == Visibility.Visible)
+        {
             this.Hide();
+        }
         else
         {
             this.Show();

@@ -15,7 +15,8 @@ internal class UserViewModel: ViewModel
 
 
 
-    private static event EventHandler _closeEvent;
+    private static event EventHandler<User> _closeEvent;
+    private static event EventHandler<User> _showMainEvent;
     
     private readonly IUserService _userService;
     private readonly IAccountService _accountService;
@@ -45,6 +46,11 @@ internal class UserViewModel: ViewModel
                 PrincipalId = user.PrincipalId,
                 StoreId = user.StoreId
             };
+
+            _showMainEvent?.Invoke(null, CurrentUser);
+            
+            MainWindow window = new MainWindow();
+            window.Show();
         }
         catch (Exception ex)
         {
@@ -63,7 +69,7 @@ internal class UserViewModel: ViewModel
         await _semaphore.WaitAsync();
         try
         {
-            _closeEvent?.Invoke(null,EventArgs.Empty);
+            _closeEvent?.Invoke(null,null);
             var register = new RegisterWindow();
             register.Show();
         }
@@ -106,7 +112,7 @@ internal class UserViewModel: ViewModel
         await _semaphore.WaitAsync();
         try
         {
-            _closeEvent?.Invoke(null,EventArgs.Empty);
+            _closeEvent?.Invoke(null,null);
         }
         catch (Exception ex)
         {
@@ -130,10 +136,16 @@ internal class UserViewModel: ViewModel
         set => Set(ref _isInvalidCredentials, value);
     }
 
-    public static event EventHandler CloseEvent
+    public static event EventHandler<User> CloseEvent
     {
         add => _closeEvent += value;
         remove => _closeEvent -= value;
+    }
+    
+    public static event EventHandler<User> ShowMainEvent
+    {
+        add => _showMainEvent += value;
+        remove => _showMainEvent -= value;
     }
     
     public UserViewModel(IUserService userService, IAccountService accountService)
