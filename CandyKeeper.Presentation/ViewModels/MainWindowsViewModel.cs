@@ -24,6 +24,9 @@ namespace CandyKeeper.Presentation.ViewModels
 {
     internal class MainWindowsViewModel : ViewModel
     {
+        
+        private static event EventHandler<User> _transferCurrentUserEvent;
+        
         private UserControl _currentView;
         private ViewModelLocator _viewModelLocator;
         private User _currentUser;
@@ -72,6 +75,7 @@ namespace CandyKeeper.Presentation.ViewModels
             if (p is string viewmodel)
             {
                 CurrentView = SelectViewModel(viewmodel);
+                _transferCurrentUserEvent?.Invoke(null,CurrentUser);
             }
             else
             {
@@ -83,6 +87,11 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
 
+        public static event EventHandler<User> TransferCurrentUserEvent
+        {
+            add => _transferCurrentUserEvent += value;
+            remove => _transferCurrentUserEvent -= value;
+        }
         
         public MainWindowsViewModel(IConfiguration configuration)
         {
@@ -117,6 +126,7 @@ namespace CandyKeeper.Presentation.ViewModels
             "ProductView" => new ProductWindow(),
             "StoreView" => new StoreWindow(),
             "SupplierView" => new SupplierWindow(),
+            "AdminPanelView" => new AdminPanelWindow(),
             _ => throw new ArgumentException("selected view model does not exist exist")
         };
 

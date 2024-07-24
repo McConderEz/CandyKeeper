@@ -47,16 +47,16 @@ public class AccountService : IAccountService
                                                 
                                                                                                   SELECT principal_id 
                                                                                                   FROM sys.database_principals 
-                                                                                                  WHERE name = @userName
+                                                                                                  WHERE name = 'Client'
                                                 """;
 
                     AssignRoleToUser(_configuration.GetConnectionString("DefaultConnection"), userName, "Client");
 
                     using (SqlCommand command = new SqlCommand(getPrincipalIdSql, connection))
                     {
-                        command.Parameters.AddWithValue("@userName", userName);
+                        command.Parameters.AddWithValue("roleName", "Client");
                         var principalId = (int)command.ExecuteScalar();
-                        user = User.Create(0, userName, hashedPassword, principalId).Value;
+                        user = User.Create(0, userName, hashedPassword, principalId, 8).Value;
                     
                         await _userService.Create(user);
                     }

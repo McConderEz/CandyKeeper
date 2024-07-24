@@ -7,13 +7,12 @@ using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.Models;
 using CandyKeeper.Presentation.Views.Windows;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Data.SqlClient;
 
 namespace CandyKeeper.Presentation.ViewModels.Base;
 
 internal class UserViewModel: ViewModel
 {
-
-
 
     private static event EventHandler<User> _closeEvent;
     private static event EventHandler<User> _showMainEvent;
@@ -25,6 +24,7 @@ internal class UserViewModel: ViewModel
     private bool _isInvalidCredentials = false;
 
     private User _currentUser;
+    private ObservableCollection<Domain.Models.User> _users;
     
     public ICommand LoginCommand { get; }
     private bool CanLoginCommandExecute(object p) => true;
@@ -46,11 +46,10 @@ internal class UserViewModel: ViewModel
                 PrincipalId = user.PrincipalId,
                 StoreId = user.StoreId
             };
-
+            MainWindow window = new MainWindow(CurrentUser);
             _showMainEvent?.Invoke(null, CurrentUser);
-            
-            MainWindow window = new MainWindow();
             window.Show();
+            
         }
         catch (Exception ex)
         {
@@ -62,6 +61,26 @@ internal class UserViewModel: ViewModel
         }
     }
 
+    
+    public ICommand GetCommand { get; }
+    private bool CanGetCommandExecute(object p) => true;
+    public async void OnGetCommandExecuted(object p)
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            Users = new ObservableCollection<Domain.Models.User>(await _userService.Get());
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+    
     public ICommand GoToRegCommand { get; }
     private bool CanGoToRegCommandExecute(object p) => true;
     public async void OnGoToRegCommandExecuted(object p)
@@ -130,6 +149,12 @@ internal class UserViewModel: ViewModel
         set => Set(ref _currentUser, value);
     }
 
+    public ObservableCollection<Domain.Models.User> Users
+    {
+        get => _users;
+        set => Set(ref _users, value);
+    }
+    
     public bool IsInvalidCredentials
     {
         get => _isInvalidCredentials;
@@ -159,7 +184,8 @@ internal class UserViewModel: ViewModel
         GoToLoginCommand = new LambdaCommand(OnGoToLoginCommandExecuted);
         
         CurrentUser = new User();
-        
+        OnGetCommandExecuted(null);
         _accountService.AddRoot();
     }
+    
 }

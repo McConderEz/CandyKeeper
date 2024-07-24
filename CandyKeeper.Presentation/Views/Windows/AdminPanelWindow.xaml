@@ -1,19 +1,15 @@
-﻿<UserControl  x:Class="CandyKeeper.Presentation.Views.Windows.ProductForSaleWindow"
-              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-              xmlns:local="clr-namespace:CandyKeeper.Presentation.Views.Windows"
-              xmlns:ext="clr-namespace:CandyKeeper.Presentation.Extensions"
-              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-              xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna"
-              mc:Ignorable="d"
-              DataContext="{Binding ProductForSaleViewModel,Source={StaticResource Locator}}"
-              d:DesignHeight="720" d:DesignWidth="1080">
-    
-    
+﻿<UserControl x:Class="CandyKeeper.Presentation.Views.Windows.AdminPanelWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:CandyKeeper.Presentation.Views.Windows"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna"
+             mc:Ignorable="d"
+             DataContext="{Binding UserViewModel, Source={StaticResource Locator}}"
+             d:DesignHeight="720" d:DesignWidth="1200">
     <UserControl.Resources>
-        <ext:TabsItemToVisibilityConverter x:Key="TabsItemToVisibilityConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <Style x:Key="DataGridRowStyle1" TargetType="{x:Type DataGridRow}">
             <Setter Property="Background" Value="White"/>
@@ -168,52 +164,28 @@
                 
 
                 <!--Название страницы-->
-                <TextBlock Text="Кондитерские изделия" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
+                <TextBlock Text="Админ-панель" Grid.Row="1" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
                            HorizontalAlignment="Left" Foreground="#121518"/>
                 
-                <!--Кнопка добавления-->
-                <Button Style="{StaticResource addButton}" 
-                        Visibility="{Binding IsManagerVisible, Converter={StaticResource TabsItemToVisibilityConverter}}"
-                        Command="{Binding AddEditShowCommand}">
-                    <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
-                        <TextBlock Text="Добавить"/>
-                    </StackPanel>
-                </Button>
 
                 <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
 
                 
 
-                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="ProductForSaleDataGrid" ItemsSource="{Binding ProductForSales}">
+                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="CityDataGrid" ItemsSource="{Binding Users}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Название" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Product.Name}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Тип продукта" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Product.ProductType.Name}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Упакова" IsReadOnly="True" CanUserResize="False" Width="auto"  Binding="{Binding Packaging.Name}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Цена" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Price}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Объём" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Volume}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Магазин" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Store.Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Имя" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Место работы" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Store.Name}"></DataGridTextColumn>
 
                         <DataGridTemplateColumn Header="Действия" IsReadOnly="True" Width="auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Style="{StaticResource gridEditButton}"
-                                                Visibility="{Binding DataContext.IsManagerVisible, 
-                                                RelativeSource={RelativeSource AncestorType=DataGrid}, 
-                                                Converter={StaticResource TabsItemToVisibilityConverter}}"
-                                                Command="{Binding DataContext.AddEditShowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
-                                            <iconPacks:PackIconMaterial Kind="PencilOutline" Style="{StaticResource gridButtonIcon}"/>
+                                        <Button Style="{StaticResource gridEditButton}" Command="{Binding DataContext.EditStoreShowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
+                                            <iconPacks:PackIconMaterial Kind="AccountEdit" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
                                         <Button Style="{StaticResource gridDetailButton}" Command="{Binding DataContext.DetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
-                                            <iconPacks:PackIconMaterial Kind="Details" Style="{StaticResource gridButtonIcon}"/>
-                                        </Button>
-                                        <Button Style="{StaticResource gridRemoveButton}"
-                                                Visibility="{Binding DataContext.IsManagerVisible, 
-                                                RelativeSource={RelativeSource AncestorType=DataGrid}, 
-                                                Converter={StaticResource TabsItemToVisibilityConverter}}"
-                                                Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
-                                            <iconPacks:PackIconMaterial Kind="DeleteOutline" Style="{StaticResource gridButtonIcon}"/>
+                                            <iconPacks:PackIconMaterial Kind="Lock" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
                                     </StackPanel>
                                 </DataTemplate>
@@ -228,9 +200,6 @@
             </Grid>
             <Grid Grid.Column="1" Margin="30 20 20 20">
                 <ContentControl Grid.Row="1" Content="{Binding DetailsPage}"/>
-                        
-    
-                <!--<ContentControl x:Name="ContentArea" Grid.Row="1"/>-->
             </Grid>
     </Grid>
 </UserControl>

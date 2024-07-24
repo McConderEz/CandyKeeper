@@ -19,6 +19,9 @@ using System.Windows.Input;
 using CandyKeeper.Presentation.Views.AddEditPages;
 using CandyKeeper.Presentation.Views.DetailsPages;
 using CandyKeeper.Presentation.Views.Windows;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using User = CandyKeeper.Presentation.Models.User;
 
 namespace CandyKeeper.Presentation.ViewModels
 {
@@ -36,6 +39,10 @@ namespace CandyKeeper.Presentation.ViewModels
         private readonly IStoreService _storeService;
         private readonly IProductDeliveryService _productDeliveryService;
         private readonly IPackagingService _packagingService;
+        private readonly IConfiguration _configuration;
+        private User _currentUser;
+
+        private readonly List<DatabaseRole> _roles;
         
         private ObservableCollection<ProductForSale> _productForSales;
         
@@ -303,17 +310,29 @@ namespace CandyKeeper.Presentation.ViewModels
             set => Set(ref _detailsView, value);
         }
         
+        public User CurrentUser
+        {
+            get => _currentUser;
+            set => Set(ref _currentUser, value);
+        }
+        
+        public bool IsAdminVisible => IsAdmin();
+        public bool IsClientVisible => IsClient();
+        public bool IsManagerVisible => IsManager();
+        
         public ProductForSaleViewModel(IProductForSaleService service,
             IProductService productService,
             IStoreService storeService,
             IProductDeliveryService productDeliveryService,
-            IPackagingService packagingService)
+            IPackagingService packagingService,
+            IConfiguration configuration)
         {
             _service = service;
             _productService = productService;
             _storeService = storeService;
             _productDeliveryService = productDeliveryService;
             _packagingService = packagingService;
+            _configuration = configuration;
             
             GetCommand = new LambdaCommand(OnGetCommandExecuted);
             AddEditShowCommand = new LambdaCommand(OnAddEditShowCommandExecuted);
@@ -323,7 +342,17 @@ namespace CandyKeeper.Presentation.ViewModels
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
             
             _productForSales = new ObservableCollection<ProductForSale>();
+            _roles = GetDatabaseRoles();
+            MainWindowsViewModel.TransferCurrentUserEvent += GetCurrentUser;
             OnGetCommandExecuted(null);
+        }
+
+        private void GetCurrentUser(object? sender, User e)
+        {
+            CurrentUser = e;
+            OnPropertyChanged(nameof(IsAdminVisible));
+            OnPropertyChanged(nameof(IsClientVisible));
+            OnPropertyChanged(nameof(IsManagerVisible));
         }
 
         private async Task LoadComboBoxes()
@@ -352,6 +381,54 @@ namespace CandyKeeper.Presentation.ViewModels
         private async Task GetPackagings()
         {
             Packagings = new ObservableCollection<Packaging>(await _packagingService.Get());
+        }
+        
+        public bool IsAdmin()
+        {
+            return CurrentUser != null && _roles.Any(r => r.Name == "Admin" && r.PrincipalId == CurrentUser.PrincipalId);
+        }
+
+        public bool IsClient()
+        {
+            return CurrentUser != null && _roles.Any(r => r.Name == "Client" && r.PrincipalId == CurrentUser.PrincipalId);
+        }
+
+        public bool IsManager()
+        {
+            return CurrentUser != null && _roles.Any(r => r.Name == "Manager" && r.PrincipalId == CurrentUser.PrincipalId);
+        }
+        
+        private List<DatabaseRole> GetDatabaseRoles()
+        {
+            string query = "SELECT principal_id, name FROM sys.database_principals WHERE type = 'R'";
+            var roles = new List<DatabaseRole>();
+
+            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var role = new DatabaseRole
+                        {
+                            PrincipalId = reader.GetInt32(0),
+                            Name = reader.GetString(1)
+                        };
+                        roles.Add(role);
+                    }
+                }
+            }
+
+            return roles;
+        }
+    
+        private class DatabaseRole
+        {
+            public int PrincipalId { get; set; }
+            public string Name { get; set; }
         }
     }
 }
