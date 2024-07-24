@@ -19,6 +19,7 @@ using CandyKeeper.DAL;
 using CandyKeeper.DAL.Repositories;
 using System.ComponentModel;
 using CandyKeeper.Presentation.Views.Windows;
+using User = CandyKeeper.Presentation.Models.User;
 
 namespace CandyKeeper.Presentation
 {
@@ -26,7 +27,7 @@ namespace CandyKeeper.Presentation
     {
         private bool IsMaximized = false;
 
-        public MainWindow()
+        public MainWindow(User currentUser)
         {
             InitializeComponent();
         }

@@ -15,6 +15,8 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using CandyKeeper.Domain.Models;
 using CandyKeeper.Presentation.Views.Windows;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using User = CandyKeeper.Presentation.Models.User;
 
@@ -26,6 +28,18 @@ namespace CandyKeeper.Presentation.ViewModels
         private ViewModelLocator _viewModelLocator;
         private User _currentUser;
 
+        private readonly List<DatabaseRole> _roles;
+        private readonly IConfiguration _configuration;
+
+        
+        public bool IsAdminVisible => IsAdmin();
+        public bool IsClientVisible => IsClient();
+        public bool IsManagerVisible => IsManager();
+       /*public bool IsAdmin => CurrentUser?.PrincipalId == _roles.SingleOrDefault(r => r.Name == "Admin").PrincipalId;
+        public bool IsClient => CurrentUser?.PrincipalId == _roles.SingleOrDefault(r => r.Name == "Client").PrincipalId;
+        public bool IsManager => CurrentUser?.PrincipalId == _roles.SingleOrDefault(r => r.Name == "Manager").PrincipalId;
+        */
+       
         public UserControl CurrentView
         {
             get => _currentView;
@@ -70,7 +84,7 @@ namespace CandyKeeper.Presentation.ViewModels
         #endregion
 
         
-        public MainWindowsViewModel()
+        public MainWindowsViewModel(IConfiguration configuration)
         {
             _viewModelLocator = new ViewModelLocator();
             #region Команды
@@ -78,12 +92,17 @@ namespace CandyKeeper.Presentation.ViewModels
             SelectViewCommand = new LambdaCommand(OnSelectViewCommandExecute);
             #endregion
 
+            _configuration = configuration;
+            _roles = GetDatabaseRoles();
             UserViewModel.ShowMainEvent += GetCurrentUser;
         }
 
         private void GetCurrentUser(object? sender, User e)
         {
             CurrentUser = e;
+            OnPropertyChanged(nameof(IsAdminVisible));
+            OnPropertyChanged(nameof(IsClientVisible));
+            OnPropertyChanged(nameof(IsManagerVisible));
         }
 
         public UserControl SelectViewModel(string viewModelName) => viewModelName switch
@@ -101,5 +120,53 @@ namespace CandyKeeper.Presentation.ViewModels
             _ => throw new ArgumentException("selected view model does not exist exist")
         };
 
+        public bool IsAdmin()
+        {
+            return CurrentUser != null && _roles.Any(r => r.Name == "Admin" && r.PrincipalId == CurrentUser.PrincipalId);
+        }
+
+        public bool IsClient()
+        {
+            return CurrentUser != null && _roles.Any(r => r.Name == "Client" && r.PrincipalId == CurrentUser.PrincipalId);
+        }
+
+        public bool IsManager()
+        {
+            return CurrentUser != null && _roles.Any(r => r.Name == "Manager" && r.PrincipalId == CurrentUser.PrincipalId);
+        }
+        
+        private List<DatabaseRole> GetDatabaseRoles()
+        {
+            string query = "SELECT principal_id, name FROM sys.database_principals WHERE type = 'R'";
+            var roles = new List<DatabaseRole>();
+
+            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var role = new DatabaseRole
+                        {
+                            PrincipalId = reader.GetInt32(0),
+                            Name = reader.GetString(1)
+                        };
+                        roles.Add(role);
+                    }
+                }
+            }
+
+            return roles;
+        }
+    
+        private class DatabaseRole
+        {
+            public int PrincipalId { get; set; }
+            public string Name { get; set; }
+        }
+        
     }
 }

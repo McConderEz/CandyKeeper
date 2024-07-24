@@ -4,6 +4,7 @@
               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
               xmlns:local="clr-namespace:CandyKeeper.Presentation.Views.Windows"
+              xmlns:ext="clr-namespace:CandyKeeper.Presentation.Extensions"
               xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
               xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna"
               mc:Ignorable="d"
@@ -12,6 +13,7 @@
     
     
     <UserControl.Resources>
+        <ext:TabsItemToVisibilityConverter x:Key="TabsItemToVisibilityConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <Style x:Key="DataGridRowStyle1" TargetType="{x:Type DataGridRow}">
             <Setter Property="Background" Value="White"/>

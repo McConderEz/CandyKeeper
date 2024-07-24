@@ -13,6 +13,7 @@ namespace CandyKeeper.Domain.Models
 
         private User(int id,string name, string passwordHashed,int principalId,int? storeId = null, Store store = null)
         {
+            Id = id;
             Name = name;
             PasswordHashed= passwordHashed;
             PrincipalId = principalId;
