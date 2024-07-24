@@ -38,10 +38,6 @@ namespace CandyKeeper.Presentation.ViewModels
         public bool IsAdminVisible => IsAdmin();
         public bool IsClientVisible => IsClient();
         public bool IsManagerVisible => IsManager();
-       /*public bool IsAdmin => CurrentUser?.PrincipalId == _roles.SingleOrDefault(r => r.Name == "Admin").PrincipalId;
-        public bool IsClient => CurrentUser?.PrincipalId == _roles.SingleOrDefault(r => r.Name == "Client").PrincipalId;
-        public bool IsManager => CurrentUser?.PrincipalId == _roles.SingleOrDefault(r => r.Name == "Manager").PrincipalId;
-        */
        
         public UserControl CurrentView
         {

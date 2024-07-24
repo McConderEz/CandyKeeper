@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using CandyKeeper.Presentation.ViewModels;
+using CandyKeeper.Presentation.ViewModels.Base;
 
 namespace CandyKeeper.Presentation.Views.Windows;
 
@@ -9,12 +10,13 @@ public partial class AdminPanelWindow : UserControl
     public AdminPanelWindow()
     {
         InitializeComponent();
+        UserViewModel.RefreshEvent += RefreshDataGridHandler;
     }
-    
-    public void RefreshDataGridHandler(object p)
+
+    private void RefreshDataGridHandler(object? sender, EventArgs e)
     {
-        CityDataGrid.Items.Refresh();
-        if (DataContext is ProductViewModel viewModel)
+        UsersDataGrid.Items.Refresh();
+        if (DataContext is UserViewModel viewModel)
         {
             viewModel.OnGetCommandExecuted(null);
         }

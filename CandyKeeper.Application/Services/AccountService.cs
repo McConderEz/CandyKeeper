@@ -100,6 +100,33 @@ public class AccountService : IAccountService
         }
     }
     
+    public void DropRoleToUser(string connectionString, string userName, string roleName)
+    {
+        string assignRoleSql = $"""
+                                 
+                                                          ALTER ROLE [{roleName}] DROP MEMBER [{userName}];
+                                                                                                         
+                                 """;
+
+        using (SqlConnection connection = new SqlConnection(connectionString))
+        {
+            try
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand(assignRoleSql, connection))
+                {
+                    command.ExecuteNonQuery();
+                    Console.WriteLine($"User '{userName}' drop from role '{roleName}' successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+        }
+    }
+    
     public async Task<User> Login(string userName, string password)
     {
         var user = await _userService.GetByUserName(userName);

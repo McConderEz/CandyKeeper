@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using System.Data;
 using System.Windows;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using CandyKeeper.Application.Interfaces;
 using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.Models;
+using CandyKeeper.Presentation.Views.AddEditPages;
 using CandyKeeper.Presentation.Views.Windows;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Data.SqlClient;
@@ -17,6 +19,7 @@ internal class UserViewModel: ViewModel
 
     private static event EventHandler<User> _closeEvent;
     private static event EventHandler<User> _showMainEvent;
+    private static event EventHandler _refreshEvent;
     
     private readonly IUserService _userService;
     private readonly IAccountService _accountService;
@@ -27,8 +30,90 @@ internal class UserViewModel: ViewModel
     private bool _isInvalidCredentials = false;
 
     private User _currentUser;
+    private User _selectedUser = new();
+    private int previousPrincipalId;
     private ObservableCollection<Domain.Models.User> _users;
+    public List<DatabaseRole> _rolesToComboBox;
+
     public static List<DatabaseRole> Roles;
+
+    public List<DatabaseRole> RolesToComboBox
+    {
+        get => _rolesToComboBox;
+        set => Set(ref _rolesToComboBox, value);
+    }
+
+    public User SelectedUser
+    {
+        get => _selectedUser;
+        set => Set(ref _selectedUser, value);
+    }
+    
+    
+    
+    public ICommand EditRoleShowCommand { get; }
+    private bool CanEditRoleShowCommandExecute(object p) => true;
+    public async void OnEditRoleShowCommandExecuted(object p)
+    {
+        if (p is int id)
+        {
+            SelectedUser.Id = id;
+            previousPrincipalId = SelectedUser.PrincipalId;
+        }
+
+        await _semaphore.WaitAsync();
+
+        try
+        {
+            var page = new EditRolePage();
+            page.DataContext = this;
+            page.Show();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+    
+    public ICommand EditRoleCommand { get; }
+    private bool CanEditRoleCommandExecute(object p) => true;
+    public async void OnEditRoleCommandExecuted(object p)
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            var userEntity = await _userService.GetById(SelectedUser.Id);
+
+            await _userService.Update(
+                userEntity.Id,
+                userEntity.Name,
+                SelectedUser.PrincipalId,
+                userEntity.StoreId);
+            _accountService.DropRoleToUser(
+                _configuration.GetConnectionString("DefaultConnection")!,
+                userEntity.Name,
+                Roles.SingleOrDefault(r => r.PrincipalId == previousPrincipalId).Name);
+             
+            _accountService.AssignRoleToUser(
+                _configuration.GetConnectionString("DefaultConnection")!,
+                userEntity.Name,
+                Roles.SingleOrDefault(r => r.PrincipalId == SelectedUser.PrincipalId).Name);
+            _refreshEvent?.Invoke(null, EventArgs.Empty);
+            
+        }
+        catch (Exception ex)
+        {
+            IsInvalidCredentials = true;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
     
     public ICommand LoginCommand { get; }
     private bool CanLoginCommandExecute(object p) => true;
@@ -178,6 +263,13 @@ internal class UserViewModel: ViewModel
         remove => _showMainEvent -= value;
     }
     
+    public static event EventHandler RefreshEvent
+    {
+        add => _refreshEvent += value;
+        remove => _refreshEvent -= value;
+    }
+    
+    
     public UserViewModel(IUserService userService, IAccountService accountService, IConfiguration configuration)
     {
         _userService = userService;
@@ -187,19 +279,29 @@ internal class UserViewModel: ViewModel
         GoToRegCommand = new LambdaCommand(OnGoToRegCommandExecuted);
         RegistrationCommand = new LambdaCommand(OnRegistrationCommandExecuted);
         GoToLoginCommand = new LambdaCommand(OnGoToLoginCommandExecuted);
-
+        EditRoleShowCommand = new LambdaCommand(OnEditRoleShowCommandExecuted);
+        EditRoleCommand = new LambdaCommand(OnEditRoleCommandExecuted);
+        
         _configuration = configuration;
         CurrentUser = new User();
         Roles = GetDatabaseRoles();
+        RolesToComboBox = Roles;
         OnGetCommandExecuted(null);
         _accountService.AddRoot();
+
+        MainWindowsViewModel.TransferCurrentUserEvent += GetCurrentUser;
     }
-    
+
+    private void GetCurrentUser(object? sender, User e)
+    {
+        CurrentUser = e;
+    }
+
     private List<DatabaseRole> GetDatabaseRoles()
     {
         string query = "SELECT principal_id, name FROM sys.database_principals WHERE type = 'R'";
         var roles = new List<DatabaseRole>();
-
+        var temp = new string[]{"Admin", "Client", "Manager"};
         using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
         {
             SqlCommand command = new SqlCommand(query, connection);
@@ -209,12 +311,15 @@ internal class UserViewModel: ViewModel
             {
                 while (reader.Read())
                 {
-                    var role = new DatabaseRole
+                    if (temp.Any(t => t == reader.GetString(1)))
                     {
-                        PrincipalId = reader.GetInt32(0),
-                        Name = reader.GetString(1)
-                    };
-                    roles.Add(role);
+                        var role = new DatabaseRole
+                        {
+                            PrincipalId = reader.GetInt32(0),
+                            Name = reader.GetString(1)
+                        };
+                        roles.Add(role);
+                    }
                 }
             }
         }
