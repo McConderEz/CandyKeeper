@@ -8,6 +8,7 @@ using CandyKeeper.Presentation.Models;
 using CandyKeeper.Presentation.Views.Windows;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace CandyKeeper.Presentation.ViewModels.Base;
 
@@ -20,11 +21,14 @@ internal class UserViewModel: ViewModel
     private readonly IUserService _userService;
     private readonly IAccountService _accountService;
     private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+    private readonly IConfiguration _configuration;
+    
 
     private bool _isInvalidCredentials = false;
 
     private User _currentUser;
     private ObservableCollection<Domain.Models.User> _users;
+    public static List<DatabaseRole> Roles;
     
     public ICommand LoginCommand { get; }
     private bool CanLoginCommandExecute(object p) => true;
@@ -70,6 +74,7 @@ internal class UserViewModel: ViewModel
         try
         {
             Users = new ObservableCollection<Domain.Models.User>(await _userService.Get());
+            Users.Remove(Users.SingleOrDefault(x => x.Name == "Root"));
         }
         catch (Exception ex)
         {
@@ -173,7 +178,7 @@ internal class UserViewModel: ViewModel
         remove => _showMainEvent -= value;
     }
     
-    public UserViewModel(IUserService userService, IAccountService accountService)
+    public UserViewModel(IUserService userService, IAccountService accountService, IConfiguration configuration)
     {
         _userService = userService;
         _accountService = accountService;
@@ -182,10 +187,45 @@ internal class UserViewModel: ViewModel
         GoToRegCommand = new LambdaCommand(OnGoToRegCommandExecuted);
         RegistrationCommand = new LambdaCommand(OnRegistrationCommandExecuted);
         GoToLoginCommand = new LambdaCommand(OnGoToLoginCommandExecuted);
-        
+
+        _configuration = configuration;
         CurrentUser = new User();
+        Roles = GetDatabaseRoles();
         OnGetCommandExecuted(null);
         _accountService.AddRoot();
+    }
+    
+    private List<DatabaseRole> GetDatabaseRoles()
+    {
+        string query = "SELECT principal_id, name FROM sys.database_principals WHERE type = 'R'";
+        var roles = new List<DatabaseRole>();
+
+        using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+        {
+            SqlCommand command = new SqlCommand(query, connection);
+            connection.Open();
+
+            using (SqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var role = new DatabaseRole
+                    {
+                        PrincipalId = reader.GetInt32(0),
+                        Name = reader.GetString(1)
+                    };
+                    roles.Add(role);
+                }
+            }
+        }
+
+        return roles;
+    }
+    
+    public class DatabaseRole
+    {
+        public int PrincipalId { get; set; }
+        public string Name { get; set; }
     }
     
 }
