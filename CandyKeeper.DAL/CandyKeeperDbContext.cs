@@ -14,9 +14,10 @@ namespace CandyKeeper.DAL
     public class CandyKeeperDbContext : DbContext
     {
         //TODO: Добавить Constraints
-        //TODO: Добавить UserEntity
-        //TODO:Сделать регистрацию и авторизацию
-
+        //TODO: Сделать универсальный путь к аватарке
+        //TODO: Возможно добавить контейнеры
+        //TODO: Обновлять счётчик пользователей
+        
         private readonly IConfiguration _configuration;
         
         public CandyKeeperDbContext(IConfiguration configuration)

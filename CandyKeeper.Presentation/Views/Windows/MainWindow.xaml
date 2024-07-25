@@ -17,6 +17,7 @@
 
     <Window.Resources>
         <ext:TabsItemToVisibilityConverter x:Key="TabsItemToVisibilityConverter"/>
+        <ext:MultiConditionToVisibilityConverter x:Key="MultiConditionToVisibilityConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <Style x:Key="DataGridRowStyle1" TargetType="{x:Type DataGridRow}">
             <Setter Property="Background" Value="White"/>
@@ -175,7 +176,7 @@
                                 DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="20 -30 0 0">
                             <Ellipse>
                                 <Ellipse.Fill>
-                                    <ImageBrush ImageSource="C:\Users\rusta\source\repos\CandyKeeper\CandyKeeper.Presentation\Images\avatardefault_92824.png"/>
+                                    <ImageBrush ImageSource="C:\Users\rusta\RiderProjects\CandyKeeper\CandyKeeper.Presentation\Images\avatardefault_92824.png"/>
                                 </Ellipse.Fill>
                             </Ellipse>
                         </Border>
@@ -196,7 +197,13 @@
                             </Button>
                         </StackPanel>
                         
-                        <StackPanel DockPanel.Dock="Top" Visibility="{Binding IsClientVisible, Converter={StaticResource TabsItemToVisibilityConverter}}">
+                        <StackPanel DockPanel.Dock="Top">
+                            <StackPanel.Visibility>
+                                <MultiBinding Converter="{StaticResource MultiConditionToVisibilityConverter}">
+                                    <Binding Path="IsClientVisible" />
+                                    <Binding Path="IsManagerVisible" />
+                                </MultiBinding>
+                            </StackPanel.Visibility>
                             <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="ProductForSaleView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Candy" Style="{StaticResource menuButtonIcon}"/>
