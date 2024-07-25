@@ -174,7 +174,7 @@
 
                 
 
-                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="UsersDataGrid" ItemsSource="{Binding Users}">
+                <DataGrid Style="{DynamicResource DataGridStyle1}" CellStyle="{DynamicResource DataGridCellStyle1}" ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" RowStyle="{DynamicResource DataGridRowStyle1}" Grid.Row="5" x:Name="UsersDataGrid" ItemsSource="{Binding Users}" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Имя" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Name}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Место работы" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Store.Name}"></DataGridTextColumn>

@@ -33,12 +33,12 @@ public class AccountService : IAccountService
                                 """;
         if (user == null)
         {
-            using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            await using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
                 try
                 {
                     connection.Open();
-                    using (SqlCommand command = new SqlCommand(createUserSql, connection))
+                    await using (SqlCommand command = new SqlCommand(createUserSql, connection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -50,9 +50,9 @@ public class AccountService : IAccountService
                                                                                                   WHERE name = 'Client'
                                                 """;
 
-                    AssignRoleToUser(_configuration.GetConnectionString("DefaultConnection"), userName, "Client");
+                    await AssignRoleToUser(_configuration.GetConnectionString("DefaultConnection"), userName, "Client");
 
-                    using (SqlCommand command = new SqlCommand(getPrincipalIdSql, connection))
+                    await using (SqlCommand command = new SqlCommand(getPrincipalIdSql, connection))
                     {
                         command.Parameters.AddWithValue("roleName", "Client");
                         var principalId = (int)command.ExecuteScalar();
@@ -73,7 +73,7 @@ public class AccountService : IAccountService
         }
     }
     
-    public void AssignRoleToUser(string connectionString, string userName, string roleName)
+    public async Task AssignRoleToUser(string connectionString, string userName, string roleName)
     {
         string assignRoleSql = $"""
                                 
@@ -81,13 +81,13 @@ public class AccountService : IAccountService
                                                                                                         
                                 """;
 
-        using (SqlConnection connection = new SqlConnection(connectionString))
+        await using (SqlConnection connection = new SqlConnection(connectionString))
         {
             try
             {
                 connection.Open();
 
-                using (SqlCommand command = new SqlCommand(assignRoleSql, connection))
+                await using (SqlCommand command = new SqlCommand(assignRoleSql, connection))
                 {
                     command.ExecuteNonQuery();
                     Console.WriteLine($"User '{userName}' assigned to role '{roleName}' successfully.");
@@ -100,7 +100,7 @@ public class AccountService : IAccountService
         }
     }
     
-    public void DropRoleToUser(string connectionString, string userName, string roleName)
+    public async Task DropRoleToUser(string connectionString, string userName, string roleName)
     {
         string assignRoleSql = $"""
                                  
@@ -108,13 +108,13 @@ public class AccountService : IAccountService
                                                                                                          
                                  """;
 
-        using (SqlConnection connection = new SqlConnection(connectionString))
+        await using (SqlConnection connection = new SqlConnection(connectionString))
         {
             try
             {
                 connection.Open();
 
-                using (SqlCommand command = new SqlCommand(assignRoleSql, connection))
+                await using (SqlCommand command = new SqlCommand(assignRoleSql, connection))
                 {
                     command.ExecuteNonQuery();
                     Console.WriteLine($"User '{userName}' drop from role '{roleName}' successfully.");
@@ -149,7 +149,7 @@ public class AccountService : IAccountService
     public async Task AddRoot()
     {
         var hashedPassword = _passwordHasherService.Generate("Root");
-        using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"))) 
+        await using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"))) 
         {
             try
                 {
@@ -168,7 +168,7 @@ public class AccountService : IAccountService
                                                            END;
                                            """;
 
-                    using (SqlCommand command = new SqlCommand(checkUserSql, connection))
+                    await using (SqlCommand command = new SqlCommand(checkUserSql, connection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -181,9 +181,9 @@ public class AccountService : IAccountService
                                                """;
 
 
-                    AssignRoleToUser(_configuration.GetConnectionString("DefaultConnection"), "Root", "Admin");
+                    await AssignRoleToUser(_configuration.GetConnectionString("DefaultConnection"), "Root", "Admin");
 
-                    using (SqlCommand command = new SqlCommand(getPrincipalIdSql, connection))
+                    await using (SqlCommand command = new SqlCommand(getPrincipalIdSql, connection))
                     {
                         var principalId = (int)command.ExecuteScalar();
 

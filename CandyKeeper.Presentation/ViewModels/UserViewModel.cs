@@ -95,16 +95,18 @@ internal class UserViewModel: ViewModel
                 SelectedUser.PrincipalId,
                 userEntity.StoreId,
                 userEntity.IsBlocked);
-            _accountService.DropRoleToUser(
+            
+            _refreshEvent?.Invoke(null, EventArgs.Empty);
+            
+            await _accountService.DropRoleToUser(
                 _configuration.GetConnectionString("DefaultConnection")!,
                 userEntity.Name,
                 Roles.SingleOrDefault(r => r.PrincipalId == previousPrincipalId).Name);
-             
-            _accountService.AssignRoleToUser(
+
+            await _accountService.AssignRoleToUser(
                 _configuration.GetConnectionString("DefaultConnection")!,
                 userEntity.Name,
                 Roles.SingleOrDefault(r => r.PrincipalId == SelectedUser.PrincipalId).Name);
-            _refreshEvent?.Invoke(null, EventArgs.Empty);
             
         }
         catch (Exception ex)
