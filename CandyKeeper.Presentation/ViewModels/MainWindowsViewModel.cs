@@ -26,6 +26,7 @@ namespace CandyKeeper.Presentation.ViewModels
     internal class MainWindowsViewModel : ViewModel
     {
         private static event EventHandler<User> _transferCurrentUserEvent;
+        private static event EventHandler<User> _leaveAccountEvent;
         
         private UserControl _currentView;
         private ViewModelLocator _viewModelLocator;
@@ -81,7 +82,16 @@ namespace CandyKeeper.Presentation.ViewModels
         private bool CanSelectViewCommandExecute(object p) => true;
         #endregion
         
+        public ICommand LeaveAccountCommand { get; }
+
+        private void OnLeaveAccountCommandExecute(object p)
+        {
+            _leaveAccountEvent?.Invoke(null,null);
+        }
+
+        private bool CanLeaveAccountCommandExecute(object p) => true;
         #endregion
+
 
         public static event EventHandler<User> TransferCurrentUserEvent
         {
@@ -89,12 +99,19 @@ namespace CandyKeeper.Presentation.ViewModels
             remove => _transferCurrentUserEvent -= value;
         }
         
+        public static event EventHandler<User> LeaveAccountEvent
+        {
+            add => _leaveAccountEvent += value;
+            remove => _leaveAccountEvent -= value;
+        } 
+        
         public MainWindowsViewModel(IConfiguration configuration)
         {
             _viewModelLocator = new ViewModelLocator();
             #region Команды
             CloseApplicationCommand = new LambdaCommand(OnCloseApplicationCommandExecute);
             SelectViewCommand = new LambdaCommand(OnSelectViewCommandExecute);
+            LeaveAccountCommand = new LambdaCommand(OnLeaveAccountCommandExecute);
             #endregion
 
             _configuration = configuration;

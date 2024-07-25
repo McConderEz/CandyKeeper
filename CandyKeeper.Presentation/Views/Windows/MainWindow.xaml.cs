@@ -30,8 +30,13 @@ namespace CandyKeeper.Presentation
         public MainWindow(User currentUser)
         {
             InitializeComponent();
+            MainWindowsViewModel.LeaveAccountEvent += CloseMainWindow;
         }
 
+        private void CloseMainWindow(object? sender, User e)
+        {
+            CloseBtn(null, null);
+        }
 
 
         private void Border_MouseDown(object sender, MouseButtonEventArgs e)

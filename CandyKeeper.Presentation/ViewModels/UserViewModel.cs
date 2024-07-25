@@ -351,7 +351,11 @@ internal class UserViewModel: ViewModel
         _accountService.AddRoot();
 
         MainWindowsViewModel.TransferCurrentUserEvent += GetCurrentUser;
+        MainWindowsViewModel.LeaveAccountEvent += ClearCurrentUser;
     }
+
+    private void ClearCurrentUser(object? sender, User e) => CurrentUser = new();
+
 
     private void GetCurrentUser(object? sender, User e)
     {
