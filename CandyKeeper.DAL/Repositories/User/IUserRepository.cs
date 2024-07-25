@@ -6,6 +6,6 @@ public interface IUserRepository
     Task Delete(int id);
     Task<List<Domain.Models.User>> Get();
     Task<Domain.Models.User> GetById(int id);
-    Task Update(int id, string name,int principalId, int? storeId);
+    Task Update(int id, string name,int principalId, int? storeId, bool isBlocked);
     Task<Domain.Models.User> GetByUserName(string userName);
 }

@@ -162,7 +162,7 @@
                            Margin="0 0 15 0" Foreground="#b0b9c6" HorizontalAlignment="Right"/>
                 </Grid>
 
-                <!--Верхние кнопки-->
+                
                 
 
                 <!--Название страницы-->
@@ -178,6 +178,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Имя" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Name}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Место работы" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding Store.Name}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Блокировка" IsReadOnly="True" CanUserResize="False" Width="auto" Binding="{Binding IsBlocked}"></DataGridTextColumn>
                         <DataGridTextColumn Header="Роль" IsReadOnly="True" CanUserResize="False" Width="auto">
                             <DataGridTextColumn.Binding>
                                 <Binding Path="PrincipalId" Converter="{StaticResource PrincipalIdToRoleConverter}" />
@@ -190,7 +191,7 @@
                                         <Button Style="{StaticResource gridEditButton}" Command="{Binding DataContext.EditRoleShowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
                                             <iconPacks:PackIconMaterial Kind="AccountEdit" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
-                                        <Button Style="{StaticResource gridDetailButton}" Command="{Binding DataContext.DetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
+                                        <Button Style="{StaticResource gridDetailButton}" Command="{Binding DataContext.BlockCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
                                             <iconPacks:PackIconMaterial Kind="Lock" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>
                                     </StackPanel>
@@ -203,9 +204,6 @@
                 </DataGrid>
                 
                 
-            </Grid>
-            <Grid Grid.Column="1" Margin="30 20 20 20">
-                <ContentControl Grid.Row="1" Content="{Binding DetailsPage}"/>
             </Grid>
     </Grid>
 </UserControl>

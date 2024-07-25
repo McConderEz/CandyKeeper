@@ -56,7 +56,7 @@ public class AccountService : IAccountService
                     {
                         command.Parameters.AddWithValue("roleName", "Client");
                         var principalId = (int)command.ExecuteScalar();
-                        user = User.Create(0, userName, hashedPassword, principalId, 8).Value;
+                        user = User.Create(0, userName, hashedPassword, principalId).Value;
                     
                         await _userService.Create(user);
                     }

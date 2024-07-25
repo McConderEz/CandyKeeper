@@ -11,7 +11,7 @@ namespace CandyKeeper.Domain.Models
     {
         public const int MAX_NAME_SIZE = 100;
 
-        private User(int id,string name, string passwordHashed,int principalId,int? storeId = null, Store store = null)
+        private User(int id,string name, string passwordHashed,int principalId,int? storeId = null, Store store = null, bool isBlocked = false)
         {
             Id = id;
             Name = name;
@@ -19,6 +19,7 @@ namespace CandyKeeper.Domain.Models
             PrincipalId = principalId;
             StoreId = storeId;
             Store = store;
+            IsBlocked = isBlocked;
         }
 
         public int Id { get; }
@@ -27,9 +28,10 @@ namespace CandyKeeper.Domain.Models
         public int PrincipalId { get; }
         public int? StoreId { get; }
         public virtual Store? Store { get; }
+        public bool IsBlocked { get; } = false;
 
 
-        public static Result<User> Create(int id,string name, string passwordHashed, int principalId ,int? storeId = null, Store store = null)
+        public static Result<User> Create(int id,string name, string passwordHashed, int principalId ,int? storeId = null, Store store = null, bool isBlocked = false)
         {
             if (string.IsNullOrEmpty(name) || name.Length > MAX_NAME_SIZE)
                 return Result.Failure<User>("Name is null or empty");
@@ -37,7 +39,7 @@ namespace CandyKeeper.Domain.Models
             if (string.IsNullOrEmpty(passwordHashed))
                 return Result.Failure<User>("PasswordHashed is null or empty");
 
-            var user = new User(id, name, passwordHashed, principalId ,storeId, store);
+            var user = new User(id, name, passwordHashed, principalId ,storeId, store, isBlocked);
 
             return Result.Success(user);
         }

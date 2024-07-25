@@ -12,5 +12,6 @@ public class User
     public int PrincipalId { get; set; }
     public int? StoreId { get; set; }
     public virtual Store? Store { get; set; }
-    
+    public bool IsBlocked { get; set; } = false;
+
 }

@@ -8,4 +8,5 @@ public class UserEntity
     public int PrincipalId { get; set; }
     public int? StoreId { get; set; }
     public virtual StoreEntity? Store { get; set; }
+    public bool IsBlocked { get; set; } = false;
 }

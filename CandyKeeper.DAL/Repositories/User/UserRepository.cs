@@ -50,7 +50,8 @@ public class UserRepository : IUserRepository
                 userEntity.PasswordHashed,
                 userEntity.PrincipalId,
                 userEntity.StoreId,
-                store).Value;
+                store,
+                userEntity.IsBlocked).Value;
         }
 
         private Store MapToStore(StoreEntity userEntityStore)
@@ -121,11 +122,12 @@ public class UserRepository : IUserRepository
                 Name = user.Name,
                 PasswordHashed = user.PasswordHashed,
                 PrincipalId = user.PrincipalId,
-                StoreId = user.StoreId
+                StoreId = user.StoreId,
+                IsBlocked = user.IsBlocked
             };
         }
 
-        public async Task Update(int id, string name,int principalId ,int? storeId)
+        public async Task Update(int id, string name,int principalId ,int? storeId, bool isBlocked)
         {
             await _semaphore.WaitAsync();
 
@@ -136,7 +138,8 @@ public class UserRepository : IUserRepository
                     .ExecuteUpdateAsync(p => p
                         .SetProperty(p => p.Name, name)
                         .SetProperty(p => p.PrincipalId, principalId)
-                        .SetProperty(p => p.StoreId, storeId));
+                        .SetProperty(p => p.StoreId, storeId)
+                        .SetProperty(p => p.IsBlocked, isBlocked));
 
                 await _context.SaveChangesAsync();
             }

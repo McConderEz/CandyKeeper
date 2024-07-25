@@ -28,6 +28,7 @@ internal class UserViewModel: ViewModel
     
 
     private bool _isInvalidCredentials = false;
+    private bool _isBlockedAccount = false;
 
     private User _currentUser;
     private User _selectedUser = new();
@@ -92,7 +93,8 @@ internal class UserViewModel: ViewModel
                 userEntity.Id,
                 userEntity.Name,
                 SelectedUser.PrincipalId,
-                userEntity.StoreId);
+                userEntity.StoreId,
+                userEntity.IsBlocked);
             _accountService.DropRoleToUser(
                 _configuration.GetConnectionString("DefaultConnection")!,
                 userEntity.Name,
@@ -133,16 +135,27 @@ internal class UserViewModel: ViewModel
                 Name = user.Name,
                 PasswordHashed = user.PasswordHashed,
                 PrincipalId = user.PrincipalId,
-                StoreId = user.StoreId
+                StoreId = user.StoreId,
+                IsBlocked = user.IsBlocked
             };
+
+            if (CurrentUser.IsBlocked)
+                throw new MemberAccessException();
+            
             MainWindow window = new MainWindow(CurrentUser);
             _showMainEvent?.Invoke(null, CurrentUser);
             window.Show();
             
         }
+        catch (MemberAccessException ex)
+        {
+            IsBlockedAccount = true;
+            CurrentUser = new();
+        }
         catch (Exception ex)
         {
             IsInvalidCredentials = true;
+            CurrentUser = new();
         }
         finally
         {
@@ -233,6 +246,45 @@ internal class UserViewModel: ViewModel
         }
     }
     
+    public ICommand BlockCommand { get; }
+    private bool CanBlockCommandExecute(object p) => true;
+    public async void OnBlockCommandExecuted(object p)
+    {
+        if (p is int id)
+        {
+            SelectedUser.Id = id;
+            previousPrincipalId = SelectedUser.PrincipalId;
+        }
+        else
+        {
+            return;
+        }
+
+        await _semaphore.WaitAsync();
+
+        try
+        {
+            var userEntity = await _userService.GetById(SelectedUser.Id);
+            
+            await _userService.Update(
+                userEntity.Id,
+                userEntity.Name,
+                userEntity.PrincipalId,
+                userEntity.StoreId,
+                !userEntity.IsBlocked);
+            
+            _refreshEvent?.Invoke(null, EventArgs.Empty);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+    
     public User CurrentUser
     {
         get => _currentUser;
@@ -251,6 +303,12 @@ internal class UserViewModel: ViewModel
         set => Set(ref _isInvalidCredentials, value);
     }
 
+    public bool IsBlockedAccount
+    {
+        get => _isBlockedAccount;
+        set => Set(ref _isBlockedAccount, value);
+    }
+    
     public static event EventHandler<User> CloseEvent
     {
         add => _closeEvent += value;
@@ -281,6 +339,7 @@ internal class UserViewModel: ViewModel
         GoToLoginCommand = new LambdaCommand(OnGoToLoginCommandExecuted);
         EditRoleShowCommand = new LambdaCommand(OnEditRoleShowCommandExecuted);
         EditRoleCommand = new LambdaCommand(OnEditRoleCommandExecuted);
+        BlockCommand = new LambdaCommand(OnBlockCommandExecuted);
         
         _configuration = configuration;
         CurrentUser = new User();
