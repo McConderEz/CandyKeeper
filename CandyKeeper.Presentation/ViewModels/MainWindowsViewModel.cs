@@ -6,6 +6,7 @@ using CandyKeeper.Presentation.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,6 @@ namespace CandyKeeper.Presentation.ViewModels
 {
     internal class MainWindowsViewModel : ViewModel
     {
-        
         private static event EventHandler<User> _transferCurrentUserEvent;
         
         private UserControl _currentView;

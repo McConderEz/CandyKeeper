@@ -176,7 +176,7 @@
                                 DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="20 -30 0 0">
                             <Ellipse>
                                 <Ellipse.Fill>
-                                    <ImageBrush ImageSource="C:\Users\rusta\RiderProjects\CandyKeeper\CandyKeeper.Presentation\Images\avatardefault_92824.png"/>
+                                    <ImageBrush ImageSource="pack://application:,,,/Images/avatardefault_92824.png"/>
                                 </Ellipse.Fill>
                             </Ellipse>
                         </Border>
