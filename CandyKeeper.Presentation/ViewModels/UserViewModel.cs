@@ -228,7 +228,7 @@ internal class UserViewModel: ViewModel
             _semaphore.Release();
         }
     }
-    
+
     public ICommand GoToLoginCommand { get; }
     private bool CanGoToLoginCommandExecute(object p) => true;
     public async void OnGoToLoginCommandExecuted(object p)

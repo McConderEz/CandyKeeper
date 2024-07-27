@@ -16,6 +16,10 @@ namespace CandyKeeper.DAL.Configuration
         {
             builder.HasKey(s => s.Id);
 
+            builder.ToTable(t =>
+                t.HasCheckConstraint("PhoneConstraintForSupplier",
+                    "Phone LIKE '^\\+\\d{1,3}\\d{10}$'"));
+            
             builder.Property(s => s.Name)
                 .HasMaxLength(Supplier.MAX_NAME_SIZE)
                 .IsRequired();

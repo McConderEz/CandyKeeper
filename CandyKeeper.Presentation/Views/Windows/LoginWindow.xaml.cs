@@ -31,6 +31,8 @@ public partial class LoginWindow : Window
             this.Show();
         }
     }
+    
+
 
     private void Border_MouseDown(object sender, MouseButtonEventArgs e)
     {

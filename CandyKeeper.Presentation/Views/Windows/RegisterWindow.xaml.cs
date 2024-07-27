@@ -8,7 +8,6 @@ namespace CandyKeeper.Presentation.Views.Windows;
 
 public partial class RegisterWindow : Window
 {
-    //TODO: Сделать скрытие вводимого пароля
     private bool IsMaximized = false;
     
     public RegisterWindow()

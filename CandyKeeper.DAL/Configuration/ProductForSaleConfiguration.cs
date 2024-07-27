@@ -15,6 +15,9 @@ namespace CandyKeeper.DAL.Configuration
         public void Configure(EntityTypeBuilder<ProductForSaleEntity> builder)
         {
             builder.HasKey(p => p.Id);
+            builder.ToTable(t => t.HasCheckConstraint("VolumeConstraint", "Volume >= 0"))
+                .ToTable(t => t.HasCheckConstraint("PriceConstraint", "Price >= 1"));
+                
 
             builder.HasOne(p => p.Store)
                 .WithMany(s => s.ProductForSales)

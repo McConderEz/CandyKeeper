@@ -35,7 +35,7 @@
             <TextBlock Text="Пароль" Margin="65 10 0 0"></TextBlock>
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="Lock" Style="{StaticResource loginButtonIcon}" />
-                <TextBox Width="150" Text="{Binding CurrentUser.PasswordHashed}"></TextBox>
+                <TextBox  Width="150" Text="{Binding CurrentUser.PasswordHashed}" InputScope="Password"></TextBox>
             </StackPanel>
             
             </StackPanel>

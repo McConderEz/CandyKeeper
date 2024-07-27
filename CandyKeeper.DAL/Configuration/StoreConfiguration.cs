@@ -16,6 +16,15 @@ namespace CandyKeeper.DAL.Configuration
         {
             builder.HasKey(s => s.Id);
 
+            builder
+                .ToTable(t =>
+                    t.HasCheckConstraint("YearOfOpenedConstraint", $"YEAR(YearOfOpened) <= YEAR(GETDATE())"))
+                .ToTable(t =>
+                    t.HasCheckConstraint("PhoneConstraintForStore",
+                        "Phone LIKE '^\\+\\d{1,3}\\d{10}$'"))
+                .ToTable(t =>
+                    t.HasCheckConstraint("StoreNumberConstrains", "StoreNumber >= 100000 And StoreNumber <= 999999"));
+
             builder.Property(s => s.Name)
                 .HasMaxLength(Store.MAX_NAME_SIZE);
 
