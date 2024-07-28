@@ -105,19 +105,31 @@ namespace CandyKeeper.Presentation.ViewModels
                     var product = Product.Create(
                         _selectedItem.Id,
                         _selectedItem.Name,
-                        _selectedItem.ProductTypeId).Value;
-                    await _productService.Create(product);
+                        _selectedItem.ProductTypeId);
+
+                    if (product.IsFailure)
+                        throw new ArgumentException();
+
+                    await _productService.Create(product.Value);
                 }
                 else
                 {
                     var product = Product.Create(
                         _selectedItem.Id,
                         _selectedItem.Name,
-                        _selectedItem.ProductTypeId).Value;
-                    await _productService.Update(product);
+                        _selectedItem.ProductTypeId);
+
+                    if (product.IsFailure)
+                        throw new ArgumentException();
+
+                    await _productService.Update(product.Value);
                 }
-                
+
                 _refreshEvent?.Invoke(null);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
             }
             catch (Exception ex)
             {

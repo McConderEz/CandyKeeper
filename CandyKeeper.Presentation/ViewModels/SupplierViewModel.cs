@@ -127,8 +127,12 @@ namespace CandyKeeper.Presentation.ViewModels
                         _selectedItem.OwnershipTypeId,
                         _selectedItem.CityId,
                         _selectedItem.Phone
-                        ).Value;
-                    await _service.Create(supplier);
+                    );
+
+                    if (supplier.IsFailure)
+                        throw new ArgumentException();
+
+                    await _service.Create(supplier.Value);
                 }
                 else
                 {
@@ -138,11 +142,19 @@ namespace CandyKeeper.Presentation.ViewModels
                         _selectedItem.OwnershipTypeId,
                         _selectedItem.CityId,
                         _selectedItem.Phone
-                    ).Value;
-                    await _service.Update(supplier);
+                    );
+
+                    if (supplier.IsFailure)
+                        throw new ArgumentException();
+
+                    await _service.Update(supplier.Value);
                 }
-                
+
                 _refreshEvent?.Invoke(null);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
             }
             catch (Exception ex)
             {

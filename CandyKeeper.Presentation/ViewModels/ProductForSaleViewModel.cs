@@ -129,8 +129,12 @@ namespace CandyKeeper.Presentation.ViewModels
                         _selectedItem.ProductDeliveryId,
                         _selectedItem.PackagingId,
                         _selectedItem.Price,
-                        _selectedItem.Volume).Value;
-                    await _service.Create(productForSale);
+                        _selectedItem.Volume);
+
+                    if (productForSale.IsFailure)
+                        throw new ArgumentException();
+
+                    await _service.Create(productForSale.Value);
                 }
                 else
                 {
@@ -141,11 +145,19 @@ namespace CandyKeeper.Presentation.ViewModels
                         _selectedItem.ProductDeliveryId,
                         _selectedItem.PackagingId,
                         _selectedItem.Price,
-                        _selectedItem.Volume).Value;
-                    await _service.Update(productForSale);
+                        _selectedItem.Volume);
+
+                    if (productForSale.IsFailure)
+                        throw new ArgumentException();
+
+                    await _service.Update(productForSale.Value);
                 }
-                
+
                 _refreshEvent?.Invoke(null);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
             }
             catch (Exception ex)
             {

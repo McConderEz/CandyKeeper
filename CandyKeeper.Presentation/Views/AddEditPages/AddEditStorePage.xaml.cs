@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CandyKeeper.Application.Interfaces;
 using CandyKeeper.Domain.Models;
+using CandyKeeper.Presentation.ViewModels;
 
 namespace CandyKeeper.Presentation.Views.AddEditPages;
 
@@ -17,8 +18,13 @@ public partial class AddEditStorePage : Window
     public AddEditStorePage()
     {
         InitializeComponent();
+        StoreViewModel.RefreshEvent += CloseFormAfterUpdate;
     }
 
+    private void CloseFormAfterUpdate(object p)
+    {
+        CloseBtn(null,null);
+    }
 
     private void Border_MouseDown(object sender, MouseButtonEventArgs e)
     {

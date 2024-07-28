@@ -129,8 +129,12 @@ namespace CandyKeeper.Presentation.ViewModels
                         _selectedItem.Phone,
                         _selectedItem.OwnershipTypeId,
                         _selectedItem.DistrictId
-                        ).Value;
-                    await _service.Create(store);
+                    );
+
+                    if (store.IsFailure)
+                        throw new ArgumentException();
+
+                    await _service.Create(store.Value);
                 }
                 else
                 {
@@ -141,11 +145,19 @@ namespace CandyKeeper.Presentation.ViewModels
                         _selectedItem.YearOfOpened,
                         _selectedItem.Phone,
                         _selectedItem.OwnershipTypeId,
-                        _selectedItem.DistrictId).Value;
-                    await _service.Update(store);
+                        _selectedItem.DistrictId);
+
+                    if (store.IsFailure)
+                        throw new ArgumentException();
+
+                    await _service.Update(store.Value);
                 }
-                
+
                 _refreshEvent?.Invoke(null);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
             }
             catch (Exception ex)
             {
