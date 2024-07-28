@@ -23,6 +23,7 @@ internal class UserViewModel: ViewModel
     
     private readonly IUserService _userService;
     private readonly IAccountService _accountService;
+    private readonly IStoreService _storeService;
     private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
     private readonly IConfiguration _configuration;
     
@@ -330,10 +331,11 @@ internal class UserViewModel: ViewModel
     }
     
     
-    public UserViewModel(IUserService userService, IAccountService accountService, IConfiguration configuration)
+    public UserViewModel(IUserService userService, IAccountService accountService,IStoreService storeService ,IConfiguration configuration)
     {
         _userService = userService;
         _accountService = accountService;
+        _storeService = storeService;
         
         LoginCommand = new LambdaCommand(OnLoginCommandExecuted);
         GoToRegCommand = new LambdaCommand(OnGoToRegCommandExecuted);
