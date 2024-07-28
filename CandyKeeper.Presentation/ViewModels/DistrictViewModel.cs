@@ -106,19 +106,31 @@ namespace CandyKeeper.Presentation.ViewModels
                     var district = District.Create(
                         _selectedItem.Id,
                         _selectedItem.Name,
-                        _selectedItem.CityId).Value;
-                    await _districtService.Create(district);
+                        _selectedItem.CityId);
+
+                    if (district.IsFailure)
+                        throw new ArgumentException();
+
+                    await _districtService.Create(district.Value);
                 }
                 else
                 {
                     var district = District.Create(
                         _selectedItem.Id,
                         _selectedItem.Name,
-                        _selectedItem.CityId).Value;
-                    await _districtService.Update(district);
+                        _selectedItem.CityId);
+
+                    if (district.IsFailure)
+                        throw new ArgumentException();
+
+                    await _districtService.Update(district.Value);
                 }
-                
+
                 _refreshEvent?.Invoke(null);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
             }
             catch (Exception ex)
             {
@@ -220,6 +232,13 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        private bool _isInvalid = false;
+
+        public bool IsInvalid
+        {
+            get => _isInvalid;
+            set => Set(ref _isInvalid, value);
+        }
 
         public static event Delegate RefreshEvent
         {

@@ -5,6 +5,7 @@ using System.Windows.Input;
 using CandyKeeper.Application.Interfaces;
 using CandyKeeper.Application.Services;
 using CandyKeeper.Domain.Models;
+using CandyKeeper.Presentation.ViewModels;
 
 namespace CandyKeeper.Presentation.Views.AddEditPages;
 
@@ -18,6 +19,12 @@ public partial class AddEditPackagingPage : Window
     public AddEditPackagingPage()
     {
         InitializeComponent();
+        PackagingViewModel.RefreshEvent += CloseFormAfterUpdate;
+    }
+
+    private void CloseFormAfterUpdate(object p)
+    {
+        CloseBtn(null, null);
     }
 
 

@@ -4,12 +4,16 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:CandyKeeper.Presentation.Views.AddEditPages"
+      xmlns:ext="clr-namespace:CandyKeeper.Presentation.Extensions"
       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       WindowStartupLocation="CenterScreen"
       WindowStyle="None"
       AllowsTransparency="True" Background="Transparent"
       DataContext="{Binding CityViewModel,Source={StaticResource Locator}}"
       Title="AddEditProductForSalePage" Height="400" Width="300">
+    <Window.Resources>
+        <ext:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></ext:BooleanToVisibilityConverter>
+    </Window.Resources>
     <Border Background="#dbdae0" CornerRadius="20"
             MouseDown="Border_MouseDown" MouseLeftButtonDown="Border_MouseLeftButtonDown">
         <Grid>
@@ -28,12 +32,18 @@
                 <TextBox Width="200" Text="{Binding SelectedItem.Name}" ></TextBox>
             
                 <!--Сохранение-->
-                <Button Style="{StaticResource addButton}" Height="30" Width="100" Margin="100,200,100,0" Click="CloseBtn" Command="{Binding AddEditCommand}">
-                    <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial Kind="ContentSave" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
-                        <TextBlock Text="Сохранить"/>
-                    </StackPanel>
-                </Button>
+                <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,200,0,0">
+                    <TextBlock Grid.Row="2" Margin="10,0,10,0" Visibility="{Binding IsInvalid, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Red" FontSize="10" HorizontalAlignment="Center">
+                        Некорректный ввод. Попробуйте еще раз.
+                    </TextBlock>
+                    <Button Style="{StaticResource addButton}" Height="30" Width="100" Margin="100,10,100,0" Command="{Binding AddEditCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="ContentSave" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
+                            <TextBlock Text="Сохранить"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                
             </StackPanel>
         </Grid>
     </Border>

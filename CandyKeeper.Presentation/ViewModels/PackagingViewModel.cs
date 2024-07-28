@@ -106,18 +106,30 @@ namespace CandyKeeper.Presentation.ViewModels
                 {
                     var packaging = Packaging.Create(
                         _selectedItem.Id,
-                        _selectedItem.Name).Value;
-                    await _packagingService.Create(packaging);
+                        _selectedItem.Name);
+
+                    if (packaging.IsFailure)
+                        throw new ArgumentException();
+
+                    await _packagingService.Create(packaging.Value);
                 }
                 else
                 {
                     var packaging = Packaging.Create(
                         _selectedItem.Id,
-                        _selectedItem.Name).Value;
-                    await _packagingService.Update(packaging);
+                        _selectedItem.Name);
+
+                    if (packaging.IsFailure)
+                        throw new ArgumentException();
+
+                    await _packagingService.Update(packaging.Value);
                 }
-                
+
                 _refreshEvent?.Invoke(null);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
             }
             catch (Exception ex)
             {
@@ -219,6 +231,13 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        private bool _isInvalid = false;
+
+        public bool IsInvalid
+        {
+            get => _isInvalid;
+            set => Set(ref _isInvalid, value);
+        }
 
         public static event Delegate RefreshEvent
         {

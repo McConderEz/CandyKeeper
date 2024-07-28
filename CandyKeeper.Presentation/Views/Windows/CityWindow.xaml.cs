@@ -17,7 +17,7 @@ public partial class CityWindow : UserControl
     public void RefreshDataGridHandler(object p)
     {
         CityDataGrid.Items.Refresh();
-        if (DataContext is ProductViewModel viewModel)
+        if (DataContext is CityViewModel viewModel)
         {
             viewModel.OnGetCommandExecuted(null);
         }

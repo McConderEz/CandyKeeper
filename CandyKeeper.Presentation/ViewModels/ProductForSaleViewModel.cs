@@ -247,7 +247,14 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        private bool _isInvalid = false;
 
+        public bool IsInvalid
+        {
+            get => _isInvalid;
+            set => Set(ref _isInvalid, value);
+        }
+        
         public static event Delegate RefreshEvent
         {
             add => _refreshEvent += value;

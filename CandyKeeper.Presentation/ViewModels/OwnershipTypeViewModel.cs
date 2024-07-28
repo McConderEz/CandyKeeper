@@ -105,18 +105,30 @@ namespace CandyKeeper.Presentation.ViewModels
                 {
                     var ownershipType = OwnershipType.Create(
                         _selectedItem.Id,
-                        _selectedItem.Name).Value;
-                    await _ownershipTypeService.Create(ownershipType);
+                        _selectedItem.Name);
+
+                    if (ownershipType.IsFailure)
+                        throw new ArgumentException();
+
+                    await _ownershipTypeService.Create(ownershipType.Value);
                 }
                 else
                 {
                     var ownershipType = OwnershipType.Create(
                         _selectedItem.Id,
-                        _selectedItem.Name).Value;
-                    await _ownershipTypeService.Update(ownershipType);
+                        _selectedItem.Name);
+
+                    if (ownershipType.IsFailure)
+                        throw new ArgumentException();
+
+                    await _ownershipTypeService.Update(ownershipType.Value);
                 }
-                
+
                 _refreshEvent?.Invoke(null);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
             }
             catch (Exception ex)
             {
@@ -218,7 +230,14 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        private bool _isInvalid = false;
 
+        public bool IsInvalid
+        {
+            get => _isInvalid;
+            set => Set(ref _isInvalid, value);
+        }
+        
         public static event Delegate RefreshEvent
         {
             add => _refreshEvent += value;

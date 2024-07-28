@@ -12,6 +12,7 @@ using System.Windows.Input;
 using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.Views.AddEditPages;
 using CandyKeeper.Presentation.Views.DetailsPages;
+using CSharpFunctionalExtensions;
 
 namespace CandyKeeper.Presentation.ViewModels
 {
@@ -26,7 +27,7 @@ namespace CandyKeeper.Presentation.ViewModels
         
         private readonly ICityService _cityService;
         private readonly ISupplierService _supplierService;
-
+            
         
         private ObservableCollection<City> _cities;
         
@@ -106,18 +107,30 @@ namespace CandyKeeper.Presentation.ViewModels
                 {
                     var city = City.Create(
                         _selectedItem.Id,
-                        _selectedItem.Name).Value;
-                    await _cityService.Create(city);
+                        _selectedItem.Name);
+
+                    if (city.IsFailure)
+                        throw new ArgumentException();
+                    
+                    await _cityService.Create(city.Value);
                 }
                 else
                 {
                     var city = City.Create(
                         _selectedItem.Id,
-                        _selectedItem.Name).Value;
-                    await _cityService.Update(city);
+                        _selectedItem.Name);
+                    
+                    if (city.IsFailure)
+                        throw new ArgumentException();
+                    
+                    await _cityService.Update(city.Value);
                 }
-                
+
                 _refreshEvent?.Invoke(null);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
             }
             catch (Exception ex)
             {
@@ -218,8 +231,15 @@ namespace CandyKeeper.Presentation.ViewModels
         #endregion
         
         #endregion
-        
 
+
+        private bool _isInvalid = false;
+
+        public bool IsInvalid
+        {
+            get => _isInvalid;
+            set => Set(ref _isInvalid, value);
+        }
         public static event Delegate RefreshEvent
         {
             add => _refreshEvent += value;
