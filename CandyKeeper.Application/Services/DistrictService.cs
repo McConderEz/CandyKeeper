@@ -21,7 +21,7 @@ namespace CandyKeeper.Application.Services
         public async Task<List<District>> GetBySearchingString(string searchingString)
         {
             var districts = await _repository.Get();
-            return districts.Where(d => d.Name == searchingString || d.City.Name == searchingString).ToList();
+            return districts.Where(d => d.Name.Contains(searchingString) || d.City.Name.Contains(searchingString)).ToList();
         }
         
         public async Task<List<District>> Get()

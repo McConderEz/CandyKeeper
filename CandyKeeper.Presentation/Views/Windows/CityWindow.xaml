@@ -169,8 +169,22 @@
                                                     Height="15"
                                                     Foreground="#b0b9c6" />
                     </Button>
+                    
+                    <Button Command="{Binding GetCommand}"
+                            Width="Auto"
+                            Height="Auto"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="0 0 -35 0">
+                        <iconPacks:PackIconMaterial Kind="Refresh"
+                                                    Width="15"
+                                                    Height="15"
+                                                    Foreground="#b0b9c6" />
+                    </Button>
                 </Grid>
-
+                
                 <!--Верхние кнопки-->
                 
 
