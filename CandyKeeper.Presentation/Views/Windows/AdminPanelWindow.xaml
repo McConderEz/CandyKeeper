@@ -188,6 +188,9 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
+                                        <Button Style="{StaticResource gridEditButton}" Command="{Binding DataContext.EditJobShowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
+                                            <iconPacks:PackIconMaterial Kind="Factory" Style="{StaticResource gridButtonIcon}"/>
+                                        </Button>
                                         <Button Style="{StaticResource gridEditButton}" Command="{Binding DataContext.EditRoleShowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">
                                             <iconPacks:PackIconMaterial Kind="AccountEdit" Style="{StaticResource gridButtonIcon}"/>
                                         </Button>

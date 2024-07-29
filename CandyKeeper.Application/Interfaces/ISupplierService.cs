@@ -11,5 +11,6 @@ namespace CandyKeeper.Application.Interfaces
         Task Update(Supplier supplier);
         Task AddStore(int id, Store model);
         Task DeleteStore(int id, Store model);
+        Task<List<Supplier>> GetBySearchingString(string searchingString);
     }
 }

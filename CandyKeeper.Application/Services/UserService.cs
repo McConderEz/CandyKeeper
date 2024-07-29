@@ -1,6 +1,8 @@
 ﻿using CandyKeeper.Application.Interfaces;
 using CandyKeeper.DAL.Repositories.User;
 using CandyKeeper.Domain.Models;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 namespace CandyKeeper.Application.Services;
 
@@ -12,6 +14,7 @@ public class UserService : IUserService
     {
         _repository = repository;
     }
+    
     
     public async Task Create(User user)
     {

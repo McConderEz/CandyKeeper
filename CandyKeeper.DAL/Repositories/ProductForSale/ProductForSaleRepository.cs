@@ -50,6 +50,41 @@ namespace CandyKeeper.DAL
             }
         }
 
+        public async Task<List<ProductForSale>> GetByStoreId(int storeId)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                IQueryable<ProductForSaleEntity> productForSaleEntities = _context.ProductForSales.Where(pfs => pfs.StoreId == storeId).AsNoTracking();
+
+                if (productForSaleEntities == null)
+                    throw new Exception("productForSale null");
+
+
+                var productForSales =  productForSaleEntities
+                    .Include(pfs => pfs.Product)
+                    .ThenInclude(p => p.ProductType)
+                    .Include(pfs => pfs.Packaging)
+                    .Include(pfs => pfs.Store)
+                    .ThenInclude(s => s.District)
+                    .ThenInclude(d => d.City)
+                    .Include(pfs => pfs.ProductDelivery)
+                    .ThenInclude(pd => pd.Supplier)
+                    .Select(pfs => MapToProductForSale(pfs));
+
+                return productForSales.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
         public async Task<ProductForSale> GetById(int id)
         {
             await _semaphore.WaitAsync();
@@ -238,7 +273,7 @@ namespace CandyKeeper.DAL
             };
         }
 
-        private ProductForSale MapToProductForSale(ProductForSaleEntity productForSaleEntity)
+        private  ProductForSale MapToProductForSale(ProductForSaleEntity productForSaleEntity)
         {
             var product = productForSaleEntity.Product != null ? MapToProduct(productForSaleEntity.Product) : null;
             var store = productForSaleEntity.Store != null ? MapToStore(productForSaleEntity.Store) : null;

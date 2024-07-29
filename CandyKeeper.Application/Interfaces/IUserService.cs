@@ -10,4 +10,5 @@ public interface IUserService
     Task<Domain.Models.User> GetById(int id);
     Task Update(int id, string name,int principalId, int? storeId, bool isBlocked);
     Task<User> GetByUserName(string userName);
+
 }

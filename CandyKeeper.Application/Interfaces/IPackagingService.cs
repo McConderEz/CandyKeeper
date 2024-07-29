@@ -9,5 +9,6 @@ namespace CandyKeeper.Application.Services
         Task<List<Packaging>> Get();
         Task<Packaging> GetById(int id);
         Task Update(Packaging packaging);
+        Task<List<Packaging>> GetBySearchingString(string searchingString);
     }
 }

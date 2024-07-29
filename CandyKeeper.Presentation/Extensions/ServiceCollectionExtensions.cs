@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using CandyKeeper.DAL.Repositories.User;
 using CandyKeeper.Presentation.ViewModels.Base;
 using CSharpFunctionalExtensions;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic.ApplicationServices;
 
@@ -33,7 +34,7 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddScoped<IStoreRepository, StoreRepository>();
             services.AddScoped<ISupplierRepository, SupplierRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-
+            
             return services;
         }
 
@@ -49,10 +50,12 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddScoped<IProductTypeService, ProductTypeService>();
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<ISupplierService, SupplierService>();
-            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPasswordHasherService, PasswordHasherService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserService, UserService>();
 
+            services.AddSingleton<IUserSessionService, UserSessionService>();
+            
             return services;
         }
 

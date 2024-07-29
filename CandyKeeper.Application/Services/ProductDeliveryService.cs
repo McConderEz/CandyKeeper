@@ -18,6 +18,12 @@ namespace CandyKeeper.Application.Services
             _repository = productDeliveryRepository;
         }
 
+        public async Task<List<ProductDelivery>> GetBySearchingString(string searchingString)
+        {
+            var productDeliveries = await _repository.Get();
+            return productDeliveries.Where(d => d.Store.Name == searchingString || d.Supplier.Name == searchingString).ToList();
+        }
+        
         public async Task<List<ProductDelivery>> Get()
         {
             return await _repository.Get();

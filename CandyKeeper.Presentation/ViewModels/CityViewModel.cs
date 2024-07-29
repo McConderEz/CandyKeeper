@@ -27,18 +27,12 @@ namespace CandyKeeper.Presentation.ViewModels
         
         private readonly ICityService _cityService;
         private readonly ISupplierService _supplierService;
-            
-        
         private ObservableCollection<City> _cities;
-        
         private ObservableCollection<Supplier> _suppliers;
-
-
         private Models.City _selectedItem = new();
         private City _selectedItemForDetails;
-
         private DetailsCityPage _detailsView;
-        
+        private string _searchingString;
         #region Команды
 
         #region  GetCommand
@@ -230,6 +224,33 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        
+        public ICommand SearchCommand { get; }
+        private bool CanSearchCommandExecute(object p) => true;
+        public async void OnSearchCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(SearchingString))
+                {
+                    Cities = new ObservableCollection<City>(await _cityService.GetBySearchingString(SearchingString));
+                }
+                else
+                {
+                    OnGetCommandExecuted(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
         #endregion
 
 
@@ -240,6 +261,13 @@ namespace CandyKeeper.Presentation.ViewModels
             get => _isInvalid;
             set => Set(ref _isInvalid, value);
         }
+
+        public string SearchingString
+        {
+            get => _searchingString;
+            set => Set(ref _searchingString, value);
+        }
+        
         public static event Delegate RefreshEvent
         {
             add => _refreshEvent += value;
@@ -300,6 +328,7 @@ namespace CandyKeeper.Presentation.ViewModels
             DeleteCommand = new LambdaCommand(OnDeleteCommandExecuted);
             DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
+            SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
             
             _cities = new ObservableCollection<City>();
             OnGetCommandExecuted(null);

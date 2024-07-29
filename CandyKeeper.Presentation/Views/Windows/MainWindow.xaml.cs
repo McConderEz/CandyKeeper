@@ -27,7 +27,7 @@ namespace CandyKeeper.Presentation
     {
         private bool IsMaximized = false;
 
-        public MainWindow(User currentUser)
+        public MainWindow()
         {
             InitializeComponent();
             MainWindowsViewModel.LeaveAccountEvent += CloseMainWindow;

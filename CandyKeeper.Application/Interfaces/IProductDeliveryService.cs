@@ -10,5 +10,6 @@ namespace CandyKeeper.Application.Interfaces
         Task<ProductDelivery> GetById(int id);
         Task Update(ProductDelivery productDelivery);
         Task AddProductForSale(int id, ProductForSale model);
+        Task<List<ProductDelivery>> GetBySearchingString(string searchingString);
     }
 }

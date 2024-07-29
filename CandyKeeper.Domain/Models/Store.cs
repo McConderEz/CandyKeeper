@@ -23,7 +23,7 @@ namespace CandyKeeper.Domain.Models
 
         private Store(int id,int storeNumber, string name, DateTime yearOfOpened, string phone,int ownershipTypeId,int districtId,
             OwnershipType ownershipType, District district,
-            IEnumerable<Supplier> suppliers, IEnumerable<ProductForSale> productForSales, IEnumerable<ProductDelivery> productDeliveries)
+            IEnumerable<Supplier> suppliers, IEnumerable<ProductForSale> productForSales, IEnumerable<ProductDelivery> productDeliveries, int numberOfEmployees)
         {
             Id = id;
             StoreNumber = storeNumber;
@@ -34,6 +34,7 @@ namespace CandyKeeper.Domain.Models
             DistrictId = districtId;
             OwnershipType = ownershipType;
             District = district;
+            NumberOfEmployees = numberOfEmployees;
             AddSupplier(suppliers.ToList());
             AddProductForSale(productForSales.ToList());
             AddProductDelivery(productDeliveries.ToList());
@@ -56,12 +57,13 @@ namespace CandyKeeper.Domain.Models
         public void AddSupplier(List<Supplier> suppliers) => _suppliers.AddRange(suppliers);
         public void AddProductForSale(List<ProductForSale> productForSales) => _productForSales.AddRange(productForSales);
         public void AddProductDelivery(List<ProductDelivery> productDeliveries) => _productDeliveries.AddRange(productDeliveries);
-
+        
         public void CountNumberOfEmployees() => NumberOfEmployees++;
+        public void DecNumberOfEmployees() => NumberOfEmployees--;
 
         public static Result<Store> Create(int id,int storeNumber, string name, DateTime yearOfOpened, string phone, int ownershipTypeId, int districtId,
                       OwnershipType ownershipType = null, District district = null,
-                      IEnumerable<Supplier> suppliers = null, IEnumerable<ProductForSale> productForSales = null, IEnumerable<ProductDelivery> productDeliveries = null)
+                      IEnumerable<Supplier> suppliers = null, IEnumerable<ProductForSale> productForSales = null, IEnumerable<ProductDelivery> productDeliveries = null, int numberOfEmployees = 0)
         {
             if (storeNumber < STORE_NUMBER_MIN || storeNumber > STORE_NUMBER_MAX)
                 return Result.Failure<Store>("storeNumber is in incorrect ranger");
@@ -81,7 +83,8 @@ namespace CandyKeeper.Domain.Models
                                   ownershipType, district,
                                   suppliers ?? Enumerable.Empty<Supplier>(),
                                   productForSales ?? Enumerable.Empty<ProductForSale>(),
-                                  productDeliveries ?? Enumerable.Empty<ProductDelivery>());
+                                  productDeliveries ?? Enumerable.Empty<ProductDelivery>(),
+                                  numberOfEmployees);
 
             return Result.Success(store);
         }

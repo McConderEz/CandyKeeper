@@ -9,5 +9,6 @@ namespace CandyKeeper.Application.Interfaces
         Task<List<OwnershipType>> Get();
         Task<OwnershipType> GetById(int id);
         Task Update(OwnershipType ownershipType);
+        Task<List<OwnershipType>> GetBySearchingString(string searchingString);
     }
 }

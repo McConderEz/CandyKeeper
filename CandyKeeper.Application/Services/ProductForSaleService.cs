@@ -18,6 +18,12 @@ namespace CandyKeeper.Application.Services
         {
             _repository = productForSaleRepository;
         }
+        
+        public async Task<List<ProductForSale>> GetBySearchingString(string searchingString)
+        {
+            var productForSales = await _repository.Get();
+            return productForSales.Where(pfs => pfs.Product.Name == searchingString).ToList();
+        }
 
         public async Task<List<ProductForSale>> Get()
         {
@@ -39,6 +45,12 @@ namespace CandyKeeper.Application.Services
             await _repository.Update(productForSale.Id, productForSale.Price, productForSale.Volume, productForSale.ProductId,
                                     productForSale.StoreId, productForSale.ProductDeliveryId, productForSale.PackagingId);
         }
+
+        public async Task<List<ProductForSale>> GetByStoreId(int storeId)
+        {
+            return await _repository.GetByStoreId(storeId);
+        }
+
         public async Task Delete(int id)
         {
             await _repository.Delete(id);

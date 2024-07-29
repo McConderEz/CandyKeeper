@@ -21,6 +21,8 @@ using CandyKeeper.Presentation.Views.DetailsPages;
 using CandyKeeper.Presentation.Views.Windows;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
 using User = CandyKeeper.Presentation.Models.User;
 
 namespace CandyKeeper.Presentation.ViewModels
@@ -39,6 +41,8 @@ namespace CandyKeeper.Presentation.ViewModels
         private readonly IStoreService _storeService;
         private readonly IProductDeliveryService _productDeliveryService;
         private readonly IPackagingService _packagingService;
+        private readonly IUserService _userService;
+        private readonly IUserSessionService _userSessionService;
         private readonly IConfiguration _configuration;
         private User _currentUser;
 
@@ -55,6 +59,7 @@ namespace CandyKeeper.Presentation.ViewModels
         private ProductForSale _selectedItemForDetails;
 
         private DetailsProductForSalePage _detailsView;
+        private string _searchingString;
         
         #region Команды
 
@@ -67,7 +72,14 @@ namespace CandyKeeper.Presentation.ViewModels
             await _semaphore.WaitAsync();
             try
             {
-                ProductForSales = new ObservableCollection<ProductForSale>(await _service.Get());
+                if (CurrentUser.StoreId == null)
+                {
+                    ProductForSales = new ObservableCollection<ProductForSale>(await _service.Get());
+                }
+                else
+                {
+                    ProductForSales = new ObservableCollection<ProductForSale>(await _service.GetByStoreId((int)CurrentUser.StoreId));
+                }
             }
             catch (Exception ex)
             {
@@ -257,6 +269,33 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        
+        public ICommand SearchCommand { get; }
+        private bool CanSearchCommandExecute(object p) => true;
+        public async void OnSearchCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(SearchingString))
+                {
+                    ProductForSales = new ObservableCollection<ProductForSale>(await _service.GetBySearchingString(SearchingString));
+                }
+                else
+                {
+                    OnGetCommandExecuted(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
         #endregion
         
         private bool _isInvalid = false;
@@ -265,6 +304,12 @@ namespace CandyKeeper.Presentation.ViewModels
         {
             get => _isInvalid;
             set => Set(ref _isInvalid, value);
+        }
+        
+        public string SearchingString
+        {
+            get => _searchingString;
+            set => Set(ref _searchingString, value);
         }
         
         public static event Delegate RefreshEvent
@@ -339,30 +384,38 @@ namespace CandyKeeper.Presentation.ViewModels
         public bool IsClientVisible => IsClient();
         public bool IsManagerVisible => IsManager();
         
+        //TODO: Решить проблему с MemoryCache
         public ProductForSaleViewModel(IProductForSaleService service,
             IProductService productService,
             IStoreService storeService,
             IProductDeliveryService productDeliveryService,
             IPackagingService packagingService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IUserService userService,
+            IUserSessionService userSessionService)
         {
+            MainWindowsViewModel.TransferCurrentUserEvent += GetCurrentUser;
             _service = service;
             _productService = productService;
             _storeService = storeService;
             _productDeliveryService = productDeliveryService;
             _packagingService = packagingService;
+            _userService = userService;
+            _userSessionService = userSessionService;
             _configuration = configuration;
+
             
+            CurrentUser = _userSessionService.GetUserData<User>("CurrentUser");
             GetCommand = new LambdaCommand(OnGetCommandExecuted);
             AddEditShowCommand = new LambdaCommand(OnAddEditShowCommandExecuted);
             AddEditCommand = new LambdaCommand(OnAddEditCommandExecuted);
             DeleteCommand = new LambdaCommand(OnDeleteCommandExecuted);
             DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
+            SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
             
             _productForSales = new ObservableCollection<ProductForSale>();
             _roles = GetDatabaseRoles();
-            MainWindowsViewModel.TransferCurrentUserEvent += GetCurrentUser;
             OnGetCommandExecuted(null);
         }
 

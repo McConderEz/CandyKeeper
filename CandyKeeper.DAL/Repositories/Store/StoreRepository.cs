@@ -58,7 +58,8 @@ namespace CandyKeeper.DAL
                 _semaphore.Release();
             }
         }
-
+        
+        
         public async Task<Store> GetById(int id)
         {
             await _semaphore.WaitAsync();
@@ -264,7 +265,8 @@ namespace CandyKeeper.DAL
                 district,
                 suppliers,
                 productForSales,
-                productDeliveries
+                productDeliveries,
+                storeEntity.NumberOfEmployees
             ).Value;
         }
 
@@ -289,7 +291,8 @@ namespace CandyKeeper.DAL
                 District = districtEntity,
                 Suppliers = suppliersEntities,
                 ProductForSales = productForSalesEntities,
-                ProductDeliveries = productDeliveriesEntities
+                ProductDeliveries = productDeliveriesEntities,
+                NumberOfEmployees = store.NumberOfEmployees
             };
         }
 

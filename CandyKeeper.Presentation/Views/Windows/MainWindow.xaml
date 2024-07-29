@@ -151,6 +151,7 @@
         
              
         <Grid>
+            
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="*"/>
@@ -299,6 +300,9 @@
             </Grid>
 
             <Grid Grid.Column="1" Margin="30 20 20 20">
+                <Button HorizontalAlignment="Right" VerticalAlignment="Top" Style="{StaticResource topButton}" Command="{Binding CloseApplicationCommand}">
+                    <Icon:PackIconMaterial Kind="Close" Width="15" Height="15"/>
+                </Button>
                 <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
                     
 

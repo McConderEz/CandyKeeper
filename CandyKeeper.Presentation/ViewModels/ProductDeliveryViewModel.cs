@@ -41,6 +41,7 @@ namespace CandyKeeper.Presentation.ViewModels
         private int _productForSaleId;
 
         private DetailsProductDeliveryPage _detailsView;
+        private string _searchingString;
         private DateTime _displayDate = new DateTime(2000, 1, 1);
         public DateTime DisplayDate
         {
@@ -243,6 +244,31 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        public ICommand SearchCommand { get; }
+        private bool CanSearchCommandExecute(object p) => true;
+        public async void OnSearchCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(SearchingString))
+                {
+                    ProductDeliveries = new ObservableCollection<ProductDelivery>(await _service.GetBySearchingString(SearchingString));
+                }
+                else
+                {
+                    OnGetCommandExecuted(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
         
         #region AddProductInProductDeliveryShowCommand
         public ICommand AddProductInProductDeliveryShowCommand { get; }
@@ -313,6 +339,12 @@ namespace CandyKeeper.Presentation.ViewModels
         {
             get => _isInvalid;
             set => Set(ref _isInvalid, value);
+        }
+        
+        public string SearchingString
+        {
+            get => _searchingString;
+            set => Set(ref _searchingString, value);
         }
         
         public static event Delegate RefreshEvent
@@ -398,6 +430,7 @@ namespace CandyKeeper.Presentation.ViewModels
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
             AddProductInProductDeliveryShowCommand = new LambdaCommand(OnAddProductInProductDeliveryShowCommandExecuted);
             AddProductInProductDeliveryCommand = new LambdaCommand(OnAddProductInProductDeliveryCommandExecuted);
+            SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
             
             _productDeliveries = new ObservableCollection<ProductDelivery>();
             OnGetCommandExecuted(null);

@@ -150,14 +150,25 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <!--Поисковое поле-->
-                <Grid Width="300" HorizontalAlignment="Left">
+                <Grid Width="300" Height="50" HorizontalAlignment="Left">
                     <TextBlock Margin="20 0" VerticalAlignment="Center" Foreground="#b0b9c6" IsHitTestVisible="False"
-                            Panel.ZIndex="1" Text="Искать здесь..."
-                            Visibility="{Binding ElementName=txtSearch, Converter={StaticResource BoolToVis}}"/>
-                    <TextBox x:Name="txtSearch" Style="{StaticResource textBoxSearch}"/>
+                               Panel.ZIndex="1" Text="Искать здесь..."
+                               Visibility="{Binding ElementName=txtSearch, Converter={StaticResource BoolToVis}}"/>
+                    <TextBox x:Name="txtSearch" Style="{StaticResource textBoxSearch}" VerticalContentAlignment="Center" Text="{Binding SearchingString}" Height="30"/>
 
-                    <iconPacks:PackIconMaterial Kind="Magnify" Width="15" Height="15" VerticalAlignment="Center"
-                           Margin="0 0 15 0" Foreground="#b0b9c6" HorizontalAlignment="Right"/>
+                    <Button Command="{Binding SearchCommand}"
+                            Width="Auto"
+                            Height="Auto"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="0 0 5 0">
+                        <iconPacks:PackIconMaterial Kind="Magnify"
+                                                    Width="15"
+                                                    Height="15"
+                                                    Foreground="#b0b9c6" />
+                    </Button>
                 </Grid>
 
                 <!--Верхние кнопки-->

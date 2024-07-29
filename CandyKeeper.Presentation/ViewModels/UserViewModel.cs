@@ -4,13 +4,16 @@ using System.Windows;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using CandyKeeper.Application.Interfaces;
+using CandyKeeper.Application.Services;
 using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.Models;
 using CandyKeeper.Presentation.Views.AddEditPages;
 using CandyKeeper.Presentation.Views.Windows;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CandyKeeper.Presentation.ViewModels.Base;
 
@@ -22,6 +25,7 @@ internal class UserViewModel: ViewModel
     private static event EventHandler _refreshEvent;
     
     private readonly IUserService _userService;
+    private readonly IUserSessionService _userSessionService;
     private readonly IAccountService _accountService;
     private readonly IStoreService _storeService;
     private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
@@ -35,10 +39,20 @@ internal class UserViewModel: ViewModel
     private User _selectedUser = new();
     private int previousPrincipalId;
     private ObservableCollection<Domain.Models.User> _users;
+    private List<Domain.Models.Store> _stores; 
+    
+    
     public List<DatabaseRole> _rolesToComboBox;
-
+    
+    
     public static List<DatabaseRole> Roles;
 
+    public List<Domain.Models.Store> Stores
+    {
+        get => _stores;
+        set => Set(ref _stores, value);
+    }
+    
     public List<DatabaseRole> RolesToComboBox
     {
         get => _rolesToComboBox;
@@ -145,7 +159,9 @@ internal class UserViewModel: ViewModel
             if (CurrentUser.IsBlocked)
                 throw new MemberAccessException();
             
-            MainWindow window = new MainWindow(CurrentUser);
+            _userSessionService.SetUserData("CurrentUser", CurrentUser, TimeSpan.FromHours(1));
+            
+            MainWindow window = new MainWindow();
             _showMainEvent?.Invoke(null, CurrentUser);
             window.Show();
             
@@ -288,6 +304,92 @@ internal class UserViewModel: ViewModel
         }
     }
     
+    public ICommand EditJobShowCommand { get; }
+    private bool CanEditJobShowCommandExecute(object p) => true;
+    public async void OnEditJobShowCommandExecuted(object p)
+    {
+        if (p is int id)
+        {
+            SelectedUser.Id = id;
+        }
+
+        await _semaphore.WaitAsync();
+
+        try
+        {
+            Stores = await GetStores();
+            var page = new EditJobPage();
+            page.DataContext = this;
+            page.Show();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+    
+    public ICommand EditJobCommand { get; }
+    private bool CanEditJobCommandExecute(object p) => true;
+    public async void OnEditJobCommandExecuted(object p)
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            var userEntity = await _userService.GetById(SelectedUser.Id);
+
+            if (userEntity.StoreId == null)
+            {
+                var store = Stores.FirstOrDefault(s => s.Id == SelectedUser.StoreId);
+                
+                store.CountNumberOfEmployees();
+                
+                await _storeService.Update(store);
+                
+                await _userService.Update(
+                    userEntity.Id,
+                    userEntity.Name,
+                    userEntity.PrincipalId,
+                    SelectedUser.StoreId,
+                    userEntity.IsBlocked);
+            }
+            else
+            {
+                var previousStore = Stores.FirstOrDefault(s => s.Id == userEntity.StoreId);
+                previousStore.DecNumberOfEmployees();
+               await _storeService.Update(previousStore);
+               
+               var store = Stores.FirstOrDefault(s => s.Id == SelectedUser.StoreId);
+                
+               store.CountNumberOfEmployees();
+                
+               await _storeService.Update(store);
+                
+               await _userService.Update(
+                   userEntity.Id,
+                   userEntity.Name,
+                   userEntity.PrincipalId,
+                   SelectedUser.StoreId,
+                   userEntity.IsBlocked);
+            }
+            
+            
+            _refreshEvent?.Invoke(null, EventArgs.Empty);
+            
+        }
+        catch (Exception ex)
+        {
+            IsInvalidCredentials = true;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+    
     public User CurrentUser
     {
         get => _currentUser;
@@ -331,11 +433,12 @@ internal class UserViewModel: ViewModel
     }
     
     
-    public UserViewModel(IUserService userService, IAccountService accountService,IStoreService storeService ,IConfiguration configuration)
+    public UserViewModel(IUserService userService, IAccountService accountService,IStoreService storeService,IUserSessionService userSessionService ,IConfiguration configuration)
     {
         _userService = userService;
         _accountService = accountService;
         _storeService = storeService;
+        _userSessionService = userSessionService;
         
         LoginCommand = new LambdaCommand(OnLoginCommandExecuted);
         GoToRegCommand = new LambdaCommand(OnGoToRegCommandExecuted);
@@ -344,6 +447,8 @@ internal class UserViewModel: ViewModel
         EditRoleShowCommand = new LambdaCommand(OnEditRoleShowCommandExecuted);
         EditRoleCommand = new LambdaCommand(OnEditRoleCommandExecuted);
         BlockCommand = new LambdaCommand(OnBlockCommandExecuted);
+        EditJobShowCommand = new LambdaCommand(OnEditJobShowCommandExecuted);
+        EditJobCommand = new LambdaCommand(OnEditJobCommandExecuted);
         
         _configuration = configuration;
         CurrentUser = new User();
@@ -363,6 +468,9 @@ internal class UserViewModel: ViewModel
     {
         CurrentUser = e;
     }
+    
+    
+    private async Task<List<Domain.Models.Store>> GetStores() => await _storeService.Get();
 
     private List<DatabaseRole> GetDatabaseRoles()
     {

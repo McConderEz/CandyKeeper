@@ -47,6 +47,7 @@ namespace CandyKeeper.Presentation.ViewModels
         private ComboBoxItem _selectedDataGridInDetailsPage;
         
         private DetailsStorePage _detailsView;
+        private string _searchingString;
         private DateTime _displayDate = new DateTime(2000, 1, 1);
         public DateTime DisplayDate
         {
@@ -257,6 +258,32 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        public ICommand SearchCommand { get; }
+        private bool CanSearchCommandExecute(object p) => true;
+        public async void OnSearchCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(SearchingString))
+                {
+                    Stores = new ObservableCollection<Store>(await _service.GetBySearchingString(SearchingString));
+                }
+                else
+                {
+                    OnGetCommandExecuted(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
         #region AddSupplierInStoreShowCommand
         public ICommand AddSupplierInStoreShowCommand { get; }
         private bool CanAddSupplierInStoreShowCommandExecute(object p) => true;
@@ -350,6 +377,12 @@ namespace CandyKeeper.Presentation.ViewModels
         {
             get => _isInvalid;
             set => Set(ref _isInvalid, value);
+        }
+        
+        public string SearchingString
+        {
+            get => _searchingString;
+            set => Set(ref _searchingString, value);
         }
 
         public static event Delegate RefreshEvent
@@ -458,6 +491,7 @@ namespace CandyKeeper.Presentation.ViewModels
             AddSupplierInStoreShowCommand = new LambdaCommand(OnAddSupplierInStoreShowCommandExecuted);
             AddSupplierInStoreCommand = new LambdaCommand(OnAddSupplierInStoreCommandExecuted);
             DeleteSupplierFromStoreCommand = new LambdaCommand(OnDeleteSupplierFromStoreCommadExecuted);
+            SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
             
             _productDeliveries = new ObservableCollection<ProductDelivery>();
             OnGetCommandExecuted(null);

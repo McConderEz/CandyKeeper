@@ -36,6 +36,7 @@ namespace CandyKeeper.Presentation.ViewModels
         private OwnershipType _selectedItemForDetails;
 
         private DetailsOwnershipTypePage _detailsView;
+        private string _searchingString;
         
         #region Команды
 
@@ -228,6 +229,32 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        public ICommand SearchCommand { get; }
+        private bool CanSearchCommandExecute(object p) => true;
+        public async void OnSearchCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(SearchingString))
+                {
+                    OwnershipTypes = new ObservableCollection<OwnershipType>(await _ownershipTypeService.GetBySearchingString(SearchingString));
+                }
+                else
+                {
+                    OnGetCommandExecuted(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
         #endregion
         
         private bool _isInvalid = false;
@@ -236,6 +263,12 @@ namespace CandyKeeper.Presentation.ViewModels
         {
             get => _isInvalid;
             set => Set(ref _isInvalid, value);
+        }
+        
+        public string SearchingString
+        {
+            get => _searchingString;
+            set => Set(ref _searchingString, value);
         }
         
         public static event Delegate RefreshEvent
@@ -305,6 +338,7 @@ namespace CandyKeeper.Presentation.ViewModels
             DeleteCommand = new LambdaCommand(OnDeleteCommandExecuted);
             DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
+            SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
             
             _ownershipTypes = new ObservableCollection<OwnershipType>();
             OnGetCommandExecuted(null);

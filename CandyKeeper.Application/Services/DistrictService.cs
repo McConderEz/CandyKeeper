@@ -18,6 +18,12 @@ namespace CandyKeeper.Application.Services
             _repository = districtRepository;
         }
 
+        public async Task<List<District>> GetBySearchingString(string searchingString)
+        {
+            var districts = await _repository.Get();
+            return districts.Where(d => d.Name == searchingString || d.City.Name == searchingString).ToList();
+        }
+        
         public async Task<List<District>> Get()
         {
             return await _repository.Get();

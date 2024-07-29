@@ -18,6 +18,12 @@ namespace CandyKeeper.Application.Services
             _repository = ownershipTypeRepository;
         }
 
+        public async Task<List<OwnershipType>> GetBySearchingString(string searchingString)
+        {
+            var ownershipTypes = await _repository.Get();
+            return ownershipTypes.Where(d => d.Name == searchingString).ToList();
+        }
+        
         public async Task<List<OwnershipType>> Get()
         {
             return await _repository.Get();

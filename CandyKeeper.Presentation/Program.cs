@@ -10,6 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CandyKeeper.Application.Interfaces;
+using CandyKeeper.Application.Services;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CandyKeeper.Presentation
 {
@@ -33,12 +38,12 @@ namespace CandyKeeper.Presentation
                           services.AddDbContext<CandyKeeperDbContext>(options =>
                           {
                               options.UseSqlServer(context.Configuration.GetConnectionString("DefaultConnection"));
-                          }, ServiceLifetime.Singleton);
+                          }, ServiceLifetime.Scoped);
+                          services.AddMemoryCache();
                           services.AddRepositories();
                           services.AddServices();
                           services.AddViewModels();
                           services.EnsureRolesExist(context.Configuration.GetConnectionString("DefaultConnection")!, roleNames);
-
                       });
             
             return host;

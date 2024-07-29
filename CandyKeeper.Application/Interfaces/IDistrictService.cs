@@ -9,5 +9,6 @@ namespace CandyKeeper.Application.Interfaces
         Task<List<District>> Get();
         Task<District> GetById(int id);
         Task Update(District district);
+        Task<List<District>> GetBySearchingString(string searchingString);
     }
 }

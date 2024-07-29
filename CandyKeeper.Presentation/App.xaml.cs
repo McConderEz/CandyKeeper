@@ -44,6 +44,8 @@ namespace CandyKeeper.Presentation
             host.Dispose();
             _host = null;
         }
+        
+       
     }
 
 }
