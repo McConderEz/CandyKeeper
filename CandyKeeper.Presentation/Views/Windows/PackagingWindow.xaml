@@ -192,12 +192,20 @@
                            HorizontalAlignment="Left" Foreground="#121518"/>
                 
                 <!--Кнопка добавления-->
-                <Button Style="{StaticResource addButton}" Command="{Binding AddEditShowCommand}">
-                    <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
-                        <TextBlock Text="Добавить"/>
-                    </StackPanel>
-                </Button>
+                <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
+                    <Button Style="{StaticResource addButton}" Command="{Binding AddEditShowCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
+                            <TextBlock Text="Добавить"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource filterButton}" Command="{Binding FilterShowCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="Filter" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
+                            <TextBlock Text="Фильтрация"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
 
                 <Separator Height="1" Grid.Row="3" Background="#dae2ea" Margin="0 -1 0 10"/>
 

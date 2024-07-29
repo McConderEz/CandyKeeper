@@ -61,8 +61,9 @@ namespace CandyKeeper.DAL
                 if (productForSaleEntities == null)
                     throw new Exception("productForSale null");
 
+                
 
-                var productForSales =  productForSaleEntities
+                var productForSales =  await productForSaleEntities
                     .Include(pfs => pfs.Product)
                     .ThenInclude(p => p.ProductType)
                     .Include(pfs => pfs.Packaging)
@@ -70,10 +71,11 @@ namespace CandyKeeper.DAL
                     .ThenInclude(s => s.District)
                     .ThenInclude(d => d.City)
                     .Include(pfs => pfs.ProductDelivery)
-                    .ThenInclude(pd => pd.Supplier)
-                    .Select(pfs => MapToProductForSale(pfs));
+                    .ThenInclude(pd => pd.Supplier).ToListAsync();
 
-                return productForSales.ToList();
+                var mappedPFS = productForSales.Select(pfs => MapToProductForSale(pfs));
+                
+                return mappedPFS.ToList();
             }
             catch (Exception ex)
             {

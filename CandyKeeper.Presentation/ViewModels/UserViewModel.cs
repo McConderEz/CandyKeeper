@@ -5,6 +5,7 @@ using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using CandyKeeper.Application.Interfaces;
 using CandyKeeper.Application.Services;
+using CandyKeeper.Presentation.Extensions;
 using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.Models;
 using CandyKeeper.Presentation.Views.AddEditPages;
@@ -159,7 +160,10 @@ internal class UserViewModel: ViewModel
             if (CurrentUser.IsBlocked)
                 throw new MemberAccessException();
             
+            //TODO: Чинить
             _userSessionService.SetUserData("CurrentUser", CurrentUser, TimeSpan.FromHours(1));
+
+            CurrentUserTransfer.CurrentUser = CurrentUser;
             
             MainWindow window = new MainWindow();
             _showMainEvent?.Invoke(null, CurrentUser);

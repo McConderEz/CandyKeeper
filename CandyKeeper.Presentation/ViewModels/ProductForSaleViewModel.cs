@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CandyKeeper.Presentation.Extensions;
 using CandyKeeper.Presentation.Views.AddEditPages;
 using CandyKeeper.Presentation.Views.DetailsPages;
 using CandyKeeper.Presentation.Views.Windows;
@@ -404,8 +405,9 @@ namespace CandyKeeper.Presentation.ViewModels
             _userSessionService = userSessionService;
             _configuration = configuration;
 
+            //CurrentUser = _userSessionService.GetUserData<User>("CurrentUser");
             
-            CurrentUser = _userSessionService.GetUserData<User>("CurrentUser");
+            CurrentUser = CurrentUserTransfer.CurrentUser;
             GetCommand = new LambdaCommand(OnGetCommandExecuted);
             AddEditShowCommand = new LambdaCommand(OnAddEditShowCommandExecuted);
             AddEditCommand = new LambdaCommand(OnAddEditCommandExecuted);
@@ -442,12 +444,15 @@ namespace CandyKeeper.Presentation.ViewModels
         
         private async Task GetStores()
         {
-            Stores = new ObservableCollection<Store>(await _storeService.Get());
+            Store storeOfCurrentUser = await _storeService.GetById((int)CurrentUser.StoreId);
+            Stores = new ObservableCollection<Store>();
+            Stores.Add(storeOfCurrentUser);
         }
         
         private async Task GetProductDeliveries()
         {
-            ProductDeliveries = new ObservableCollection<ProductDelivery>(await _productDeliveryService.Get());
+            var pdFiltered = await _productDeliveryService.Get();
+            ProductDeliveries = new ObservableCollection<ProductDelivery>(pdFiltered.Where(pd => pd.StoreId == CurrentUser.StoreId));
         }
         
         private async Task GetPackagings()

@@ -11,5 +11,6 @@ namespace CandyKeeper.DAL.Repositories
         Task<ProductDelivery> GetById(int id);
         Task Update(int id, DateTime deliveryDate, int supplierId, int storeId);
         Task AddProductForSale(int id, ProductForSale model);
+        Task<List<ProductDelivery>> GetByStoreId(int storeId);
     }
 }

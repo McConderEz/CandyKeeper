@@ -52,6 +52,43 @@ namespace CandyKeeper.DAL
             }
         }
 
+        public async Task<List<ProductDelivery>> GetByStoreId(int storeId)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                IQueryable<ProductDeliveryEntity> productDeliveryEntities= _context.ProductDeliveries.Where(pd => pd.StoreId == storeId).AsNoTracking();
+
+                if (productDeliveryEntities == null)
+                    throw new Exception("productDeliveries null");
+
+                
+
+                var productDeliveries =  await productDeliveryEntities
+                    .Include(pd => pd.Supplier)
+                    .Include(pd => pd.ProductForSales)
+                    .ThenInclude(pfs => pfs.Product)
+                    .ThenInclude(p => p.ProductType)
+                    .Include(pd => pd.ProductForSales)
+                    .ThenInclude(pfs => pfs.Packaging)
+                    .Include(pd => pd.Store)
+                    .ToListAsync();
+
+                var mappedPD = productDeliveries.Select(pd => MapToProductDelivery(pd));
+                
+                return mappedPD.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+        
         public async Task<ProductDelivery> GetById(int id)
         {
             await _semaphore.WaitAsync();

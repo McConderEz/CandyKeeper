@@ -23,7 +23,12 @@ namespace CandyKeeper.Application.Services
             var productDeliveries = await _repository.Get();
             return productDeliveries.Where(d => d.Store.Name.Contains(searchingString) || d.Supplier.Name.Contains(searchingString)).ToList();
         }
-        
+
+        public async Task<List<ProductDelivery>> GetByStoreId(int storeId)
+        {
+            return await _repository.GetByStoreId(storeId);
+        }
+
         public async Task<List<ProductDelivery>> Get()
         {
             return await _repository.Get();

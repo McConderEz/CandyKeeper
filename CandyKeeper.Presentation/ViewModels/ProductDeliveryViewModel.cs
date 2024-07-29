@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CandyKeeper.Presentation.Extensions;
 using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.Views.AddEditPages;
 using CandyKeeper.Presentation.Views.DetailsPages;
@@ -37,7 +38,7 @@ namespace CandyKeeper.Presentation.ViewModels
 
         private Models.ProductDelivery _selectedItem = new();
         private ProductDelivery _selectedItemForDetails;
-
+        private Models.User _currentUser;
         private int _productForSaleId;
 
         private DetailsProductDeliveryPage _detailsView;
@@ -60,7 +61,16 @@ namespace CandyKeeper.Presentation.ViewModels
             await _semaphore.WaitAsync();
             try
             {
-                ProductDeliveries = new ObservableCollection<ProductDelivery>(await _service.Get());
+                if (CurrentUser.StoreId == null)
+                {
+                    ProductDeliveries = new ObservableCollection<ProductDelivery>(await _service.Get());
+                }
+                else
+                {
+                    ProductDeliveries =
+                        new ObservableCollection<ProductDelivery>(
+                            await _service.GetByStoreId((int)CurrentUser.StoreId));
+                }
             }
             catch (Exception ex)
             {
@@ -340,6 +350,12 @@ namespace CandyKeeper.Presentation.ViewModels
             get => _isInvalid;
             set => Set(ref _isInvalid, value);
         }
+
+        public Models.User CurrentUser
+        {
+            get => _currentUser;
+            set => Set(ref _currentUser, value);
+        }
         
         public string SearchingString
         {
@@ -431,6 +447,8 @@ namespace CandyKeeper.Presentation.ViewModels
             AddProductInProductDeliveryShowCommand = new LambdaCommand(OnAddProductInProductDeliveryShowCommandExecuted);
             AddProductInProductDeliveryCommand = new LambdaCommand(OnAddProductInProductDeliveryCommandExecuted);
             SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
+
+            CurrentUser = CurrentUserTransfer.CurrentUser;
             
             _productDeliveries = new ObservableCollection<ProductDelivery>();
             OnGetCommandExecuted(null);
