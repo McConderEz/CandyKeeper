@@ -50,7 +50,8 @@ namespace CandyKeeper.Presentation.ViewModels
             await _semaphore.WaitAsync();
             try
             {
-                ProductTypes = new ObservableCollection<ProductType>(await _productTypeService.Get());
+                if(p == null)
+                    ProductTypes = new ObservableCollection<ProductType>(await _productTypeService.Get());
             }
             catch (Exception ex)
             {
@@ -229,7 +230,8 @@ namespace CandyKeeper.Presentation.ViewModels
         }
         
         #endregion
-        
+
+        #region SearchingCommand
         
         public ICommand SearchCommand { get; }
         private bool CanSearchCommandExecute(object p) => true;
@@ -256,6 +258,66 @@ namespace CandyKeeper.Presentation.ViewModels
                 _semaphore.Release();
             }
         }
+        #endregion
+        
+        #region FilterShowCommand
+
+        public ICommand FilterShowCommand { get; }
+        private bool CanFilterShowCommandExecute(object p) => true;
+        public async void OnFilterShowCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var page = new FilterProductTypePage();
+                page.DataContext = this;
+                page.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+
+        #region FilterCommand
+
+        public ICommand FilterCommand { get; }
+        private bool CanFilterCommandExecute(object p) => true;
+        public async void OnFilterCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+
+                var productTypes = await _productTypeService.Get();
+                
+                ProductTypes = Filter(MinProductsCount, MaxProductsCount, productTypes);
+
+                _refreshEvent?.Invoke(true);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
         
         #endregion
         
@@ -334,6 +396,8 @@ namespace CandyKeeper.Presentation.ViewModels
             DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
             SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
+            FilterShowCommand = new LambdaCommand(OnFilterShowCommandExecuted);
+            FilterCommand = new LambdaCommand(OnFilterCommandExecuted);
             
             _productTypes = new ObservableCollection<ProductType>();
             OnGetCommandExecuted(null);
@@ -347,6 +411,38 @@ namespace CandyKeeper.Presentation.ViewModels
         private async Task GetProductForSales()
         {
             ProductForSales = new ObservableCollection<ProductForSale>(await _productForSaleService.Get());
+        }
+        
+        #region Поля_фильтрации
+
+        private int? _minProductsCount;
+        private int? _maxProductsCount;
+        
+
+        public int? MinProductsCount
+        {
+            get => _minProductsCount;
+            set => Set(ref _minProductsCount, value);
+        }
+        
+        public int? MaxProductsCount
+        {
+            get => _maxProductsCount;
+            set => Set(ref _maxProductsCount, value);
+        }
+        
+        
+        #endregion
+        
+        private static ObservableCollection<ProductType>? Filter(int? minProductsCount, 
+            int? maxProductsCount, 
+            List<ProductType> productTypes)
+        {
+            if (minProductsCount.HasValue)
+                productTypes = productTypes.Where(a => a.Products.Count() >= minProductsCount.Value).ToList();
+            if (maxProductsCount.HasValue)
+                productTypes = productTypes.Where(a => a.Products.Count() <= maxProductsCount.Value).ToList();
+            return new ObservableCollection<ProductType>(productTypes);
         }
     }
 }

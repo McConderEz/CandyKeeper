@@ -166,7 +166,7 @@
                 
                 <!--Иконка меню-->
                 <Button HorizontalAlignment="Left" Margin="20 28 0 35" Style="{StaticResource topButton}" Command="{Binding LeaveAccountCommand}">
-                    <Icon:PackIconMaterial Kind="ExitToApp" Width="25" Height="25"/>
+                    <Icon:PackIconMaterial Kind="ExitToApp" Width="20" Height="20"/>
                 </Button>
 
                 <Border Grid.Row="1" Background="#F5DEB3" CornerRadius="0 50 0 30">

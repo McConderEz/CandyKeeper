@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using CandyKeeper.Application.Interfaces;
 using CandyKeeper.DAL;
 using MaterialDesignColors;
 using Microsoft.Data.SqlClient;
@@ -32,6 +33,7 @@ public static class ServiceRolesExtensions
     };
 
     private static string[] _permissions = { "SELECT", "INSERT", "UPDATE", "DELETE" };
+    
     
     public static bool DoesRoleExist(string connectionString, string roleName)
         {

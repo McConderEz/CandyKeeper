@@ -19,7 +19,7 @@ public partial class ProductTypeWindow : UserControl
         ProductTypesDataGrid.Items.Refresh();
         if (DataContext is ProductTypeViewModel viewModel)
         {
-            viewModel.OnGetCommandExecuted(null);
+            viewModel.OnGetCommandExecuted(p);
         }
     }
 

@@ -19,7 +19,7 @@ public partial class CityWindow : UserControl
         CityDataGrid.Items.Refresh();
         if (DataContext is CityViewModel viewModel)
         {
-            viewModel.OnGetCommandExecuted(null);
+            viewModel.OnGetCommandExecuted(p);
         }
     }
 

@@ -44,7 +44,10 @@ namespace CandyKeeper.Presentation.ViewModels
             await _semaphore.WaitAsync();
             try
             {
-                Cities = new ObservableCollection<City>(await _cityService.Get());
+                if (p == null)
+                {
+                    Cities = new ObservableCollection<City>(await _cityService.Get());
+                }
             }
             catch (Exception ex)
             {
@@ -223,8 +226,9 @@ namespace CandyKeeper.Presentation.ViewModels
         }
         
         #endregion
-        
-        
+
+        #region SearchCommand
+
         public ICommand SearchCommand { get; }
         private bool CanSearchCommandExecute(object p) => true;
         public async void OnSearchCommandExecuted(object p)
@@ -250,6 +254,68 @@ namespace CandyKeeper.Presentation.ViewModels
                 _semaphore.Release();
             }
         }
+
+        #endregion
+
+        #region FilterShowCommand
+
+        public ICommand FilterShowCommand { get; }
+        private bool CanFilterShowCommandExecute(object p) => true;
+        public async void OnFilterShowCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var page = new FilterCityPage();
+                page.DataContext = this;
+                page.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+
+        #region FilterCommand
+
+        public ICommand FilterCommand { get; }
+        private bool CanFilterCommandExecute(object p) => true;
+        public async void OnFilterCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+
+                var cities = await _cityService.Get();
+                
+                Cities = Filter(MinStoreCount, MaxStoreCount, MinSupplierCount, MaxSupplierCount, MinDistrictCount,
+                    MaxDistrictCount, cities);
+
+                _refreshEvent?.Invoke(true);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
         
         #endregion
 
@@ -329,6 +395,8 @@ namespace CandyKeeper.Presentation.ViewModels
             DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
             SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
+            FilterShowCommand = new LambdaCommand(OnFilterShowCommandExecuted);
+            FilterCommand = new LambdaCommand(OnFilterCommandExecuted);
             
             _cities = new ObservableCollection<City>();
             OnGetCommandExecuted(null);
@@ -342,6 +410,79 @@ namespace CandyKeeper.Presentation.ViewModels
         private async Task GetSuppliers()
         {
             Suppliers = new ObservableCollection<Supplier>(await _supplierService.Get());
+        }
+        
+        #region Поля_фильтрации
+
+        private int? _minStoreCount;
+        private int? _maxStoreCount;
+
+        private int? _minSupplierCount;
+        private int? _maxSupplierCount;
+
+        private int? _minDistrictCount;
+        private int? _maxDistrictCount;
+
+        public int? MinStoreCount
+        {
+            get => _minStoreCount;
+            set => Set(ref _minStoreCount, value);
+        }
+        
+        public int? MaxStoreCount
+        {
+            get => _maxStoreCount;
+            set => Set(ref _maxStoreCount, value);
+        }
+        
+        public int? MinSupplierCount
+        {
+            get => _minSupplierCount;
+            set => Set(ref _minSupplierCount, value);
+        }
+        
+        public int? MaxSupplierCount
+        {
+            get => _maxSupplierCount;
+            set => Set(ref _maxSupplierCount, value);
+        }
+        
+        public int? MinDistrictCount
+        {
+            get => _minDistrictCount;
+            set => Set(ref _minDistrictCount, value);
+        }
+
+        public int? MaxDistrictCount
+        {
+            get => _maxDistrictCount;
+            set => Set(ref _maxDistrictCount, value);
+        }
+
+        
+        #endregion
+        
+        private static ObservableCollection<City>? Filter(int? minStoreCount, 
+            int? maxStoreCount, 
+            int? minSupplierCount, 
+            int? maxSupplierCount, 
+            int? minDistrictCount, 
+            int? maxDistrictCount, 
+            List<City> cities)
+        {
+            if (minStoreCount.HasValue)
+                cities = cities.Where(a => a.Districts.Sum(d => d.Stores.Count()) >= minStoreCount.Value).ToList();
+            if (maxStoreCount.HasValue)
+                cities = cities.Where(a => a.Districts.Sum(d => d.Stores.Count()) <= maxStoreCount.Value).ToList();
+            if (minSupplierCount.HasValue)
+                cities = cities.Where(a => a.Suppliers.Count >= minSupplierCount.Value).ToList();
+            if (maxSupplierCount.HasValue)
+                cities = cities.Where(a => a.Suppliers.Count <= maxSupplierCount.Value).ToList();
+            if (minDistrictCount.HasValue)
+                cities = cities.Where(a => a.Districts.Count() >= minDistrictCount.Value).ToList();
+            if (maxDistrictCount.HasValue)
+                cities = cities.Where(a => a.Districts.Count() <= maxDistrictCount.Value).ToList();
+            return new ObservableCollection<City>(cities);
         }
     }
 }

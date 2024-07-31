@@ -19,7 +19,7 @@ public partial class OwnershipTypeWindow : UserControl
         OwnershipTypeDataGrid.Items.Refresh();
         if (DataContext is OwnershipTypeViewModel viewModel)
         {
-            viewModel.OnGetCommandExecuted(null);
+            viewModel.OnGetCommandExecuted(p);
         }
     }
 

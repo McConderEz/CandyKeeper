@@ -19,7 +19,7 @@ public partial class PackagingWindow : UserControl
         PackagingsDataGrid.Items.Refresh();
         if (DataContext is PackagingViewModel viewModel)
         {
-            viewModel.OnGetCommandExecuted(null);
+            viewModel.OnGetCommandExecuted(p);
         }
     }
 

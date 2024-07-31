@@ -49,7 +49,8 @@ namespace CandyKeeper.Presentation.ViewModels
             await _semaphore.WaitAsync();
             try
             {
-                Districts = new ObservableCollection<District>(await _districtService.Get());
+                if(p == null)
+                    Districts = new ObservableCollection<District>(await _districtService.Get());
             }
             catch (Exception ex)
             {
@@ -230,7 +231,8 @@ namespace CandyKeeper.Presentation.ViewModels
         }
         
         #endregion
-        
+
+        #region SearchCommand
         public ICommand SearchCommand { get; }
         private bool CanSearchCommandExecute(object p) => true;
         public async void OnSearchCommandExecuted(object p)
@@ -256,6 +258,68 @@ namespace CandyKeeper.Presentation.ViewModels
                 _semaphore.Release();
             }
         }
+        
+
+        #endregion
+       
+        #region FilterShowCommand
+
+        public ICommand FilterShowCommand { get; }
+        private bool CanFilterShowCommandExecute(object p) => true;
+        public async void OnFilterShowCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                var page = new FilterDistrictPage();
+                page.DataContext = this;
+                page.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+
+        #region FilterCommand
+
+        public ICommand FilterCommand { get; }
+        private bool CanFilterCommandExecute(object p) => true;
+        public async void OnFilterCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+
+                var districts = await _districtService.Get();
+                
+                Districts = Filter(MinStoreCount, MaxStoreCount, districts);
+
+                _refreshEvent?.Invoke(true);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
         
         #endregion
         
@@ -341,6 +405,8 @@ namespace CandyKeeper.Presentation.ViewModels
             DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
             SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
+            FilterShowCommand = new LambdaCommand(OnFilterShowCommandExecuted);
+            FilterCommand = new LambdaCommand(OnFilterCommandExecuted);
             
             _districts = new ObservableCollection<District>();
             OnGetCommandExecuted(null);
@@ -360,6 +426,38 @@ namespace CandyKeeper.Presentation.ViewModels
         private async Task GetCities()
         {
             Cities = new ObservableCollection<City>(await _cityService.Get());
+        }
+        
+        #region Поля_фильтрации
+
+        private int? _minStoreCount;
+        private int? _maxStoreCount;
+        
+
+        public int? MinStoreCount
+        {
+            get => _minStoreCount;
+            set => Set(ref _minStoreCount, value);
+        }
+        
+        public int? MaxStoreCount
+        {
+            get => _maxStoreCount;
+            set => Set(ref _maxStoreCount, value);
+        }
+        
+        
+        #endregion
+        
+        private static ObservableCollection<District>? Filter(int? minStoreCount, 
+            int? maxStoreCount, 
+            List<District> districts)
+        {
+            if (minStoreCount.HasValue)
+                districts = districts.Where(a => a.Stores.Count() >= minStoreCount.Value).ToList();
+            if (maxStoreCount.HasValue)
+                districts = districts.Where(a => a.Stores.Count() <= maxStoreCount.Value).ToList();
+            return new ObservableCollection<District>(districts);
         }
     }
 }

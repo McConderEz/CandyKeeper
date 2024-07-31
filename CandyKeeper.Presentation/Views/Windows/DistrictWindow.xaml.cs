@@ -19,7 +19,7 @@ public partial class DistrictWindow : UserControl
         DistrictDataGrid.Items.Refresh();
         if (DataContext is DistrictViewModel viewModel)
         {
-            viewModel.OnGetCommandExecuted(null);
+            viewModel.OnGetCommandExecuted(p);
         }
     }
 

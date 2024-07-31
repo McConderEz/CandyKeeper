@@ -161,7 +161,7 @@ internal class UserViewModel: ViewModel
                 throw new MemberAccessException();
             
             //TODO: Чинить
-            _userSessionService.SetUserData("CurrentUser", CurrentUser, TimeSpan.FromHours(1));
+           // _userSessionService.SetUserData("CurrentUser", CurrentUser, TimeSpan.FromHours(1));
 
             CurrentUserTransfer.CurrentUser = CurrentUser;
             
@@ -441,6 +441,7 @@ internal class UserViewModel: ViewModel
     {
         _userService = userService;
         _accountService = accountService;
+        _accountService.AddRoot();
         _storeService = storeService;
         _userSessionService = userSessionService;
         
@@ -459,8 +460,7 @@ internal class UserViewModel: ViewModel
         Roles = GetDatabaseRoles();
         RolesToComboBox = Roles;
         OnGetCommandExecuted(null);
-        _accountService.AddRoot();
-
+        
         MainWindowsViewModel.TransferCurrentUserEvent += GetCurrentUser;
         MainWindowsViewModel.LeaveAccountEvent += ClearCurrentUser;
     }

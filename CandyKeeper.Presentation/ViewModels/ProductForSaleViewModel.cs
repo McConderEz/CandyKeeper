@@ -40,6 +40,7 @@ namespace CandyKeeper.Presentation.ViewModels
         private readonly IProductForSaleService _service;
         private readonly IProductService _productService;
         private readonly IStoreService _storeService;
+        private readonly ISupplierService _supplierService;
         private readonly IProductDeliveryService _productDeliveryService;
         private readonly IPackagingService _packagingService;
         private readonly IUserService _userService;
@@ -53,6 +54,7 @@ namespace CandyKeeper.Presentation.ViewModels
         
         private ObservableCollection<Product> _products;
         private ObservableCollection<Store> _stores;
+        private ObservableCollection<Supplier> _suppliers;
         private ObservableCollection<ProductDelivery> _productDeliveries;
         private ObservableCollection<Packaging> _packagings;
 
@@ -269,8 +271,8 @@ namespace CandyKeeper.Presentation.ViewModels
         }
         
         #endregion
-        
-        
+
+        #region SearchingCommand
         public ICommand SearchCommand { get; }
         private bool CanSearchCommandExecute(object p) => true;
         public async void OnSearchCommandExecuted(object p)
@@ -296,6 +298,72 @@ namespace CandyKeeper.Presentation.ViewModels
                 _semaphore.Release();
             }
         }
+        
+
+        #endregion
+        
+        
+        #region FilterShowCommand
+
+        public ICommand FilterShowCommand { get; }
+        private bool CanFilterShowCommandExecute(object p) => true;
+        public async void OnFilterShowCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                await GetSuppliers();
+                Stores = new ObservableCollection<Store>(await _storeService.Get());
+                await GetProductDeliveries();
+                var page = new FilterProductForSalePage();
+                page.DataContext = this;
+                page.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+
+        #region FilterCommand
+
+        public ICommand FilterCommand { get; }
+        private bool CanFilterCommandExecute(object p) => true;
+        public async void OnFilterCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+
+                var productForSales = await _service.Get();
+                
+                ProductForSales = Filter(MinProductsCount, MaxProductsCount, productForSales);
+
+                _refreshEvent?.Invoke(true);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
         
         #endregion
         
@@ -347,6 +415,13 @@ namespace CandyKeeper.Presentation.ViewModels
             get => _stores;
             set => Set(ref _stores, value);
         }
+
+        public ObservableCollection<Supplier> Suppliers
+        {
+            get => _suppliers;
+            set => Set(ref _suppliers, value);
+        }
+        
         public ObservableCollection<ProductDelivery> ProductDeliveries
         {
             get => _productDeliveries;
@@ -389,6 +464,7 @@ namespace CandyKeeper.Presentation.ViewModels
         public ProductForSaleViewModel(IProductForSaleService service,
             IProductService productService,
             IStoreService storeService,
+            ISupplierService supplierService,
             IProductDeliveryService productDeliveryService,
             IPackagingService packagingService,
             IConfiguration configuration,
@@ -399,6 +475,7 @@ namespace CandyKeeper.Presentation.ViewModels
             _service = service;
             _productService = productService;
             _storeService = storeService;
+            _supplierService = supplierService;
             _productDeliveryService = productDeliveryService;
             _packagingService = packagingService;
             _userService = userService;
@@ -415,8 +492,14 @@ namespace CandyKeeper.Presentation.ViewModels
             DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
             SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
+            FilterShowCommand = new LambdaCommand(OnFilterShowCommandExecuted);
+            FilterCommand = new LambdaCommand(OnFilterCommandExecuted);
             
             _productForSales = new ObservableCollection<ProductForSale>();
+            _selectedStores = new ObservableCollection<Store>();
+            _selectedSuppliers = new ObservableCollection<Supplier>();
+            _selectedProductDeliveries = new ObservableCollection<ProductDelivery>();
+            
             _roles = GetDatabaseRoles();
             OnGetCommandExecuted(null);
         }
@@ -435,6 +518,7 @@ namespace CandyKeeper.Presentation.ViewModels
             await GetStores();
             await GetProductDeliveries();
             await GetPackagings();
+            await GetSuppliers();
         }
         
         private async Task GetProduct()
@@ -446,6 +530,7 @@ namespace CandyKeeper.Presentation.ViewModels
         {
             Store storeOfCurrentUser = await _storeService.GetById((int)CurrentUser.StoreId);
             Stores = new ObservableCollection<Store>();
+            
             Stores.Add(storeOfCurrentUser);
         }
         
@@ -458,6 +543,11 @@ namespace CandyKeeper.Presentation.ViewModels
         private async Task GetPackagings()
         {
             Packagings = new ObservableCollection<Packaging>(await _packagingService.Get());
+        }
+
+        private async Task GetSuppliers()
+        {
+            Suppliers = new ObservableCollection<Supplier>(await _supplierService.Get());
         }
         
         public bool IsAdmin()
@@ -506,6 +596,59 @@ namespace CandyKeeper.Presentation.ViewModels
         {
             public int PrincipalId { get; set; }
             public string Name { get; set; }
+        }
+        
+        
+        #region Поля_фильтрации
+
+        private int? _minProductsCount;
+        private int? _maxProductsCount;
+        private ObservableCollection<Store> _selectedStores;
+        private ObservableCollection<Supplier> _selectedSuppliers;
+        private ObservableCollection<ProductDelivery> _selectedProductDeliveries;
+
+        public int? MinProductsCount
+        {
+            get => _minProductsCount;
+            set => Set(ref _minProductsCount, value);
+        }
+        
+        public int? MaxProductsCount
+        {
+            get => _maxProductsCount;
+            set => Set(ref _maxProductsCount, value);
+        }
+
+        public ObservableCollection<Store> SelectedStores
+        {
+            get => _selectedStores;
+            set => Set(ref _selectedStores, value);
+        }
+        
+        public ObservableCollection<Supplier> SelectedSuppliers
+        {
+            get => _selectedSuppliers;
+            set => Set(ref _selectedSuppliers, value);
+        }
+        
+        public ObservableCollection<ProductDelivery> SelectedProductDeliveries
+        {
+            get => _selectedProductDeliveries;
+            set => Set(ref _selectedProductDeliveries, value);
+        }
+        
+        #endregion
+        
+        private static ObservableCollection<ProductForSale>? Filter(int? minProductsCount, 
+            int? maxProductsCount, 
+            List<ProductForSale> productForSales)
+        {
+            //if (minProductsCount.HasValue)
+                //productForSales = productForSales.Where(a => a.ProductForSales.Count() >= minProductsCount.Value).ToList();
+            //if (maxProductsCount.HasValue)
+                //productForSales = productForSales.Where(a => a.ProductForSales.Count() <= maxProductsCount.Value).ToList();
+            
+            return new ObservableCollection<ProductForSale>(productForSales);
         }
     }
 }
