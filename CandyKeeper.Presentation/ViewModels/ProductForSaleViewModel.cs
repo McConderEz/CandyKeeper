@@ -785,6 +785,7 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #endregion
         
+        //TODO: Протестировать
         private static ObservableCollection<ProductForSale>? Filter(int? minPrice = 0, 
             int? maxPrice = Int32.MaxValue,
             int? minVolume = 0, 

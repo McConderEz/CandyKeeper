@@ -34,16 +34,16 @@
                     <TextBlock Text="По цене" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="От" Margin="0 5 4 0"></TextBlock>
-                        <materialDesign:NumericUpDown Width="20" Value="{Binding MinProductsCount}" ></materialDesign:NumericUpDown>
+                        <materialDesign:NumericUpDown Width="20" Value="{Binding MinPrice}" ></materialDesign:NumericUpDown>
                         <TextBlock Text="До" Margin="0 5 4 0"></TextBlock>
-                        <materialDesign:NumericUpDown Width="20" Value="{Binding MaxProductsCount}" ></materialDesign:NumericUpDown>
+                        <materialDesign:NumericUpDown Width="20" Value="{Binding MaxPrice}" ></materialDesign:NumericUpDown>
                     </StackPanel>
                     <TextBlock Text="По объёму" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="От" Margin="0 5 4 0"></TextBlock>
-                        <materialDesign:NumericUpDown Width="20" Value="{Binding MinProductsCount}" ></materialDesign:NumericUpDown>
+                        <materialDesign:NumericUpDown Width="20" Value="{Binding MinVolume}" ></materialDesign:NumericUpDown>
                         <TextBlock Text="До" Margin="0 5 4 0"></TextBlock>
-                        <materialDesign:NumericUpDown Width="20" Value="{Binding MaxProductsCount}" ></materialDesign:NumericUpDown>
+                        <materialDesign:NumericUpDown Width="20" Value="{Binding MaxVolume}" ></materialDesign:NumericUpDown>
                     </StackPanel>
                     
                     
