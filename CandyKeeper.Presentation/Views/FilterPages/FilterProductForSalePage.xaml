@@ -7,6 +7,7 @@
       xmlns:ext="clr-namespace:CandyKeeper.Presentation.Extensions"
       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
       WindowStartupLocation="CenterScreen"
       WindowStyle="None"
       AllowsTransparency="True" Background="Transparent"
@@ -44,50 +45,119 @@
                         <TextBlock Text="До" Margin="0 5 4 0"></TextBlock>
                         <materialDesign:NumericUpDown Width="20" Value="{Binding MaxProductsCount}" ></materialDesign:NumericUpDown>
                     </StackPanel>
-                    <TextBlock Text="По магазину" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <ListBox ItemsSource="{Binding Stores}" Height="80" HorizontalAlignment="Left" Margin="0,5,0,0" Name="listStores" VerticalAlignment="Top" Width="240" Background="#0B000000"
-                                 SelectionMode="Multiple" ext:ListBoxExtensions.SelectedItems="{Binding SelectedStores}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock Text="{Binding Name}" Margin="5,0,0,0"/>
-                                        <TextBlock Text="{Binding StoreNumber}" Margin="5,0,0,0"/>
-                                        <TextBlock Text="{Binding District.Name}" Margin="5,0,0,0"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </StackPanel>
-                    <TextBlock Text="По поставщику" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <ListBox ItemsSource="{Binding Suppliers}" Height="80" HorizontalAlignment="Left" Margin="0,5,0,0" Name="listSuppliers" VerticalAlignment="Top" Width="240" Background="#0B000000"
-                                 SelectionMode="Multiple">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock Text="{Binding City.Name}" Margin="5,0,0,0"/>
-                                        <TextBlock Text="{Binding Phone}" Margin="5,0,0,0"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </StackPanel>
-                    <TextBlock Text="По поставке" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <ListBox ItemsSource="{Binding ProductDeliveries}" Height="80" HorizontalAlignment="Left" Margin="0,5,0,0" Name="listProductDeliveries" VerticalAlignment="Top" Width="240" Background="#0B000000"
-                                 SelectionMode="Multiple">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Vertical">
-                                        <TextBlock Text="{Binding Supplier.Name}" Margin="5,0,0,0"/>
-                                        <TextBlock Text="{Binding Store.Name}" Margin="5,0,0,0"/>
-                                        <TextBlock Text="{Binding Store.StoreNumber}" Margin="5,0,0,0"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </StackPanel>
+                    
+                    
+                    <ScrollViewer VerticalScrollBarVisibility="Visible" CanContentScroll="True">
+                     <StackPanel Height="350">
+                         <TextBlock Text="По магазину" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
+                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                             <ListBox ItemsSource="{Binding Stores}" Height="200" HorizontalAlignment="Left" Margin="0,5,0,0" x:Name="listStores" VerticalAlignment="Top" Width="240" Background="#0B000000"
+                                      SelectionMode="Multiple">
+                                 <b:Interaction.Triggers>
+                                     <b:EventTrigger EventName="MouseLeftButtonUp">
+                                         <b:InvokeCommandAction Command="{Binding ToggleSelectionCommand}" 
+                                                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListBox}}" />
+                                     </b:EventTrigger>
+                                 </b:Interaction.Triggers>
+                                 <ListBox.ItemTemplate>
+                                     <DataTemplate>
+                                         <StackPanel Orientation="Vertical">
+                                             <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
+                                                       IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
+                                                       Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                       CommandParameter="{Binding}" />
+                                             <TextBlock Text="{Binding StoreNumber}" Margin="5,0,0,0"/>
+                                             <TextBlock Text="{Binding District.Name}" Margin="5,0,0,0"/>
+                                         </StackPanel>
+                                     </DataTemplate>
+                                 </ListBox.ItemTemplate>
+                             </ListBox>
+                         </StackPanel>
+                         <TextBlock Text="По поставщику" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
+                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                             <ListBox ItemsSource="{Binding Suppliers}" Height="200" HorizontalAlignment="Left" Margin="0,5,0,0" Name="listSuppliers" VerticalAlignment="Top" Width="240" Background="#0B000000"
+                                      SelectionMode="Multiple">
+                                 <ListBox.ItemTemplate>
+                                     <DataTemplate>
+                                         <StackPanel Orientation="Vertical">
+                                             <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
+                                                       IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
+                                                       Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                       CommandParameter="{Binding}" />
+                                             <TextBlock Text="{Binding City.Name}" Margin="5,0,0,0"/>
+                                             <TextBlock Text="{Binding Phone}" Margin="5,0,0,0"/>
+                                         </StackPanel>
+                                     </DataTemplate>
+                                 </ListBox.ItemTemplate>
+                             </ListBox>
+                         </StackPanel>
+                         <TextBlock Text="По поставке" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
+                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                             <ListBox ItemsSource="{Binding ProductDeliveries}" Height="200" HorizontalAlignment="Left" Margin="0,5,0,0" Name="listProductDeliveries" VerticalAlignment="Top" Width="240" Background="#0B000000"
+                                      SelectionMode="Multiple">
+                                 <ListBox.ItemTemplate>
+                                     <DataTemplate>
+                                         <StackPanel Orientation="Vertical">
+                                             <CheckBox Margin="5,0,0,0"
+                                                       IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
+                                                       Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                       CommandParameter="{Binding}" />
+                                             <TextBlock Text="{Binding Supplier.Name}" Margin="5,0,0,0"/>
+                                             <TextBlock Text="{Binding Store.Name}" Margin="5,0,0,0"/>
+                                             <TextBlock Text="{Binding Store.StoreNumber}" Margin="5,0,0,0"/>
+                                         </StackPanel>
+                                     </DataTemplate>
+                                 </ListBox.ItemTemplate>
+                             </ListBox>
+                         </StackPanel>
+                         <TextBlock Text="По расфасовке" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
+                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                             <ListBox ItemsSource="{Binding Packagings}" Height="200" HorizontalAlignment="Left" Margin="0,5,0,0" x:Name="listPackaging" VerticalAlignment="Top" Width="240" Background="#0B000000"
+                                      SelectionMode="Multiple">
+                                 <b:Interaction.Triggers>
+                                     <b:EventTrigger EventName="SelectionChanged">
+                                         <b:InvokeCommandAction Command="{Binding ToggleSelectionCommand}" 
+                                                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListBox}}" />
+                                     </b:EventTrigger>
+                                 </b:Interaction.Triggers>
+                                 <ListBox.ItemTemplate>
+                                     <DataTemplate>
+                                         <StackPanel Orientation="Vertical">
+                                             <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
+                                                       IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
+                                                       Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                       CommandParameter="{Binding}" />
+                                         </StackPanel>
+                                     </DataTemplate>
+                                 </ListBox.ItemTemplate>
+                             </ListBox>
+                         </StackPanel>
+                         <TextBlock Text="По тип продукта" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
+                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                             <ListBox ItemsSource="{Binding ProductTypes}" Height="200" HorizontalAlignment="Left" Margin="0,5,0,0" x:Name="listProductType" VerticalAlignment="Top" Width="240" Background="#0B000000"
+                                      SelectionMode="Multiple">
+                                 <b:Interaction.Triggers>
+                                     <b:EventTrigger EventName="SelectionChanged">
+                                         <b:InvokeCommandAction Command="{Binding ToggleSelectionCommand}" 
+                                                                CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListBox}}" />
+                                     </b:EventTrigger>
+                                 </b:Interaction.Triggers>
+                                 <ListBox.ItemTemplate>
+                                     <DataTemplate>
+                                         <StackPanel Orientation="Vertical">
+                                             <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
+                                                       IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
+                                                       Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                       CommandParameter="{Binding}" />
+                                         </StackPanel>
+                                     </DataTemplate>
+                                 </ListBox.ItemTemplate>
+                             </ListBox>
+                         </StackPanel>
+                     </StackPanel>
+                    </ScrollViewer>
+
+                    
                 </StackPanel>
                 <!--Сохранение-->
                 <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,0,0,0">

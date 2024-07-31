@@ -39,6 +39,7 @@ namespace CandyKeeper.Presentation.ViewModels
         
         private readonly IProductForSaleService _service;
         private readonly IProductService _productService;
+        private readonly IProductTypeService _productTypeService;
         private readonly IStoreService _storeService;
         private readonly ISupplierService _supplierService;
         private readonly IProductDeliveryService _productDeliveryService;
@@ -57,6 +58,7 @@ namespace CandyKeeper.Presentation.ViewModels
         private ObservableCollection<Supplier> _suppliers;
         private ObservableCollection<ProductDelivery> _productDeliveries;
         private ObservableCollection<Packaging> _packagings;
+        private ObservableCollection<ProductType> _productTypes;
 
         private Models.ProductForSale _selectedItem = new();
         private ProductForSale _selectedItemForDetails;
@@ -77,11 +79,13 @@ namespace CandyKeeper.Presentation.ViewModels
             {
                 if (CurrentUser.StoreId == null)
                 {
-                    ProductForSales = new ObservableCollection<ProductForSale>(await _service.Get());
+                    if(p == null)
+                        ProductForSales = new ObservableCollection<ProductForSale>(await _service.Get());
                 }
                 else
                 {
-                    ProductForSales = new ObservableCollection<ProductForSale>(await _service.GetByStoreId((int)CurrentUser.StoreId));
+                    if(p == null)
+                        ProductForSales = new ObservableCollection<ProductForSale>(await _service.GetByStoreId((int)CurrentUser.StoreId));
                 }
             }
             catch (Exception ex)
@@ -315,7 +319,9 @@ namespace CandyKeeper.Presentation.ViewModels
             {
                 await GetSuppliers();
                 Stores = new ObservableCollection<Store>(await _storeService.Get());
-                await GetProductDeliveries();
+                ProductDeliveries = new ObservableCollection<ProductDelivery>(await _productDeliveryService.Get());
+                await GetPackagings();
+                await GetProductType();
                 var page = new FilterProductForSalePage();
                 page.DataContext = this;
                 page.Show();
@@ -345,7 +351,16 @@ namespace CandyKeeper.Presentation.ViewModels
 
                 var productForSales = await _service.Get();
                 
-                ProductForSales = Filter(MinProductsCount, MaxProductsCount, productForSales);
+                ProductForSales = Filter(MinPrice,
+                    MaxPrice,
+                    MinVolume,
+                    MaxVolume,
+                    SelectedStoreIds.ToList(),
+                    SelectedSupplierIds.ToList(),
+                    SelectedProductDeliveryIds.ToList(),
+                    SelectedPackagingIds.ToList(),
+                    SelectedProductTypeIds.ToList(),
+                    productForSales);
 
                 _refreshEvent?.Invoke(true);
             }
@@ -364,6 +379,85 @@ namespace CandyKeeper.Presentation.ViewModels
         }
 
         #endregion
+        
+        
+        public ICommand ToggleSelectionCommand { get; }
+        private bool CanToggleSelectionCommandExecute(object p) => true;
+        public async void OnToggleSelectionCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (p is Store store)
+                {
+                    if (SelectedStoreIds.Contains(store.Id))
+                    {
+                        SelectedStoreIds.Remove(store.Id);
+                    }
+                    else
+                    {
+                        SelectedStoreIds.Add(store.Id);
+                    }
+                }
+                else if (p is Supplier supplier)
+                {
+                    if (SelectedSupplierIds.Contains(supplier.Id))
+                    {
+                        SelectedSupplierIds.Remove(supplier.Id);
+                    }
+                    else
+                    {
+                        SelectedSupplierIds.Add(supplier.Id);
+                    }
+                }
+                else if (p is ProductDelivery productDelivery)
+                {
+                    if (SelectedProductDeliveryIds.Contains(productDelivery.Id))
+                    {
+                        SelectedProductDeliveryIds.Remove(productDelivery.Id);
+                    }
+                    else
+                    {
+                        SelectedProductDeliveryIds.Add(productDelivery.Id);
+                    }
+                }
+                else if (p is Packaging packaging)
+                {
+                    if (SelectedPackagingIds.Contains(packaging.Id))
+                    {
+                        SelectedPackagingIds.Remove(packaging.Id);
+                    }
+                    else
+                    {
+                        SelectedPackagingIds.Add(packaging.Id);
+                    }
+                }
+                else if (p is ProductType productType)
+                {
+                    if (SelectedProductTypeIds.Contains(productType.Id))
+                    {
+                        SelectedProductTypeIds.Remove(productType.Id);
+                    }
+                    else
+                    {
+                        SelectedProductTypeIds.Add(productType.Id);
+                    }
+                }
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
         
         #endregion
         
@@ -432,6 +526,12 @@ namespace CandyKeeper.Presentation.ViewModels
             get => _packagings;
             set => Set(ref _packagings, value);
         }
+
+        public ObservableCollection<ProductType> ProductTypes
+        {
+            get => _productTypes;
+            set => Set(ref _productTypes, value);
+        }
         public Models.ProductForSale SelectedItem
         {
             get => _selectedItem;
@@ -467,6 +567,7 @@ namespace CandyKeeper.Presentation.ViewModels
             ISupplierService supplierService,
             IProductDeliveryService productDeliveryService,
             IPackagingService packagingService,
+            IProductTypeService productTypeService,
             IConfiguration configuration,
             IUserService userService,
             IUserSessionService userSessionService)
@@ -478,6 +579,7 @@ namespace CandyKeeper.Presentation.ViewModels
             _supplierService = supplierService;
             _productDeliveryService = productDeliveryService;
             _packagingService = packagingService;
+            _productTypeService = productTypeService;
             _userService = userService;
             _userSessionService = userSessionService;
             _configuration = configuration;
@@ -494,11 +596,15 @@ namespace CandyKeeper.Presentation.ViewModels
             SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
             FilterShowCommand = new LambdaCommand(OnFilterShowCommandExecuted);
             FilterCommand = new LambdaCommand(OnFilterCommandExecuted);
+            ToggleSelectionCommand = new LambdaCommand(OnToggleSelectionCommandExecuted);
             
             _productForSales = new ObservableCollection<ProductForSale>();
-            _selectedStores = new ObservableCollection<Store>();
-            _selectedSuppliers = new ObservableCollection<Supplier>();
-            _selectedProductDeliveries = new ObservableCollection<ProductDelivery>();
+
+            SelectedStoreIds = new ObservableCollection<int>();
+            SelectedSupplierIds = new ObservableCollection<int>();
+            SelectedProductDeliveryIds = new ObservableCollection<int>();
+            SelectedPackagingIds = new ObservableCollection<int>();
+            SelectedProductTypeIds = new ObservableCollection<int>();
             
             _roles = GetDatabaseRoles();
             OnGetCommandExecuted(null);
@@ -524,6 +630,11 @@ namespace CandyKeeper.Presentation.ViewModels
         private async Task GetProduct()
         {
             Products = new ObservableCollection<Product>(await _productService.Get());
+        }
+
+        private async Task GetProductType()
+        {
+            ProductTypes = new ObservableCollection<ProductType>(await _productTypeService.Get());
         }
         
         private async Task GetStores()
@@ -601,52 +712,108 @@ namespace CandyKeeper.Presentation.ViewModels
         
         #region Поля_фильтрации
 
-        private int? _minProductsCount;
-        private int? _maxProductsCount;
-        private ObservableCollection<Store> _selectedStores;
-        private ObservableCollection<Supplier> _selectedSuppliers;
-        private ObservableCollection<ProductDelivery> _selectedProductDeliveries;
+        private int? _minPrice;
+        private int? _maxPrice;
+        private int? _minVolume;
+        private int? _maxVolume;
+        private ObservableCollection<int> _selectedStoreIds;
+        private ObservableCollection<int> _selectedSupplierIds;
+        private ObservableCollection<int> _selectedProductDeliveryIds;
+        private ObservableCollection<int> _selectedProductTypeIds;
+        private ObservableCollection<int> _selectedPackagingIds;
+        
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => Set(ref _isSelected, value);
+        }
 
-        public int? MinProductsCount
+        public int? MinPrice
         {
-            get => _minProductsCount;
-            set => Set(ref _minProductsCount, value);
+            get => _minPrice;
+            set => Set(ref _minPrice, value);
         }
         
-        public int? MaxProductsCount
+        public int? MaxPrice
         {
-            get => _maxProductsCount;
-            set => Set(ref _maxProductsCount, value);
+            get => _maxPrice;
+            set => Set(ref _maxPrice, value);
+        }
+        
+        public int? MinVolume
+        {
+            get => _minVolume;
+            set => Set(ref _minVolume, value);
+        }
+        
+        public int? MaxVolume
+        {
+            get => _maxVolume;
+            set => Set(ref _maxVolume, value);
         }
 
-        public ObservableCollection<Store> SelectedStores
+        public ObservableCollection<int> SelectedStoreIds
         {
-            get => _selectedStores;
-            set => Set(ref _selectedStores, value);
+            get => _selectedStoreIds;
+            set => Set(ref _selectedStoreIds, value); 
         }
         
-        public ObservableCollection<Supplier> SelectedSuppliers
+        public ObservableCollection<int> SelectedSupplierIds
         {
-            get => _selectedSuppliers;
-            set => Set(ref _selectedSuppliers, value);
+            get => _selectedSupplierIds;
+            set => Set(ref _selectedSupplierIds, value);
         }
         
-        public ObservableCollection<ProductDelivery> SelectedProductDeliveries
+        public ObservableCollection<int> SelectedProductDeliveryIds
         {
-            get => _selectedProductDeliveries;
-            set => Set(ref _selectedProductDeliveries, value);
+            get => _selectedProductDeliveryIds;
+            set => Set(ref _selectedProductDeliveryIds, value);
+        }
+        
+        public ObservableCollection<int> SelectedProductTypeIds
+        {
+            get => _selectedProductTypeIds;
+            set => Set(ref _selectedProductTypeIds, value);
+        }
+        
+        public ObservableCollection<int> SelectedPackagingIds
+        {
+            get => _selectedPackagingIds;
+            set => Set(ref _selectedPackagingIds, value);
         }
         
         #endregion
         
-        private static ObservableCollection<ProductForSale>? Filter(int? minProductsCount, 
-            int? maxProductsCount, 
-            List<ProductForSale> productForSales)
+        private static ObservableCollection<ProductForSale>? Filter(int? minPrice = 0, 
+            int? maxPrice = Int32.MaxValue,
+            int? minVolume = 0, 
+            int? maxVolume = Int32.MaxValue,
+            List<int> storeIds = null,
+            List<int> supplierIds = null ,
+            List<int> productDeliveryIds = null,
+            List<int> packagingIds = null,
+            List<int> productTypeIds = null,
+            List<ProductForSale> productForSales = null)
         {
-            //if (minProductsCount.HasValue)
-                //productForSales = productForSales.Where(a => a.ProductForSales.Count() >= minProductsCount.Value).ToList();
-            //if (maxProductsCount.HasValue)
-                //productForSales = productForSales.Where(a => a.ProductForSales.Count() <= maxProductsCount.Value).ToList();
+            if (minPrice.HasValue)
+                productForSales = productForSales.Where(a => a.Price >= minPrice.Value).ToList();
+            if (maxPrice.HasValue)
+                productForSales = productForSales.Where(a => a.Price <= maxPrice.Value).ToList();
+            if (minVolume.HasValue)
+                productForSales = productForSales.Where(a => a.Volume >= minVolume.Value).ToList();
+            if (maxVolume.HasValue)
+                productForSales = productForSales.Where(a => a.Volume <= maxVolume.Value).ToList();
+            if (storeIds != null && storeIds.Any())
+                productForSales = productForSales.Where(a => storeIds.Contains(a.StoreId)).ToList();
+            if (supplierIds != null && supplierIds.Any())
+                productForSales = productForSales.Where(a => supplierIds.Contains(a.ProductDelivery.SupplierId)).ToList();
+            if (productDeliveryIds != null && productDeliveryIds.Any())
+                productForSales = productForSales.Where(a => productDeliveryIds.Contains(a.ProductDeliveryId)).ToList();
+            if (packagingIds != null && packagingIds.Any())
+                productForSales = productForSales.Where(a => packagingIds.Contains(a.PackagingId)).ToList();
+            if (productTypeIds != null && productTypeIds.Any())
+                productForSales = productForSales.Where(a => productTypeIds.Contains(a.Product.ProductTypeId)).ToList();
             
             return new ObservableCollection<ProductForSale>(productForSales);
         }

@@ -22,7 +22,7 @@ public partial class ProductForSaleWindow : UserControl
         ProductForSaleDataGrid.Items.Refresh();
         if (DataContext is ProductForSaleViewModel viewModel)
         {
-            viewModel.OnGetCommandExecuted(null);
+            viewModel.OnGetCommandExecuted(p);
         }
     }
 
