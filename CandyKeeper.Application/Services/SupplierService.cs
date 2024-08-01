@@ -22,7 +22,7 @@ namespace CandyKeeper.Application.Services
         public async Task<List<Supplier>> GetBySearchingString(string searchingString)
         {
             var suppliers = await _repository.Get();
-            return suppliers.Where(p => p.Name.Contains(searchingString)).ToList();
+            return suppliers.Where(p => p.Name.Contains(searchingString) || p.Phone.Contains(searchingString)).ToList();
         }
         
         public async Task<List<Supplier>> Get()
