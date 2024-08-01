@@ -448,6 +448,7 @@ namespace CandyKeeper.Presentation.ViewModels
                     SelectedProductTypeIds.ToList(),
                     SelectedDistrictIds.ToList(),
                     SelectedCityIds.ToList(),
+                    _selectedOwnershipTypeIds.ToList(),
                     stores);
 
                 _refreshEvent?.Invoke(true);
@@ -478,15 +479,26 @@ namespace CandyKeeper.Presentation.ViewModels
 
             try
             {
-                if (p is Store store)
+                if (p is City city)
                 {
-                    if (SelectedStoreIds.Contains(store.Id))
+                    if (SelectedCityIds.Contains(city.Id))
                     {
-                        SelectedStoreIds.Remove(store.Id);
+                        SelectedCityIds.Remove(city.Id);
                     }
                     else
                     {
-                        SelectedStoreIds.Add(store.Id);
+                        SelectedCityIds.Add(city.Id);
+                    }
+                }
+                else if (p is District district)
+                {
+                    if (SelectedDistrictIds.Contains(district.Id))
+                    {
+                        SelectedDistrictIds.Remove(district.Id);
+                    }
+                    else
+                    {
+                        SelectedDistrictIds.Add(district.Id);
                     }
                 }
                 else if (p is Supplier supplier)
@@ -531,6 +543,17 @@ namespace CandyKeeper.Presentation.ViewModels
                     else
                     {
                         SelectedProductTypeIds.Add(productType.Id);
+                    }
+                }
+                else if (p is OwnershipType ownershipType)
+                {
+                    if (SelectedOwnershipTypeIds.Contains(ownershipType.Id))
+                    {
+                        SelectedOwnershipTypeIds.Remove(ownershipType.Id);
+                    }
+                    else
+                    {
+                        SelectedOwnershipTypeIds.Add(ownershipType.Id);
                     }
                 }
             }
@@ -892,6 +915,7 @@ namespace CandyKeeper.Presentation.ViewModels
             List<int> productTypeIds = null,
             List<int> districtIds = null,
             List<int> cityIds = null,
+            List<int> ownershipTypeIds = null,
             List<Store> stores = null)
         {
             if (minStoreNumber.HasValue)
@@ -918,6 +942,8 @@ namespace CandyKeeper.Presentation.ViewModels
                 stores = stores.Where(a => a.ProductForSales.Any(a => packagingIds.Contains(a.PackagingId))).ToList();
             if (productTypeIds != null && productTypeIds.Any())
                 stores = stores.Where(a => a.ProductForSales.Any(pfs => productTypeIds.Contains(pfs.Product.ProductTypeId))).ToList();
+            if (ownershipTypeIds != null && ownershipTypeIds.Any())
+                stores = stores.Where(a => ownershipTypeIds.Contains(a.OwnershipTypeId)).ToList();
             
             return new ObservableCollection<Store>(stores);
         }

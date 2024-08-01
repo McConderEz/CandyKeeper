@@ -20,7 +20,7 @@ public partial class SupplierWindow : UserControl
         SuppliersDataGrid.Items.Refresh();
         if (DataContext is SupplierViewModel viewModel)
         {
-            viewModel.OnGetCommandExecuted(null);
+            viewModel.OnGetCommandExecuted(p);
         }
     }
 
