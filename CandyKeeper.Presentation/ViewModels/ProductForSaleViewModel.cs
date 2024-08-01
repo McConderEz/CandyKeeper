@@ -379,8 +379,8 @@ namespace CandyKeeper.Presentation.ViewModels
         }
 
         #endregion
-        
-        
+
+        #region ToggleSelectionCommand
         public ICommand ToggleSelectionCommand { get; }
         private bool CanToggleSelectionCommandExecute(object p) => true;
         public async void OnToggleSelectionCommandExecuted(object p)
@@ -458,6 +458,9 @@ namespace CandyKeeper.Presentation.ViewModels
                 _semaphore.Release();
             }
         }
+        
+
+        #endregion
         
         #endregion
         

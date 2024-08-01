@@ -19,7 +19,7 @@ public partial class StoreWindow : UserControl
         StoreDataGrid.Items.Refresh();
         if (DataContext is StoreViewModel viewModel)
         {
-            viewModel.OnGetCommandExecuted(null);
+            viewModel.OnGetCommandExecuted(p);
         }
     }
 

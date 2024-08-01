@@ -72,7 +72,7 @@ public class UserRepository : IUserRepository
 
             try
             {
-                var userEntity = await _context.Users
+                var userEntity = await _context.Users.Include(u => u.Store)
                     .FirstOrDefaultAsync(c => c.Id == id);
 
                 if (userEntity == null)
