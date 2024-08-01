@@ -448,6 +448,7 @@ namespace CandyKeeper.Presentation.ViewModels
             }
             finally
             {
+                Clear();
                 _semaphore.Release();
             }
         }
@@ -806,6 +807,16 @@ namespace CandyKeeper.Presentation.ViewModels
         {
             get => _selectedOwnershipTypeIds;
             set => Set(ref _selectedOwnershipTypeIds, value);
+        }
+        
+        private void Clear()
+        {
+            _selectedStoreIds.Clear();
+            _selectedProductDeliveryIds.Clear();
+            _selectedProductTypeIds.Clear();
+            _selectedPackagingIds.Clear();
+            _selectedCityIds.Clear();
+            _selectedOwnershipTypeIds.Clear();
         }
         #endregion
         

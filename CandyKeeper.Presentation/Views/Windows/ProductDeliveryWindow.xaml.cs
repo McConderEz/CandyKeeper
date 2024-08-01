@@ -19,7 +19,7 @@ public partial class ProductDeliveryWindow : UserControl
         ProductDeliveryDataGrid.Items.Refresh();
         if (DataContext is ProductDeliveryViewModel viewModel)
         {
-            viewModel.OnGetCommandExecuted(null);
+            viewModel.OnGetCommandExecuted(p);
         }
     }
 

@@ -48,7 +48,10 @@ namespace CandyKeeper.Presentation.ViewModels
             await _semaphore.WaitAsync();
             try
             {
-                Products = new ObservableCollection<Product>(await _productService.Get());
+                if (p == null)
+                {
+                    Products = new ObservableCollection<Product>(await _productService.Get());
+                }
             }
             catch (Exception ex)
             {
@@ -229,6 +232,9 @@ namespace CandyKeeper.Presentation.ViewModels
         }
         
         #endregion
+
+        #region SearchingCommand
+        
         public ICommand SearchCommand { get; }
         private bool CanSearchCommandExecute(object p) => true;
         public async void OnSearchCommandExecuted(object p)
@@ -254,6 +260,108 @@ namespace CandyKeeper.Presentation.ViewModels
                 _semaphore.Release();
             }
         }
+        #endregion
+        
+        #region FilterShowCommand
+
+        public ICommand FilterShowCommand { get; }
+        private bool CanFilterShowCommandExecute(object p) => true;
+        public async void OnFilterShowCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                await GetProductTypes();
+                
+                var page = new FilterProductPage();
+                page.DataContext = this;
+                page.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+
+        #region FilterCommand
+
+        public ICommand FilterCommand { get; }
+        private bool CanFilterCommandExecute(object p) => true;
+        public async void OnFilterCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+
+                var products = await _productService.Get();
+                
+                Products = Filter(SelectedProductTypeIds.ToList(), products);
+
+                _refreshEvent?.Invoke(true);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                Clear();
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+
+        #region ToggleSelectionCommand
+
+        public ICommand ToggleSelectionCommand { get; }
+        private bool CanToggleSelectionCommandExecute(object p) => true;
+        public async void OnToggleSelectionCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (p is ProductType productType)
+                {
+                    if (SelectedProductTypeIds.Contains(productType.Id))
+                    {
+                        SelectedProductTypeIds.Remove(productType.Id);
+                    }
+                    else
+                    {
+                        SelectedProductTypeIds.Add(productType.Id);
+                    }
+                }
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+        
         #endregion
         
         private bool _isInvalid = false;
@@ -338,8 +446,14 @@ namespace CandyKeeper.Presentation.ViewModels
             DetailsCommand = new LambdaCommand(OnDetailsCommandExecuted);
             ReturnCommand = new LambdaCommand(OnReturnCommandExecuted);
             SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
+            FilterShowCommand = new LambdaCommand(OnFilterShowCommandExecuted);
+            FilterCommand = new LambdaCommand(OnFilterCommandExecuted);
+            ToggleSelectionCommand = new LambdaCommand(OnToggleSelectionCommandExecuted);
             
             _products = new ObservableCollection<Product>();
+
+            SelectedProductTypeIds = new ObservableCollection<int>();
+            
             OnGetCommandExecuted(null);
         }
 
@@ -366,6 +480,33 @@ namespace CandyKeeper.Presentation.ViewModels
             ProductTypes = new ObservableCollection<ProductType>(await _productTypeService.Get());
         }
 
+        
+        #region Поля_фильтрации
+
+        private ObservableCollection<int> _selectedProductTypeIds;
+        
+
+        public ObservableCollection<int> SelectedProductTypeIds
+        {
+            get => _selectedProductTypeIds;
+            set => Set(ref _selectedProductTypeIds, value);
+        }
+
+        private void Clear()
+        {
+            _selectedProductTypeIds.Clear();
+        }
+        
+        #endregion
+        
+        private static ObservableCollection<Product>? Filter(List<int> selectedProductTypeIds = null, 
+            List<Product> products = null)
+        {
+            if (selectedProductTypeIds != null && selectedProductTypeIds.Any())
+                products = products.Where(a => selectedProductTypeIds.Contains(a.ProductTypeId)).ToList();
+            return new ObservableCollection<Product>(products);
+        }
+        
 
     }
 }

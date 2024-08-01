@@ -29,12 +29,16 @@ namespace CandyKeeper.Presentation.ViewModels
         private readonly IStoreService _storeService;
         private readonly ISupplierService _supplierService;
         private readonly IProductForSaleService _productForSaleService;
+        private readonly IProductTypeService _productTypeService;
+        private readonly IProductService _productService;
         
         private ObservableCollection<ProductDelivery> _productDeliveries;
         
         private ObservableCollection<Store> _stores;
         private ObservableCollection<Supplier> _suppliers;
         private ObservableCollection<ProductForSale> _productForSales;
+        private ObservableCollection<Product> _products;
+        private ObservableCollection<ProductType> _productTypes;
 
         private Models.ProductDelivery _selectedItem = new();
         private ProductDelivery _selectedItemForDetails;
@@ -63,13 +67,19 @@ namespace CandyKeeper.Presentation.ViewModels
             {
                 if (CurrentUser.StoreId == null)
                 {
-                    ProductDeliveries = new ObservableCollection<ProductDelivery>(await _service.Get());
+                    if (p == null)
+                    {
+                        ProductDeliveries = new ObservableCollection<ProductDelivery>(await _service.Get());
+                    }
                 }
                 else
                 {
-                    ProductDeliveries =
-                        new ObservableCollection<ProductDelivery>(
-                            await _service.GetByStoreId((int)CurrentUser.StoreId));
+                    if (p == null)
+                    {
+                        ProductDeliveries =
+                            new ObservableCollection<ProductDelivery>(
+                                await _service.GetByStoreId((int)CurrentUser.StoreId));
+                    }
                 }
             }
             catch (Exception ex)
@@ -253,7 +263,9 @@ namespace CandyKeeper.Presentation.ViewModels
         }
         
         #endregion
-        
+
+        #region SearchingCommand
+
         public ICommand SearchCommand { get; }
         private bool CanSearchCommandExecute(object p) => true;
         public async void OnSearchCommandExecuted(object p)
@@ -279,6 +291,7 @@ namespace CandyKeeper.Presentation.ViewModels
                 _semaphore.Release();
             }
         }
+        #endregion
         
         #region AddProductInProductDeliveryShowCommand
         public ICommand AddProductInProductDeliveryShowCommand { get; }
@@ -337,6 +350,158 @@ namespace CandyKeeper.Presentation.ViewModels
             }
         }
         
+
+        #endregion
+        
+        #region FilterShowCommand
+
+        public ICommand FilterShowCommand { get; }
+        private bool CanFilterShowCommandExecute(object p) => true;
+        public async void OnFilterShowCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                await GetSuppliers();
+                await GetStores();
+                await GetProductTypes();
+                await GetProductForSales();
+                await GetProduct();
+                
+                var page = new FilterProductDelivryPage();
+                page.DataContext = this;
+                page.Show();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+
+        #region FilterCommand
+
+        public ICommand FilterCommand { get; }
+        private bool CanFilterCommandExecute(object p) => true;
+        public async void OnFilterCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                List<ProductDelivery> productDeliveries;
+                if (CurrentUser.StoreId != null)
+                {
+                    productDeliveries = new List<ProductDelivery>(
+                        await _service.GetByStoreId((int)CurrentUser.StoreId));
+                }
+                else
+                {
+                    productDeliveries = await _service.Get();
+                }
+
+                ProductDeliveries = Filter(
+                    MinDeliveryDate,
+                    MaxDeliveryDate,
+                    SelectedSupplierIds.ToList(),
+                    SelectedProductTypeIds.ToList(),
+                    SelectedStoreIds.ToList(),
+                    SelectedProductIds.ToList(),
+                    productDeliveries);
+
+                _refreshEvent?.Invoke(true);
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                Clear();
+                _semaphore.Release();
+            }
+        }
+
+        #endregion
+
+        #region ToggleSelectionCommand
+
+        public ICommand ToggleSelectionCommand { get; }
+        private bool CanToggleSelectionCommandExecute(object p) => true;
+        public async void OnToggleSelectionCommandExecuted(object p)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            { 
+                if (p is Supplier supplier)
+                {
+                    if (SelectedSupplierIds.Contains(supplier.Id))
+                    {
+                        SelectedSupplierIds.Remove(supplier.Id);
+                    }
+                    else
+                    {
+                        SelectedSupplierIds.Add(supplier.Id);
+                    }
+                }
+                else if (p is Store store)
+                {
+                    if (SelectedStoreIds.Contains(store.Id))
+                    {
+                        SelectedStoreIds.Remove(store.Id);
+                    }
+                    else
+                    {
+                        SelectedStoreIds.Add(store.Id);
+                    }
+                }
+                else if (p is Product product)
+                {
+                    if (SelectedProductIds.Contains(product.Id))
+                    {
+                        SelectedProductIds.Remove(product.Id);
+                    }
+                    else
+                    {
+                        SelectedProductIds.Add(product.Id);
+                    }
+                }
+                else if (p is ProductType productType)
+                {
+                    if (SelectedProductTypeIds.Contains(productType.Id))
+                    {
+                        SelectedProductTypeIds.Remove(productType.Id);
+                    }
+                    else
+                    {
+                        SelectedProductTypeIds.Add(productType.Id);
+                    }
+                }
+            }
+            catch (ArgumentException)
+            {
+                IsInvalid = true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
 
         #endregion
         
@@ -403,6 +568,18 @@ namespace CandyKeeper.Presentation.ViewModels
             set => Set(ref _productForSales, value);
         }
         
+        public ObservableCollection<Product> Products
+        {
+            get => _products;
+            set => Set(ref _products, value);
+        }
+        
+        public ObservableCollection<ProductType> ProductTypes
+        {
+            get => _productTypes;
+            set => Set(ref _productTypes, value);
+        }
+        
         public Models.ProductDelivery SelectedItem
         {
             get => _selectedItem;
@@ -431,12 +608,16 @@ namespace CandyKeeper.Presentation.ViewModels
         public ProductDeliveryViewModel(IProductDeliveryService service,
             IStoreService storeService, 
             ISupplierService supplierService,
-            IProductForSaleService productForSaleService)
+            IProductForSaleService productForSaleService,
+            IProductTypeService productTypeService,
+            IProductService productService)
         {
             _service = service;
             _storeService = storeService;
             _supplierService = supplierService;
             _productForSaleService = productForSaleService;
+            _productTypeService = productTypeService;
+            _productService = productService;
             
             GetCommand = new LambdaCommand(OnGetCommandExecuted);
             AddEditShowCommand = new LambdaCommand(OnAddEditShowCommandExecuted);
@@ -447,10 +628,17 @@ namespace CandyKeeper.Presentation.ViewModels
             AddProductInProductDeliveryShowCommand = new LambdaCommand(OnAddProductInProductDeliveryShowCommandExecuted);
             AddProductInProductDeliveryCommand = new LambdaCommand(OnAddProductInProductDeliveryCommandExecuted);
             SearchCommand = new LambdaCommand(OnSearchCommandExecuted);
+            FilterShowCommand = new LambdaCommand(OnFilterShowCommandExecuted);
+            FilterCommand = new LambdaCommand(OnFilterCommandExecuted);
+            ToggleSelectionCommand = new LambdaCommand(OnToggleSelectionCommandExecuted);
 
             CurrentUser = CurrentUserTransfer.CurrentUser;
             
             _productDeliveries = new ObservableCollection<ProductDelivery>();
+            SelectedStoreIds = new ObservableCollection<int>();
+            SelectedSupplierIds = new ObservableCollection<int>();
+            SelectedProductIds = new ObservableCollection<int>();
+            SelectedProductTypeIds = new ObservableCollection<int>();
             OnGetCommandExecuted(null);
         }
         
@@ -475,6 +663,100 @@ namespace CandyKeeper.Presentation.ViewModels
         private async Task GetProductForSales()
         {
             ProductForSales = new ObservableCollection<ProductForSale>(await _productForSaleService.Get());
+        }
+        
+        private async Task GetProduct()
+        {
+            Products = new ObservableCollection<Product>(await _productService.Get());
+        }
+        
+        private async Task GetProductTypes()
+        {
+            ProductTypes = new ObservableCollection<ProductType>(await _productTypeService.Get());
+        }
+        
+        #region Поля_фильтрации
+        
+        private DateTime? _minDeliveryDate;
+        private DateTime? _maxDeliveryDate;
+        private ObservableCollection<int> _selectedStoreIds;
+        private ObservableCollection<int> _selectedSupplierIds;
+        private ObservableCollection<int> _selectedProductIds;
+        private ObservableCollection<int> _selectedProductTypeIds;
+        
+
+        public DateTime? MinDeliveryDate
+        {
+            get => _minDeliveryDate;
+            set => Set(ref _minDeliveryDate, value);
+        }
+        
+        public DateTime? MaxDeliveryDate
+        {
+            get => _maxDeliveryDate;
+            set => Set(ref _maxDeliveryDate, value);
+        }
+        
+        public ObservableCollection<int> SelectedStoreIds
+        {
+            get => _selectedStoreIds;
+            set => Set(ref _selectedStoreIds, value); 
+        }
+        
+        public ObservableCollection<int> SelectedSupplierIds
+        {
+            get => _selectedSupplierIds;
+            set => Set(ref _selectedSupplierIds, value);
+        }
+        
+        public ObservableCollection<int> SelectedProductTypeIds
+        {
+            get => _selectedProductTypeIds;
+            set => Set(ref _selectedProductTypeIds, value);
+        }
+        
+        public ObservableCollection<int> SelectedProductIds
+        {
+            get => _selectedProductIds;
+            set => Set(ref _selectedProductIds, value);
+        }
+        
+       
+
+        private void Clear()
+        {
+            _selectedStoreIds.Clear();
+            _selectedSupplierIds.Clear();
+            _selectedProductTypeIds.Clear();
+            _selectedProductIds.Clear();
+        }
+        
+        #endregion
+        
+        //TODO: Протестировать
+        private static ObservableCollection<ProductDelivery>? Filter(
+            DateTime? minDeliveryDate = null,
+            DateTime? maxDeliveryDate  = null,
+            List<int> supplierIds = null ,
+            List<int> productTypeIds = null,
+            List<int> storeIds = null,
+            List<int> productIds = null,
+            List<ProductDelivery> productDeliveries = null)
+        {
+            if (minDeliveryDate.HasValue)
+                productDeliveries = productDeliveries.Where(a => a.DeliveryDate >= minDeliveryDate.Value).ToList();
+            if (maxDeliveryDate.HasValue)
+                productDeliveries = productDeliveries.Where(a => a.DeliveryDate <= maxDeliveryDate.Value).ToList();
+            if (supplierIds != null && supplierIds.Any())
+                productDeliveries = productDeliveries.Where(a => supplierIds.Contains(a.SupplierId)).ToList();
+            if (productTypeIds != null && productTypeIds.Any())
+                productDeliveries = productDeliveries.Where(a => a.ProductForSales.Any(pfs => productTypeIds.Contains(pfs.Product.ProductTypeId))).ToList();
+            if (storeIds != null && storeIds.Any())
+                productDeliveries = productDeliveries.Where(a => storeIds.Contains(a.StoreId)).ToList();
+            if (productIds != null && productIds.Any())
+                productDeliveries = productDeliveries.Where(a => a.ProductForSales.Any(pfs => productIds.Contains(pfs.ProductId))).ToList();
+            
+            return new ObservableCollection<ProductDelivery>(productDeliveries);
         }
     }
 }

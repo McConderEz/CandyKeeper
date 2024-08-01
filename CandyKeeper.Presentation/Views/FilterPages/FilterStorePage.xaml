@@ -72,7 +72,8 @@
                                              <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
                                                        IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
                                                        Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                       CommandParameter="{Binding}" />
+                                                       CommandParameter="{Binding}" 
+                                                       IsHitTestVisible="False"/>
                                          </StackPanel>
                                      </DataTemplate>
                                  </ListBox.ItemTemplate>
@@ -94,7 +95,8 @@
                                              <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
                                                        IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
                                                        Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                       CommandParameter="{Binding}" />
+                                                       CommandParameter="{Binding}" 
+                                                       IsHitTestVisible="False"/>
                                          </StackPanel>
                                      </DataTemplate>
                                  </ListBox.ItemTemplate>
@@ -116,7 +118,8 @@
                                              <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
                                                        IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
                                                        Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                       CommandParameter="{Binding}" />
+                                                       CommandParameter="{Binding}" 
+                                                       IsHitTestVisible="False"/>
                                          </StackPanel>
                                      </DataTemplate>
                                  </ListBox.ItemTemplate>
@@ -138,7 +141,8 @@
                                              <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
                                                        IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
                                                        Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                       CommandParameter="{Binding}" />
+                                                       CommandParameter="{Binding}" 
+                                                       IsHitTestVisible="False"/>
                                              <TextBlock Text="{Binding City.Name}" Margin="5,0,0,0"/>
                                              <TextBlock Text="{Binding Phone}" Margin="5,0,0,0"/>
                                          </StackPanel>
@@ -162,7 +166,8 @@
                                              <CheckBox Margin="5,0,0,0"
                                                        IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
                                                        Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                       CommandParameter="{Binding}" />
+                                                       CommandParameter="{Binding}" 
+                                                       IsHitTestVisible="False"/>
                                              <TextBlock Text="{Binding Supplier.Name}" Margin="5,0,0,0"/>
                                              <TextBlock Text="{Binding Store.Name}" Margin="5,0,0,0"/>
                                              <TextBlock Text="{Binding Store.StoreNumber}" Margin="5,0,0,0"/>
@@ -187,7 +192,8 @@
                                              <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
                                                        IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
                                                        Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                       CommandParameter="{Binding}" />
+                                                       CommandParameter="{Binding}" 
+                                                       IsHitTestVisible="False"/>
                                          </StackPanel>
                                      </DataTemplate>
                                  </ListBox.ItemTemplate>
@@ -209,7 +215,8 @@
                                              <CheckBox Content="{Binding Name}" Margin="5,0,0,0"
                                                        IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
                                                        Command="{Binding DataContext.ToggleSelectionCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                                       CommandParameter="{Binding}" />
+                                                       CommandParameter="{Binding}"
+                                                       IsHitTestVisible="False"/>
                                          </StackPanel>
                                      </DataTemplate>
                                  </ListBox.ItemTemplate>
