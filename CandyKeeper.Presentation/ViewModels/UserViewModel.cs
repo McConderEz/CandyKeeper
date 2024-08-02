@@ -482,6 +482,14 @@ internal class UserViewModel: ViewModel
         
         MainWindowsViewModel.TransferCurrentUserEvent += GetCurrentUser;
         MainWindowsViewModel.LeaveAccountEvent += ClearCurrentUser;
+        LoginWindow.TransferPasswordEvent += GetPassword;
+        RegisterWindow.TransferPasswordEvent += GetPassword;
+    }
+
+    private void GetPassword(object? sender, EventArgs e)
+    {
+        if(sender is string password)
+            CurrentUser.PasswordHashed = password;
     }
 
     private void ClearCurrentUser(object? sender, User e) => CurrentUser = new();

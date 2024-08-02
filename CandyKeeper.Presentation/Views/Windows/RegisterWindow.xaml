@@ -35,7 +35,7 @@
             <TextBlock Text="Пароль" Margin="65 10 0 0"></TextBlock>
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="Lock" Style="{StaticResource loginButtonIcon}" />
-                <TextBox Width="150" Text="{Binding CurrentUser.PasswordHashed}"></TextBox>
+                <PasswordBox Width="150" Name="PasswordBox"></PasswordBox>
             </StackPanel>
             
             </StackPanel>
@@ -43,7 +43,7 @@
                 <TextBlock Grid.Row="2" Visibility="{Binding IsInvalidCredentials, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Red" FontSize="10" Margin="0 0 0 5 " HorizontalAlignment="Center">
                     Неверные данные. Попробуйте ещё раз.
                 </TextBlock>
-                <Button Style="{StaticResource addButton}" Height="30" Width="150" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 35" Command="{Binding RegistrationCommand}">
+                <Button Style="{StaticResource addButton}" Height="30" Width="150" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 35" Click="TransferPassword" Command="{Binding RegistrationCommand}">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial Kind="AccountPlus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
                         <TextBlock Text="Зарегистрироваться"/>

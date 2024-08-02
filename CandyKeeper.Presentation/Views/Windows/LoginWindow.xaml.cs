@@ -11,6 +11,7 @@ namespace CandyKeeper.Presentation.Views.Windows;
 public partial class LoginWindow : Window
 {
     private bool IsMaximized = false;
+    public static event EventHandler TransferPasswordEvent;
     
     public LoginWindow()
     {
@@ -67,5 +68,9 @@ public partial class LoginWindow : Window
     {
         this.Close();
     }
-    
+
+    private void TransferPassword(object sender, RoutedEventArgs e)
+    {
+        TransferPasswordEvent?.Invoke(PasswordBox.Password, null);
+    }
 }

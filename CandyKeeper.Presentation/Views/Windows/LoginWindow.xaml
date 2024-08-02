@@ -35,7 +35,7 @@
             <TextBlock Text="Пароль" Margin="65 10 0 0"></TextBlock>
             <StackPanel Orientation="Horizontal">
                 <Icon:PackIconMaterial Kind="Lock" Style="{StaticResource loginButtonIcon}" />
-                <TextBox  Width="150" Text="{Binding CurrentUser.PasswordHashed}" InputScope="Password"></TextBox>
+                <PasswordBox  Width="150" Name="PasswordBox" InputScope="Password"></PasswordBox>
             </StackPanel>
             
             </StackPanel>
@@ -47,7 +47,7 @@
                 <TextBlock Grid.Row="2" Visibility="{Binding IsBlockedAccount, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Red" FontSize="10" Margin="0 0 0 5 " HorizontalAlignment="Center">
                     Учетная запись заблокирована
                 </TextBlock>
-                <Button Style="{StaticResource addButton}" Height="30" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 35" Command="{Binding LoginCommand}">
+                <Button Style="{StaticResource addButton}" Height="30" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0 0 0 35" Click="TransferPassword" Command="{Binding LoginCommand}">
                     <StackPanel Orientation="Horizontal">
                         <Icon:PackIconMaterial Kind="Login" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
                         <TextBlock Text="Войти"/>
