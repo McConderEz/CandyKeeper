@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="CandyKeeper.Presentation.Views.Windows.QueryWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:CandyKeeper.Presentation.Views.Windows"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna"
+             mc:Ignorable="d"
+             DataContext="{Binding MainWindowsViewModel, Source={StaticResource Locator}}"
+             d:DesignHeight="720" d:DesignWidth="1200">
+    <Grid Margin="0,50,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <TextBlock Text="Отчёты" Grid.Row="0" FontSize="32" FontWeight="SemiBold" Margin="0 20 0 0"
+                       HorizontalAlignment="Left" Foreground="#121518"/>
+        </Grid>
+        
+        <ScrollViewer Grid.Row="1" Margin="0,5,0,20">
+            <ListBox Name="QueryResultsListBox" DisplayMemberPath="Description" SelectionChanged="OnQuerySelectionChanged" Height="100"/>
+        </ScrollViewer>
+        
+        <Grid Grid.Row="2" Margin="0,0,0,20">
+            <DataGrid Name="ResultsDataGrid" AutoGenerateColumns="True" IsReadOnly="True"/>
+        </Grid>
+    </Grid>
+</UserControl>

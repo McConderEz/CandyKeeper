@@ -292,7 +292,14 @@
                                 </StackPanel>
                             </Button>
                         </StackPanel>
-                                               
+                        <StackPanel DockPanel.Dock="Top" Visibility="{Binding IsManagerVisible, Converter={StaticResource TabsItemToVisibilityConverter}}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="QueryView">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Database" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Отчёты"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>          
                         
                     </DockPanel>
                 </Border>

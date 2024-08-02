@@ -19,7 +19,8 @@ namespace CandyKeeper.DAL
         
         //TODO: Триггеры
         
-        
+        //TODO: Пофиксить проблему сброса роли, после смена магазина
+        //TODO: Протестировать смену роли и отображение нужных вкладок
         
         private readonly IConfiguration _configuration;
         

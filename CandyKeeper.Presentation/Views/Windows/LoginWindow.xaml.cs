@@ -72,5 +72,6 @@ public partial class LoginWindow : Window
     private void TransferPassword(object sender, RoutedEventArgs e)
     {
         TransferPasswordEvent?.Invoke(PasswordBox.Password, null);
+        PasswordBox.Password = "";
     }
 }
