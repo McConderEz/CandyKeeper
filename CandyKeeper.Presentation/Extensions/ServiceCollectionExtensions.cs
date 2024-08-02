@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using CandyKeeper.DAL.Repositories.User;
 using CandyKeeper.Presentation.ViewModels.Base;
 using CSharpFunctionalExtensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic.ApplicationServices;
@@ -76,6 +77,20 @@ namespace CandyKeeper.Presentation.Extensions
             services.AddSingleton<UserViewModel>();
 
             return services;
+        }
+        
+        public static void EnsureDatabaseMigrated<T>(this IServiceProvider serviceProvider) where T : DbContext
+        {
+            try
+            {
+                var context = serviceProvider.GetRequiredService<T>();
+                context.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
         }
     }
 }

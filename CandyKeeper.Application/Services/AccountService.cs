@@ -149,7 +149,7 @@ public class AccountService : IAccountService
     public async Task AddRoot()
     {
         var hashedPassword = _passwordHasherService.Generate("Root");
-        await using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"))) 
+        await using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("AuthConnection"))) 
         {
             try
                 {
@@ -181,7 +181,7 @@ public class AccountService : IAccountService
                                                """;
 
 
-                    await AssignRoleToUser(_configuration.GetConnectionString("DefaultConnection"), "Root", "Admin");
+                    await AssignRoleToUser(_configuration.GetConnectionString("AuthConnection"), "Root", "Admin");
 
                     await using (SqlCommand command = new SqlCommand(getPrincipalIdSql, connection))
                     {

@@ -5,6 +5,7 @@ using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using CandyKeeper.Application.Interfaces;
 using CandyKeeper.Application.Services;
+using CandyKeeper.DAL;
 using CandyKeeper.Presentation.Extensions;
 using CandyKeeper.Presentation.Infrastructure.Commands;
 using CandyKeeper.Presentation.Models;
@@ -12,6 +13,7 @@ using CandyKeeper.Presentation.Views.AddEditPages;
 using CandyKeeper.Presentation.Views.Windows;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -74,7 +76,16 @@ internal class UserViewModel: ViewModel
     {
         if (p is int id)
         {
-            SelectedUser.Id = id;
+            var domainUser = await _userService.GetById(id);
+
+            SelectedUser = new User
+            {
+                Id = domainUser.Id,
+                Name = domainUser.Name,
+                PrincipalId = domainUser.PrincipalId,
+                StoreId = domainUser.StoreId
+            };
+            
             previousPrincipalId = SelectedUser.PrincipalId;
         }
 
@@ -131,6 +142,8 @@ internal class UserViewModel: ViewModel
         }
         finally
         {
+            previousPrincipalId = 0;
+            SelectedUser = new User();
             _semaphore.Release();
         }
     }
@@ -162,6 +175,12 @@ internal class UserViewModel: ViewModel
             
             //TODO: Чинить
            // _userSessionService.SetUserData("CurrentUser", CurrentUser, TimeSpan.FromHours(1));
+           
+           string connectionString = DbExtensions.CreateConnectionString("(localdb)\\\\MSSQLLocalDB", "candyKeeper", CurrentUser.Name, CurrentUser.PasswordHashed);
+
+           // Создание нового контекста базы данных с новой строкой подключения
+           var optionsBuilder = new DbContextOptionsBuilder<CandyKeeperDbContext>();
+           optionsBuilder.UseSqlServer(connectionString);
 
             CurrentUserTransfer.CurrentUser = CurrentUser;
             
@@ -480,7 +499,7 @@ internal class UserViewModel: ViewModel
     {
         string query = "SELECT principal_id, name FROM sys.database_principals WHERE type = 'R'";
         var roles = new List<DatabaseRole>();
-        var temp = new string[]{"Admin", "Client", "Manager"};
+        var temp = new string[]{"Client", "Manager"};
         using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
         {
             SqlCommand command = new SqlCommand(query, connection);

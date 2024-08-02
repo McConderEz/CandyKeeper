@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
@@ -13,11 +14,6 @@ namespace CandyKeeper.DAL
 {
     public class CandyKeeperDbContext : DbContext
     {
-        //TODO: Сделать фильтр(Продуктов, Поставок, Магазинов, Поставщиков)
-        //TODO: Починить несвоевременное создание ролей и админ аккаунта
-        //TODO: Добавить данные аккаунта в строку подключения
-        
-        
         //TODO: Сделать запросы по 5 и 6 лабе в коде
         //TODO: Сделать диаграмму и вывод в эксель
         
@@ -33,6 +29,7 @@ namespace CandyKeeper.DAL
             _configuration = configuration;
             Database.EnsureCreated();
         }
+        
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

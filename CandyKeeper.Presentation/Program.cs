@@ -39,11 +39,24 @@ namespace CandyKeeper.Presentation
                           {
                               options.UseSqlServer(context.Configuration.GetConnectionString("DefaultConnection"));
                           }, ServiceLifetime.Scoped);
+                          services.AddDbContext<AuthCandyKeeperDbContext>(options =>
+                          {
+                              options.UseSqlServer(context.Configuration.GetConnectionString("AuthConnection"));
+                          }, ServiceLifetime.Scoped); 
                           services.AddMemoryCache();
                           services.AddRepositories();
                           services.AddServices();
                           services.AddViewModels();
-                          services.EnsureRolesExist(context.Configuration.GetConnectionString("DefaultConnection")!, roleNames);
+
+                      })
+                      .ConfigureServices((context, services) =>
+                      {
+                          var serviceProvider = services.BuildServiceProvider();
+                          serviceProvider.EnsureDatabaseMigrated<CandyKeeperDbContext>();
+                          serviceProvider.EnsureDatabaseMigrated<AuthCandyKeeperDbContext>();
+
+                          var authConnectionString = context.Configuration.GetConnectionString("AuthConnection")!;
+                          services.EnsureRolesExist(authConnectionString, roleNames);
                       });
             
             return host;
