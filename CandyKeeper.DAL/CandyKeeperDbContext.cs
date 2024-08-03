@@ -14,13 +14,12 @@ namespace CandyKeeper.DAL
 {
     public class CandyKeeperDbContext : DbContext
     {
-        //TODO: Сделать запросы по 5 и 6 лабе в коде
-        //TODO: Сделать диаграмму и вывод в эксель
-        
         //TODO: Триггеры
+        //TODO: Партицирование
         
         //TODO: Пофиксить проблему сброса роли, после смена магазина
         //TODO: Протестировать смену роли и отображение нужных вкладок
+        //TODO: Блокировка
         
         private readonly IConfiguration _configuration;
         

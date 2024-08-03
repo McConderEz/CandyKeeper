@@ -300,7 +300,14 @@
                                 </StackPanel>
                             </Button>
                         </StackPanel>          
-                        
+                        <StackPanel DockPanel.Dock="Top" Visibility="{Binding IsManagerVisible, Converter={StaticResource TabsItemToVisibilityConverter}}">
+                            <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="DiagramView">
+                                <StackPanel Orientation="Horizontal">
+                                    <Icon:PackIconMaterial Kind="Graph" Style="{StaticResource menuButtonIcon}"/>
+                                    <TextBlock Text="Диаграмма"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>    
                     </DockPanel>
                 </Border>
             </Grid>

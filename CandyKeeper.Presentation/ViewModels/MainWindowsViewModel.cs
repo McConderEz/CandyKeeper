@@ -141,6 +141,7 @@ namespace CandyKeeper.Presentation.ViewModels
             "SupplierView" => new SupplierWindow(),
             "AdminPanelView" => new AdminPanelWindow(),
             "QueryView" => new QueryWindow(),
+            "DiagramView" => new DiagramWindow(),
             _ => throw new ArgumentException("selected view model does not exist exist")
         };
 
