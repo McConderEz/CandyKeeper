@@ -17,29 +17,33 @@ public class DatabaseService : IDatabaseService
         _configuration = configuration;
     }
 
-    public async Task<QueryResult> ExecuteQueriesAsync((string description,string value) query)
+    public async Task<QueryResult> ExecuteQueriesAsync((string description, string value) query, Dictionary<string, object> parameters)
     {
-        var results = new List<QueryResult>();
+        var result = new QueryResult();
 
         await using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
         {
             await connection.OpenAsync();
-            
-            await using (var reader = await connection.ExecuteReaderAsync(query.value))
-            {
-                var dataTable = new DataTable();
-                dataTable.Load(reader);
 
-                results.Add(new QueryResult
+            await using (var command = new SqlCommand(query.value, connection))
+            {
+                foreach (var param in parameters)
                 {
-                    Description = query.description,
-                    QueryName = query.value,
-                    Result = dataTable
-                });
+                    command.Parameters.AddWithValue(param.Key, param.Value ?? DBNull.Value);
+                }
+
+                await using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var dataTable = new DataTable();
+                    dataTable.Load(reader);
+
+                    result.Description = query.description;
+                    result.QueryName = query.value;
+                    result.Result = dataTable;
+                }
             }
-            
         }
 
-        return results.FirstOrDefault();
+        return result;
     }
 }

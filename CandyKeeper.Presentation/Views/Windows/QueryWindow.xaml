@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:CandyKeeper.Presentation.Views.Windows"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              DataContext="{Binding MainWindowsViewModel, Source={StaticResource Locator}}"
              d:DesignHeight="720" d:DesignWidth="1200">
@@ -25,7 +26,18 @@
         </ScrollViewer>
         
         <Grid Grid.Row="2" Margin="0,0,0,20">
-            <DataGrid Name="ResultsDataGrid" AutoGenerateColumns="True" IsReadOnly="True"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                <TextBox Name="StringArgumentTextBox" Width="150" Margin="10,0"/>
+                <materialDesign:NumericUpDown Name="NumberArgumentTextBox" Width="100" Margin="10,0"/>
+                <DatePicker Name="DateArgumentPicker1" Width="100" Margin="10,0"/>
+                <DatePicker Name="DateArgumentPicker2" Width="100" Margin="10,0"/>
+                <Button Style="{StaticResource addButton}" Content="Выполнить" Click="OnExecuteQueryClick" Margin="10,0"/>
+            </StackPanel>
+            <DataGrid Name="ResultsDataGrid" AutoGenerateColumns="True" IsReadOnly="True" Grid.Row="1"/>
         </Grid>
     </Grid>
 </UserControl>

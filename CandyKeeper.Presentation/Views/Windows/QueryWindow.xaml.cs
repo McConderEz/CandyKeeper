@@ -14,6 +14,8 @@ public partial class QueryWindow : UserControl
 
 	private readonly IDatabaseService _databaseService;
 	private List<QueryResult> _queryResults;
+	private QueryResult _selectedQuery;
+
 
 	public QueryWindow()
 	{
@@ -56,7 +58,7 @@ public partial class QueryWindow : UserControl
 			                          		Join Stores as s On StoreId = s.Id
 			                          		Join Districts as d On s.DistrictId = d.Id
 			                          		Join Cities as c On d.CityId = c.Id
-			                          	where p.Name = N'Торт "Наполеон"';
+			                          	where p.Name = CONVERT(NVARCHAR, @StringArgument);
 			                          """),
 			("Магазины по типу собственности", $"""
 			                                    select s.Name as StoreName,
@@ -70,7 +72,7 @@ public partial class QueryWindow : UserControl
 			                                    	   Join OwnershipTypes as o On OwnershipTypeId = o.Id
 			                                    	   Join Districts as d On DistrictId = d.Id
 			                                    	   Join Cities as c On d.CityId = c.Id
-			                                    	where o.Name = N'Частная собственность'
+			                                    	where o.Name = CONVERT(NVARCHAR, @StringArgument)
 			                                    """),
 			("Магазины открытые с определённой даты", $"""
 			                                           select s.Name as StoreName,
@@ -84,7 +86,7 @@ public partial class QueryWindow : UserControl
 			                                           	   Join OwnershipTypes as o On OwnershipTypeId = o.Id
 			                                           	   Join Districts as d On DistrictId = d.Id
 			                                           	   Join Cities as c On d.CityId = c.Id
-			                                           	where YearOfOpened > '01-01-2000'
+			                                           	where YearOfOpened > @DateArgument1
 			                                           """),
 			("Магазины открытые в определённый временной промежуток", $"""
 			                                                           select store.Name,
@@ -93,7 +95,7 @@ public partial class QueryWindow : UserControl
 			                                                           	   from ProductDeliveries as pd 
 			                                                           	   Join Stores as store on StoreId = store.Id
 			                                                           	   Join Suppliers as supplier on SupplierId = supplierId
-			                                                           	where DeliveryDate between '01-01-2000' and '01-01-2020'
+			                                                           	where DeliveryDate between @DateArgument1 and @DateArgument2
 			                                                           """),
 			("Вывод продуктов", $"""
 			                     select	p.Name as ProductName,
@@ -171,7 +173,7 @@ public partial class QueryWindow : UserControl
 				 		   (select Count(pfs.StoreId) from ProductForSales as pfs
 				 					where pfs.StoreId = s.Id) as ProductForSalesCount 
 				 		   from Stores as s
-				 		where YearOfOpened between '01-01-2022' and '01-01-2024'
+				 		where YearOfOpened between @DateArgument1 and @DateArgument2
 				 )
 
 				 select fs.Name,	
@@ -214,7 +216,7 @@ public partial class QueryWindow : UserControl
 				 	where
 				 		(
 				 		select avg(pfs.Price) from ProductForSales as pfs
-				 							  where pfs.StoreId = s.Id) <=350000
+				 							  where pfs.StoreId = s.Id) <= @NumberArgument
 				 """),
 			("Магазины с самыми минимальными средними ценами на продукты в каждом городе", $"""
 				 with StoreAveragePrices as (
@@ -276,7 +278,7 @@ public partial class QueryWindow : UserControl
 				     LEFT JOIN 
 				         ProductForSales as pfs on pfs.ProductDeliveryId = pd.Id
 				     where 
-				         pd.DeliveryDate BETWEEN '2020-01-01' AND '2024-01-01'
+				         pd.DeliveryDate BETWEEN @DateArgument1 AND @DateArgument2
 				     group by 
 				         supplier.Name
 				 ),
@@ -375,7 +377,7 @@ public partial class QueryWindow : UserControl
 			                                               	   left join Districts as d on s.DistrictId = d.Id
 			                                               	   left join Cities as c on d.CityId = c.Id
 			                                               	   left join OwnershipTypes as ot on OwnershipTypeId = ot.Id
-			                                               	 where s.YearOfOpened IN (Select YearOfOpened from Stores where YearOfOpened > '01-01-2022')
+			                                               	 where s.YearOfOpened IN (Select YearOfOpened from Stores where YearOfOpened > @DateArgument1)
 			                                               """),
 			("Вывод магазинов, исключая диапазон дат", $"""
 			                                            select s.Name as StoreName,
@@ -389,7 +391,7 @@ public partial class QueryWindow : UserControl
 			                                            	   left join Districts as d on s.DistrictId = d.Id
 			                                            	   left join Cities as c on d.CityId = c.Id
 			                                            	   left join OwnershipTypes as ot on OwnershipTypeId = ot.Id
-			                                            	 where s.YearOfOpened NOT IN (Select YearOfOpened from Stores where YearOfOpened > '01-01-2022')
+			                                            	 where s.YearOfOpened NOT IN (Select YearOfOpened from Stores where YearOfOpened > @DateArgument1)
 			                                            """),
 			("Вывод продуктов с комментарием к цене", $"""
 			                                           select p.Name,		
@@ -406,7 +408,7 @@ public partial class QueryWindow : UserControl
 			                                           	   left join Suppliers as supplier on pd.SupplierId = supplier.Id
 			                                           	   left join Products as p on pfs.ProductId = p.Id
 			                                           """),
-			("Вывод конд. изделий соответствующих маске", $"""
+			("Вывод конд. изделий соответствующих маске 'Торт'", $"""
 			                                               select p.Name,		
 			                                               	   pfs.Volume, 
 			                                               	   pfs.Price,
@@ -484,29 +486,38 @@ public partial class QueryWindow : UserControl
 			                                                        """)
 		};
 	}
-
-	private async Task GetQuery((string,string) query)
-    {
-	    _queryResults.Add(await _databaseService.ExecuteQueriesAsync(query));
-	    QueryResultsListBox.ItemsSource = _queryResults;
-    }
-
-	private async Task RunQuery(QueryResult query) 
-	{
-		var result = await _databaseService.ExecuteQueriesAsync((query.Description,query.QueryName));
-
-		query.Result = result.Result;
-
-		ResultsDataGrid.ItemsSource = query.Result.DefaultView;
-	}
+	
 	
     private void OnQuerySelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
 	    if(QueryResultsListBox.SelectedItem is QueryResult selectedQuery)
 	    {
-		    RunQuery(selectedQuery); 
+		    _selectedQuery = selectedQuery;
 	    }
     }
-    
-    
+
+
+    private async void OnExecuteQueryClick(object sender, RoutedEventArgs e)
+    {
+	    if (_selectedQuery != null)
+	    {
+		    var stringArg = StringArgumentTextBox.Text;
+		    var numberArg = NumberArgumentTextBox.Value;
+		    var dateArg1 = DateArgumentPicker1.SelectedDate;
+		    var dateArg2 = DateArgumentPicker2.SelectedDate;
+
+		    var parameters = new Dictionary<string, object>
+		    {
+			    { "@StringArgument", stringArg },
+			    { "@NumberArgument", numberArg },
+			    { "@DateArgument1", dateArg1 ?? (object)DBNull.Value },
+			    { "@DateArgument2", dateArg2 ?? (object)DBNull.Value }
+		    };
+
+		    var result = await _databaseService.ExecuteQueriesAsync((_selectedQuery.Description, _selectedQuery.QueryName), parameters);
+
+		    _selectedQuery.Result = result.Result;
+		    ResultsDataGrid.ItemsSource = _selectedQuery.Result.DefaultView;
+	    }
+    }
 }
