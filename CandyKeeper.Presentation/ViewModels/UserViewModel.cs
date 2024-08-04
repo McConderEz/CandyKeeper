@@ -83,7 +83,8 @@ internal class UserViewModel: ViewModel
                 Id = domainUser.Id,
                 Name = domainUser.Name,
                 PrincipalId = domainUser.PrincipalId,
-                StoreId = domainUser.StoreId
+                StoreId = domainUser.StoreId,
+                IsBlocked = domainUser.IsBlocked
             };
             
             previousPrincipalId = SelectedUser.PrincipalId;
@@ -409,6 +410,7 @@ internal class UserViewModel: ViewModel
         }
         finally
         {
+            SelectedUser = new();
             _semaphore.Release();
         }
     }
