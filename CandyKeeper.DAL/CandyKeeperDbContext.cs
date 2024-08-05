@@ -14,9 +14,6 @@ namespace CandyKeeper.DAL
 {
     public class CandyKeeperDbContext : DbContext
     {
-        //TODO: Триггеры
-        //TODO: Партицирование
-        
         
         private readonly IConfiguration _configuration;
         

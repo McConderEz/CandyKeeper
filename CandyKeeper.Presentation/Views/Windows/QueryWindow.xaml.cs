@@ -183,9 +183,9 @@ public partial class QueryWindow : UserControl
 				 	   fs.NumberOfEmployees, 
 				 	   fs.SuppliersCount, 
 				 	   fs.ProductForSalesCount,
-				 	   d.Name,
-				 	   c.Name,
-				 	   ot.Name
+				 	   d.Name as DistrictName,
+				 	   c.Name as CityName,
+				 	   ot.Name as OwnershipTypeName
 				 	   from FilteredStore as fs
 				 	   left join Districts as d on fs.DistrictId = d.Id
 				 	   left join Cities as c on d.CityId = c.Id

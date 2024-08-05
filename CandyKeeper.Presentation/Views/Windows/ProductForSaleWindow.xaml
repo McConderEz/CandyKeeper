@@ -197,7 +197,8 @@
                 
                 <!--Кнопка добавления-->
                 <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource addButton}" Command="{Binding AddEditShowCommand}">
+                    <Button Style="{StaticResource addButton}" Command="{Binding AddEditShowCommand}"
+                            Visibility="{Binding IsManagerVisible, Converter={StaticResource TabsItemToVisibilityConverter}}">
                         <StackPanel Orientation="Horizontal">
                             <iconPacks:PackIconMaterial Kind="Plus" VerticalAlignment="Center" Width="11" Height="11" Margin="0 1 8 0"/>
                             <TextBlock Text="Добавить"/>

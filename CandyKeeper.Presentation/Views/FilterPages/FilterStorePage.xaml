@@ -22,7 +22,7 @@
             <StackPanel
                 VerticalAlignment="Center">
             
-                <Button Style="{StaticResource gridRemoveButton}" Click="CloseBtn" Width="25" Height="25" Margin="250 -40  0 0">
+                <Button Style="{StaticResource gridRemoveButton}" Click="CloseBtn" Width="25" Height="25" Margin="250 10  0 0">
                     <iconPacks:PackIconMaterial Kind="Close" Style="{StaticResource gridButtonIcon}"/>
                 </Button>
                 
@@ -55,7 +55,7 @@
                     
                     
                     <ScrollViewer VerticalScrollBarVisibility="Visible" CanContentScroll="True">
-                     <StackPanel Height="350">
+                     <StackPanel Height="300">
                          <TextBlock Text="По городу" Margin="0 20 0 0" HorizontalAlignment="Center"></TextBlock>
                          <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                              <ListBox ItemsSource="{Binding Cities}" Height="200" HorizontalAlignment="Left" Margin="0,5,0,0" x:Name="listCities" VerticalAlignment="Top" Width="240" Background="#0B000000"
@@ -228,7 +228,7 @@
                     
                 </StackPanel>
                 <!--Сохранение-->
-                <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,0,0,0">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" Margin="0,0,0,20">
                     <TextBlock Grid.Row="2" Margin="10,0,10,0" Visibility="{Binding IsInvalid, Converter={StaticResource BooleanToVisibilityConverter}}" Foreground="Red" FontSize="10" HorizontalAlignment="Center">
                         Некорректный ввод. Попробуйте еще раз.
                     </TextBlock>

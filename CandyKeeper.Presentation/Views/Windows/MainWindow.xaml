@@ -239,7 +239,7 @@
                             </Button>
                         </StackPanel>
 
-                        <StackPanel DockPanel.Dock="Top" Visibility="{Binding IsManagerVisible, Converter={StaticResource TabsItemToVisibilityConverter}}">
+                        <StackPanel DockPanel.Dock="Top" Visibility="{Binding IsAdminVisible, Converter={StaticResource TabsItemToVisibilityConverter}}">
                             <Button Style="{StaticResource menuButton}" Command="{Binding SelectViewCommand}" CommandParameter="ProductView">
                                 <StackPanel Orientation="Horizontal">
                                     <Icon:PackIconMaterial Kind="Cookie" Style="{StaticResource menuButtonIcon}"/>
